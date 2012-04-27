@@ -9,7 +9,8 @@ class M3U8(object):
 
     def dumps(self):
         '''
-        Returns the current m3u8 as a string
+        Returns the current m3u8 as a string.
+        You could also use unicode(<this obj>) or str(<this obj>)
         '''
         pass
 
