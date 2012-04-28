@@ -5,7 +5,7 @@ function install_deps {
 }
 
 function run {
-    py.test -vs tests/
+    PYTHONPATH=. py.test -vs tests/
 }
 
 function main {

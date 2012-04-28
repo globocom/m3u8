@@ -1,8 +1,14 @@
+from .parser import Parser
 
 class M3U8(object):
+    '''
+    Represents a single M3U8 file
+    '''
 
     def __init__(self, content):
-        pass
+        parser = Parser()
+        self.data = parser.parse(content)
+
 
     def __unicode__(self):
         return self.dumps()
@@ -24,15 +30,17 @@ class M3U8(object):
     def target_duration(self):
         '''
         Returns the EXT-X-TARGETDURATION as an integer
+        http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.2
         '''
-        return None
+        return self.data.get('targetduration')
 
     @property
     def media_sequence(self):
         '''
         Returns the EXT-X-MEDIA-SEQUENCE as an integer
+        http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.3
         '''
-        return None
+        return self.data.get('media_sequence')
 
     @property
     def key(self):
@@ -56,7 +64,7 @@ class M3U8(object):
         '''
         Returns an iterable with all .ts chunks from playlist, in order.
         '''
-        return ()
+        return self.data.get('chunks', [])
 
     @property
     def files(self):
