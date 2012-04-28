@@ -14,7 +14,7 @@ Usage
   
     # if you already have the content as string, use
   
-    m3u8_obj = m3u8.loads('/tmp/playlist.m3u8')
+    m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ... ')
 
 Runnign Tests
 -------------
