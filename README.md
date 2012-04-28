@@ -16,7 +16,7 @@ Usage
   
     m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ... ')
 
-Runnign Tests
+Running Tests
 -------------
 
     $ ./runtests
@@ -30,5 +30,4 @@ All contribution is welcome! If, and only if, it
 - follows the code conventions
 
 If you plan to implement a new feature or something that will take more than
-a few minutes before a pull request, plase open an issue to make sure we don't
-work on the same thing.
+a few minutes, plase open an issue to make sure we don't work on the same thing.
