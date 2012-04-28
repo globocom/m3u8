@@ -1,7 +1,8 @@
 
 class M3U8(object):
     '''
-    Represents a single M3U8 file
+    Represents a single M3U8 playlist. Should be instantiated with
+    the content as string.
     '''
 
     def __init__(self, content):
