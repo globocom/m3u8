@@ -1,4 +1,3 @@
-from .parser import Parser
 
 class M3U8(object):
     '''
@@ -6,9 +5,7 @@ class M3U8(object):
     '''
 
     def __init__(self, content):
-        parser = Parser()
         self.data = parser.parse(content)
-
 
     def __unicode__(self):
         return self.dumps()
