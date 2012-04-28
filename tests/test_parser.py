@@ -50,4 +50,11 @@ def test_should_parse_sliding_window_playlist_from_string():
             'https://priv.example.com/fileSequence2682.ts'] == data['chunks']
 
 def test_should_load_playlist_with_encripted_segments_from_string():
-    pass
+    data = m3u8.parse(PLAYLIST_WITH_ENCRIPTED_SEGMENTS)
+    assert 7794 == data['media_sequence']
+    assert 15 == data['targetduration']
+    assert 'AES-128' == data['key']['method']
+    assert 'https://priv.example.com/key.php?r=52' == data['key']['uri']
+    assert ['http://media.example.com/fileSequence52-1.ts',
+            'http://media.example.com/fileSequence52-2.ts',
+            'http://media.example.com/fileSequence52-3.ts'] == data['chunks']
