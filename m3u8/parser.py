@@ -70,7 +70,7 @@ def _parse_key(line, data):
     data['key'] = {}
     for param in params:
         name, value = param.split('=', 1)
-        data['key'][name.lower()] = remove_quotes(value)
+        data['key'][normalize_attribute(name)] = remove_quotes(value)
 
 def _parse_extinf(line, data, state):
     duration, title = line.replace(extinf + ':', '').split(',')
@@ -120,4 +120,4 @@ def remove_quotes(string):
     return string
 
 def normalize_attribute(attribute):
-    return attribute.replace('-', '_').lower()
+    return attribute.replace('-', '_').lower().strip()

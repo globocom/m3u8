@@ -44,7 +44,7 @@ http://media.example.com/fileSequence52-3.ts
 
 VARIANT_PLAYLIST = '''
 #EXTM3U
-#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1280000
+#EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=1280000
 http://example.com/low.m3u8
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=2560000
 http://example.com/mid.m3u8
@@ -59,7 +59,7 @@ PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV = '''
 #EXT-X-MEDIA-SEQUENCE:82400
 #EXT-X-ALLOW-CACHE:NO
 #EXT-X-VERSION:2
-#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/tvglobokey.bin",IV=0X10ef8f758ca555115584bb5b3c687f52
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/tvglobokey.bin", IV=0X10ef8f758ca555115584bb5b3c687f52
 #EXT-X-TARGETDURATION:8
 #EXTINF:8,
 ../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82400.ts
