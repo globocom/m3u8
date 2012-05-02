@@ -36,6 +36,27 @@ http://media.example.com/fileSequence52-2.ts
 http://media.example.com/fileSequence52-3.ts
 '''
 
+PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV = '''
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:82400
+#EXT-X-ALLOW-CACHE:NO
+#EXT-X-VERSION:2
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/tvglobokey.bin",IV=0X10ef8f758ca555115584bb5b3c687f52
+#EXT-X-TARGETDURATION:8
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82400.ts
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82401.ts
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82402.ts
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82403.ts
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82404.ts
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82405.ts
+'''
+
 def test_should_parse_simple_playlist_from_string():
     data = m3u8.parse(SIMPLE_PLAYLIST)
     assert 5220 == data['targetduration']
@@ -61,3 +82,9 @@ def test_should_load_playlist_with_encripted_segments_from_string():
             'http://media.example.com/fileSequence52-2.ts',
             'http://media.example.com/fileSequence52-3.ts'] == [c['uri'] for c in data['chunks']]
     assert [15, 15, 15] == [c['duration'] for c in data['chunks']]
+
+def test_should_load_playlist_with_iv_from_string():
+    data = m3u8.parse(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    assert "/hls-key/tvglobokey.bin" == data['key']['uri']
+    assert "AES-128" == data['key']['method']
+    assert "0X10ef8f758ca555115584bb5b3c687f52" == data['key']['iv']
