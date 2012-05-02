@@ -40,11 +40,9 @@ def parse(content):
             state['expect_playlist'] = False
 
         elif line.startswith(ext_x_targetduration):
-            _parse_targetduration(line, data)
-
+            _parse_simple_parameter(line, data, int)
         elif line.startswith(ext_x_media_sequence):
-            _parse_media_sequence(line, data)
-
+            _parse_simple_parameter(line, data, int)
         elif line.startswith(ext_x_version):
             _parse_simple_parameter(line, data)
         elif line.startswith(ext_x_allow_cache):
@@ -62,15 +60,6 @@ def parse(content):
             _parse_stream_inf(line, data, state)
 
     return data
-
-
-def _parse_targetduration(line, data):
-    duration = line.replace(ext_x_targetduration + ':', '')
-    data['targetduration'] = int(duration)
-
-def _parse_media_sequence(line, data):
-    seq = line.replace(ext_x_media_sequence + ':', '')
-    data['media_sequence'] = int(seq)
 
 def _parse_key(line, data):
     params = line.replace(ext_x_key + ':', '').split(',')
@@ -108,11 +97,11 @@ def _parse_variant_playlist(line, data, state):
 
     data['playlists'].append(playlist)
 
-def _parse_simple_parameter(line, data):
+def _parse_simple_parameter(line, data, cast_to=str):
     param, value = line.split(':', 1)
     param = normalize_attribute(param.replace('#EXT-X-', ''))
     value = normalize_attribute(value)
-    data[param] = value
+    data[param] = cast_to(value)
 
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')
