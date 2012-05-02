@@ -10,7 +10,7 @@ The basic usage is to create a playlist object from a file or directly from a st
     import m3u8
   
     m3u8_obj = m3u8.load('/tmp/playlist.m3u8')
-    print m3u8_obj.chunks
+    print m3u8_obj.segments
     print m3u8_obj.target_duration
   
     # if you already have the content as string, use

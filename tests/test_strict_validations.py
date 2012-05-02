@@ -5,7 +5,7 @@ def test_should_fail_if_first_line_not_EXTM3U():
     assert 0
 
 @pytest.mark.xfail
-def test_should_fail_if_expected_ts_chunk_line_is_not_valid():
+def test_should_fail_if_expected_ts_segment_line_is_not_valid():
     assert 0
 
 @pytest.mark.xfail

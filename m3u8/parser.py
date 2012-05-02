@@ -19,7 +19,7 @@ def parse(content):
     data = {
         'is_variant': False,
         'playlists': [],
-        'chunks': [],
+        'segments': [],
         }
 
     state = {
@@ -80,9 +80,9 @@ def _parse_ts_chuck(line, data, state):
     Segment = namedtuple('Segment', ['uri', 'title', 'duration'])
     info = state.pop('segment_info')
 
-    data['chunks'].append(Segment(uri=line,
-                                  title=info['title'],
-                                  duration=info['duration']))
+    data['segments'].append(Segment(uri=line,
+                                    title=info['title'],
+                                    duration=info['duration']))
 
 def _parse_stream_inf(line, data, state):
     params = line.replace(ext_x_stream_inf + ':', '').split(',')

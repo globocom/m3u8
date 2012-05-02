@@ -43,7 +43,7 @@ class M3U8(object):
     @property
     def key(self):
         '''
-        Returns a namedtuple 'Key' used to encrypt the chunks (EXT-X-KEY)
+        Returns a namedtuple 'Key' used to encrypt the segments (EXT-X-KEY)
 
         0 - method
           is a string. ex.: "AES-128"
@@ -58,16 +58,16 @@ class M3U8(object):
         return None
 
     @property
-    def chunks(self):
+    def segments(self):
         '''
-        Returns an iterable with all .ts chunks from playlist, in order.
+        Returns an iterable with all .ts segments from playlist, in order.
         '''
-        return self.data.get('chunks', [])
+        return self.data.get('segments', [])
 
     @property
     def files(self):
         '''
         Returns an iterable with all files from playlist, in order. This includes
-        chunks and key uri, if present.
+        segments and key uri, if present.
         '''
         return ()
