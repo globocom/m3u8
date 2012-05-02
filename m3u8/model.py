@@ -1,4 +1,7 @@
+import os
+import errno
 from collections import namedtuple
+
 from m3u8 import parser
 
 class M3U8(object):
@@ -43,7 +46,18 @@ class M3U8(object):
         '''
         Saves the current m3u8 to ``filename``
         '''
-        pass
+        self._create_sub_directories(filename)
+
+        with open(filename, 'w') as fileobj:
+            fileobj.write(self.dumps())
+
+    def _create_sub_directories(self, filename):
+        basename = os.path.dirname(filename)
+        try:
+            os.makedirs(basename)
+        except OSError as error:
+            if error.errno != errno.EEXIST:
+                raise
 
     @property
     def is_variant(self):

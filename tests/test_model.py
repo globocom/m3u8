@@ -147,10 +147,36 @@ def test_allow_cache_attribute():
     obj.data = {}
     assert None == obj.allow_cache
 
-# dump to string
+# dump m3u8
 
 def test_dumps_should_build_same_string():
     obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
 
     expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV.replace(', IV', ',IV').strip()
     assert obj.dumps().strip() == expected
+
+def test_dump_should_build_file_with_same_content(tmpdir):
+    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+
+    expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV.replace(', IV', ',IV').strip()
+    filename = str(tmpdir.join('playlist.m3u8'))
+
+    obj.dump(filename)
+
+    assert_file_content(filename, expected)
+
+def test_dump_should_create_sub_directories(tmpdir):
+    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+
+    expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV.replace(', IV', ',IV').strip()
+    filename = str(tmpdir.join('subdir1', 'subdir2', 'playlist.m3u8'))
+
+    obj.dump(filename)
+
+    assert_file_content(filename, expected)
+
+def assert_file_content(filename, expected):
+    with open(filename) as fileobj:
+        content = fileobj.read().strip()
+
+    assert content == expected
