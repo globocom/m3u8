@@ -74,15 +74,12 @@ def _parse_key(line, data):
 
 def _parse_extinf(line, data, state):
     duration, title = line.replace(extinf + ':', '').split(',')
-    state['segment_info'] = {'duration': int(duration), 'title': remove_quotes(title)}
+    state['segment'] = {'duration': int(duration), 'title': remove_quotes(title)}
 
 def _parse_ts_chuck(line, data, state):
-    Segment = namedtuple('Segment', ['uri', 'title', 'duration'])
-    info = state.pop('segment_info')
-
-    data['segments'].append(Segment(uri=line,
-                                    title=info['title'],
-                                    duration=info['duration']))
+    segment = state.pop('segment')
+    segment['uri'] = line
+    data['segments'].append(segment)
 
 def _parse_stream_inf(line, data, state):
     params = line.replace(ext_x_stream_inf + ':', '').split(',')
