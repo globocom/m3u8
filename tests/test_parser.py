@@ -7,6 +7,12 @@ def test_should_parse_simple_playlist_from_string():
     assert ['http://media.example.com/entire.ts'] == [c['uri'] for c in data['segments']]
     assert [5220] == [c['duration'] for c in data['segments']]
 
+def test_should_parse_simple_playlist_from_string_with_different_linebreaks():
+    data = m3u8.parse(SIMPLE_PLAYLIST.replace('\n', '\r\n'))
+    assert 5220 == data['targetduration']
+    assert ['http://media.example.com/entire.ts'] == [c['uri'] for c in data['segments']]
+    assert [5220] == [c['duration'] for c in data['segments']]
+
 def test_should_parse_sliding_window_playlist_from_string():
     data = m3u8.parse(SLIDING_WINDOW_PLAYLIST)
     assert 8 == data['targetduration']

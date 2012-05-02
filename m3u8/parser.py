@@ -102,7 +102,7 @@ def _parse_variant_playlist(line, data, state):
     data['playlists'].append(playlist)
 
 def string_to_lines(string):
-    return string.strip().split('\n')
+    return string.strip().replace('\r\n', '\n').split('\n')
 
 def remove_quotes(string):
     '''
