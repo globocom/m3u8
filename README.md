@@ -17,7 +17,7 @@ The basic usage is to create a playlist object from a file or directly from a st
   
     m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ... ')
 
-## [not implemented yet] Variant playlists (variable bitrates)
+## Variant playlists (variable bitrates)
 
 **See [issue 4](https://github.com/globocom/m3u8/issues/4)**
 
@@ -36,6 +36,9 @@ the playlist object used in the for loop above has a few attributes:
 
 - `resource`: the url to the stream
 - `stream_info`: a `StreamInfo` object (actually a namedtuple) with all the attributes available to [#EXT-X-STREAM-INF](http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.10)
+
+**note**: the following attributes are not implemented yet, follow [issue 4](https://github.com/globocom/m3u8/issues/4) for updates
+
 - `iframe_stream_info`: usually `None`, unless it's a playlist with [I-Frames](http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.13),
    in this case it's also a namedtuple `IFrameStreamInfo` with all the attribute available to [#EXT-X-I-FRAME-STREAM-INF](http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.13)
 - `alternative_audios`: it's an empty list, unless it's a playlist with [Alternative audio](http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.7),
