@@ -83,29 +83,23 @@ def _parse_ts_chuck(line, data, state):
 
 def _parse_stream_inf(line, data, state):
     params = line.replace(ext_x_stream_inf + ':', '').split(',')
-    StreamInfo = namedtuple('StreamInfo', ['program_id', 'bandwidth', 'codecs'])
 
-    tmpdata = {}
+    stream_info = {}
     for param in params:
         name, value = param.split('=', 1)
-        tmpdata[name] = value
+        stream_info[normalize_attribute(name)] = value
 
-    codecs = tmpdata.get('CODECS')
-    if codecs:
-        codecs = remove_quotes(codecs)
-
-    stream_info = StreamInfo(program_id=tmpdata.get('PROGRAM-ID'),
-                             bandwidth=tmpdata.get('BANDWIDTH'),
-                             codecs=codecs)
-
+    if 'codecs' in stream_info:
+        stream_info['codecs'] = remove_quotes(stream_info['codecs'])
 
     data['is_variant'] = True
     state['stream_info'] = stream_info
 
 def _parse_variant_playlist(line, data, state):
-    VariantPlaylist = namedtuple('VariantPlaylist', ['resource', 'stream_info'])
-    data['playlists'].append(VariantPlaylist(resource=line,
-                                             stream_info=state.pop('stream_info')))
+    playlist = {'resource': line,
+                'stream_info': state.pop('stream_info')}
+
+    data['playlists'].append(playlist)
 
 def string_to_lines(string):
     return string.strip().split('\n')
@@ -124,3 +118,6 @@ def remove_quotes(string):
     if string and string[0] in quotes and string[-1] in quotes:
         return string[1:-1]
     return string
+
+def normalize_attribute(attribute):
+    return attribute.replace('-', '_').lower()
