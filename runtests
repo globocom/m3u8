@@ -1,7 +1,19 @@
 #!/bin/bash
 
+test_server_stdout=tests/server.stdout
+
 function install_deps {
-    pip install pytest
+    pip install pytest bottle
+}
+
+function start_server {
+    rm -f ${test_server_stdout}
+    python tests/m3u8server.py >${test_server_stdout} 2>&1 &
+}
+
+function stop_server {
+    ps ax | grep m3u8server.py | grep -v grep | cut -d ' ' -f 1 | xargs kill
+    echo "Test server stdout on ${test_server_stdout}"
 }
 
 function run {
@@ -10,7 +22,9 @@ function run {
 
 function main {
     install_deps
+    start_server
     run
+    stop_server
 }
 
 if [ -z "$1" ]; then

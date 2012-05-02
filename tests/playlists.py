@@ -1,3 +1,7 @@
+from os.path import dirname, abspath, join
+
+TEST_HOST = 'http://localhost:8112'
+
 SIMPLE_PLAYLIST = '''
 #EXTM3U
 #EXT-X-TARGETDURATION:5220
@@ -5,6 +9,10 @@ SIMPLE_PLAYLIST = '''
 http://media.example.com/entire.ts
 #EXT-X-ENDLIST
 '''
+
+SIMPLE_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/simple-playlist.m3u8'))
+
+SIMPLE_PLAYLIST_URI = TEST_HOST + '/simple.m3u8'
 
 SLIDING_WINDOW_PLAYLIST = '''
 #EXTM3U
@@ -74,3 +82,5 @@ SIMPLE_PLAYLIST_WITH_TITLE = '''
 http://media.example.com/entire.ts
 #EXT-X-ENDLIST
 '''
+
+del abspath, dirname, join
