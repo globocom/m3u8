@@ -45,3 +45,32 @@ http://example.com/hi.m3u8
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,CODECS="mp4a.40.5"
 http://example.com/audio-only.m3u8
 '''
+
+PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV = '''
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:82400
+#EXT-X-ALLOW-CACHE:NO
+#EXT-X-VERSION:2
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/tvglobokey.bin",IV=0X10ef8f758ca555115584bb5b3c687f52
+#EXT-X-TARGETDURATION:8
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82400.ts
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82401.ts
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82402.ts
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82403.ts
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82404.ts
+#EXTINF:8,
+../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82405.ts
+'''
+
+SIMPLE_PLAYLIST_WITH_TITLE = '''
+#EXTM3U
+#EXT-X-TARGETDURATION:5220
+#EXTINF:5220,"A sample title"
+http://media.example.com/entire.ts
+#EXT-X-ENDLIST
+'''

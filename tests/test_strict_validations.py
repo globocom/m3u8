@@ -31,3 +31,7 @@ def test_should_fail_if_any_EXTINF_duration_is_greater_than_TARGET_DURATION():
 @pytest.mark.xfail
 def test_should_fail_if_TARGET_DURATION_not_found():
     assert 0
+
+@pytest.mark.xfail
+def test_should_fail_if_invalid_m3u8_url_after_EXT_X_STREAM_INF():
+    assert 0
