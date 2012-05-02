@@ -16,25 +16,22 @@ def parse(content):
     '''
     Given a M3U8 playlist content returns a dictionary with all data found
     '''
-    next_chuck_duration = None
-    next_chunk_title = None
     data = {
         'is_variant': False,
         'playlists': [],
         'chunks': [],
         }
 
-    expect_extinf = False
     state = {
+        'expect_segment': False,
         'expect_playlist': False,
         }
 
     for line in string_to_lines(content):
 
-        if next_chuck_duration:
-            _parse_ts_chuck(line, data, next_chuck_duration, next_chunk_title)
-            next_chuck_duration = None
-            next_chunk_title = None
+        if state['expect_segment']:
+            _parse_ts_chuck(line, data, state)
+            state['expect_segment'] = False
 
         elif state['expect_playlist']:
             _parse_variant_playlist(line, data, state)
@@ -50,7 +47,8 @@ def parse(content):
             _parse_key(line, data)
 
         elif line.startswith(extinf):
-            next_chuck_duration, next_chunk_title = _parse_duration_and_title(line)
+            _parse_extinf(line, data, state)
+            state['expect_segment'] = True
 
         elif line.startswith(ext_x_stream_inf):
             state['expect_playlist'] = True
@@ -74,14 +72,18 @@ def _parse_key(line, data):
         name, value = param.split('=', 1)
         data['key'][name.lower()] = remove_quotes(value)
 
-def _parse_duration_and_title(line):
+def _parse_extinf(line, data, state):
     duration, title = line.replace(extinf + ':', '').split(',')
-    return int(duration), remove_quotes(title)
+    state['segment_info'] = {'duration': int(duration), 'title': remove_quotes(title)}
 
-def _parse_ts_chuck(line, data, duration=None, title=None):
-    data['chunks'].append({'duration': duration,
-                           'uri': line,
-                           'title': title})
+def _parse_ts_chuck(line, data, state):
+    Segment = namedtuple('Segment', ['uri', 'title', 'duration'])
+    info = state.pop('segment_info')
+
+    data['chunks'].append(Segment(uri=line,
+                                  title=info['title'],
+                                  duration=info['duration']))
+
 def _parse_stream_inf(line, data, state):
     params = line.replace(ext_x_stream_inf + ':', '').split(',')
     StreamInfo = namedtuple('StreamInfo', ['program_id', 'bandwidth', 'codecs'])
