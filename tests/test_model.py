@@ -129,3 +129,20 @@ def test_playlists_attribute_without_program_id():
     assert '320000' == obj.playlists[0].stream_info.bandwidth
     assert None == obj.playlists[0].stream_info.codecs
     assert None == obj.playlists[0].stream_info.program_id
+
+def test_version_attribute():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj.data = {'version': '2'}
+    assert '2' == obj.version
+
+
+    obj.data = {}
+    assert None == obj.version
+
+def test_allow_cache_attribute():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj.data = {'allow_cache': 'no'}
+    assert 'no' == obj.allow_cache
+
+    obj.data = {}
+    assert None == obj.allow_cache

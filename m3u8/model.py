@@ -54,6 +54,20 @@ class M3U8(object):
         return self.data.get('media_sequence')
 
     @property
+    def version(self):
+        '''
+        Return the EXT-X-VERSION as is
+        '''
+        return self.data.get('version')
+
+    @property
+    def allow_cache(self):
+        '''
+        Return the EXT-X-ALLOW-CACHE as is
+        '''
+        return self.data.get('allow_cache')
+
+    @property
     def key(self):
         '''
         Returns a namedtuple 'Key' used to encrypt the segments (EXT-X-KEY)
