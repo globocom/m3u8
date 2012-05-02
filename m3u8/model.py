@@ -27,6 +27,17 @@ class M3U8(object):
         pass
 
     @property
+    def is_variant(self):
+        '''
+        Returns true if this M3U8 is a variant playlist, with links to
+        other M3U8s with different bitrates.
+
+        If true, `playlists` if a list of the playlists available.
+
+        '''
+        return self.data.get('is_variant', False)
+
+    @property
     def target_duration(self):
         '''
         Returns the EXT-X-TARGETDURATION as an integer
@@ -98,3 +109,32 @@ class M3U8(object):
         segments and key uri, if present.
         '''
         return ()
+
+    @property
+    def playlists(self):
+        '''
+        If this is a variant playlist (`is_variant` is True), returns a list of
+        Playlist objects, each one representing a link to another M3U8 with
+        a specific bitrate.
+
+        Each object in the list has the following attributes:
+
+        `resource`
+          url to the m3u8
+
+        `stream_info`
+          object with all attributes from EXT-X-STREAM-INF (`program_id`, `bandwidth` and `codecs`)
+
+        '''
+        Playlist = namedtuple('Playlist', ['resource', 'stream_info'])
+        StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'codecs'])
+
+        playlists = []
+        for playlist in self.data.get('playlists', []):
+            stream_info = StreamInfo(bandwidth = playlist['stream_info']['bandwidth'],
+                                     program_id = playlist['stream_info'].get('program_id'),
+                                     codecs = playlist['stream_info'].get('codecs'))
+            playlists.append(Playlist(resource = playlist['resource'],
+                                      stream_info = stream_info))
+
+        return playlists

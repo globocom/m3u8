@@ -85,3 +85,47 @@ def test_segments_attribute_without_duration():
     assert '/foo/bar-1.ts' == obj.segments[0].uri
     assert 'Segment title' == obj.segments[0].title
     assert None == obj.segments[0].duration
+
+def test_is_variant_attribute():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj.data = {'is_variant': False}
+    assert not obj.is_variant
+
+    obj.data = {'is_variant': True}
+    assert obj.is_variant
+
+def test_playlists_attribute():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj.data = {'playlists': [{'resource': '/url/1.m3u8',
+                               'stream_info': {'program_id': '1',
+                                               'bandwidth': '320000'}},
+                               {'resource': '/url/2.m3u8',
+                                'stream_info': {'program_id': '1',
+                                                'bandwidth': '120000',
+                                                'codecs': 'mp4a.40.5'}},
+                                ]}
+
+    assert 2 == len(obj.playlists)
+
+    assert '/url/1.m3u8' == obj.playlists[0].resource
+    assert '1' == obj.playlists[0].stream_info.program_id
+    assert '320000' == obj.playlists[0].stream_info.bandwidth
+    assert None == obj.playlists[0].stream_info.codecs
+
+    assert '/url/2.m3u8' == obj.playlists[1].resource
+    assert '1' == obj.playlists[1].stream_info.program_id
+    assert '120000' == obj.playlists[1].stream_info.bandwidth
+    assert 'mp4a.40.5' == obj.playlists[1].stream_info.codecs
+
+def test_playlists_attribute_without_program_id():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj.data = {'playlists': [{'resource': '/url/1.m3u8',
+                               'stream_info': {'bandwidth': '320000'}}
+                              ]}
+
+    assert 1 == len(obj.playlists)
+
+    assert '/url/1.m3u8' == obj.playlists[0].resource
+    assert '320000' == obj.playlists[0].stream_info.bandwidth
+    assert None == obj.playlists[0].stream_info.codecs
+    assert None == obj.playlists[0].stream_info.program_id
