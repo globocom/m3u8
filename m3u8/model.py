@@ -1,3 +1,5 @@
+from collections import namedtuple
+from m3u8 import parser
 
 class M3U8(object):
     '''
@@ -45,24 +47,49 @@ class M3U8(object):
         '''
         Returns a namedtuple 'Key' used to encrypt the segments (EXT-X-KEY)
 
-        0 - method
+        `method`
           is a string. ex.: "AES-128"
 
-        1 - uri
+        `uri`
           is a string. ex:: "https://priv.example.com/key.php?r=52"
 
-        2 - iv
+        `iv`
           initialization vector. a string representing a hexadecimal number. ex.: 0X12A
 
         '''
-        return None
+        if 'key' not in self.data:
+            return None
+
+        Key = namedtuple('Key', ['method', 'uri', 'iv'])
+        return Key(method=self.data['key']['method'],
+                   uri=self.data['key']['uri'],
+                   iv=self.data['key'].get('iv'))
 
     @property
     def segments(self):
         '''
         Returns an iterable with all .ts segments from playlist, in order.
+        Each segment is a namedtuple `Segment` with the attributes
+
+        `uri`
+          a string with the segment uri
+
+        `title`
+          title attribute from EXTINF parameter
+
+        `duration`
+          duration attribute from EXTINF paramter
+
         '''
-        return self.data.get('segments', [])
+        Segment = namedtuple('Segment', ['uri', 'title', 'duration'])
+
+        segments = []
+        for segment in self.data['segments']:
+            segments.append(Segment(uri=segment['uri'],
+                                    title=segment.get('title'),
+                                    duration=segment.get('duration')))
+
+        return segments
 
     @property
     def files(self):
