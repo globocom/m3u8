@@ -35,7 +35,7 @@ def test_should_parse_playlist_with_encripted_segments_from_string():
 
 def test_should_load_playlist_with_iv_from_string():
     data = m3u8.parse(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
-    assert "/hls-key/tvglobokey.bin" == data['key']['uri']
+    assert "/hls-key/key.bin" == data['key']['uri']
     assert "AES-128" == data['key']['method']
     assert "0X10ef8f758ca555115584bb5b3c687f52" == data['key']['iv']
 
@@ -61,3 +61,11 @@ def test_should_parse_variant_playlist():
     assert '1' == playlists[-1]['stream_info']['program_id']
     assert '65000' == playlists[-1]['stream_info']['bandwidth']
     assert 'mp4a.40.5' == playlists[-1]['stream_info']['codecs']
+
+def test_should_parse_ALLOW_CACHE():
+    data = m3u8.parse(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    assert 'no' == data['allow_cache']
+
+def test_should_parse_VERSION():
+    data = m3u8.parse(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    assert '2' == data['version']

@@ -9,6 +9,8 @@ ext_x_targetduration = '#EXT-X-TARGETDURATION'
 ext_x_media_sequence = '#EXT-X-MEDIA-SEQUENCE'
 ext_x_key = '#EXT-X-KEY'
 ext_x_stream_inf = '#EXT-X-STREAM-INF'
+ext_x_version = '#EXT-X-VERSION'
+ext_x_allow_cache = '#EXT-X-ALLOW-CACHE'
 extinf = '#EXTINF'
 
 
@@ -42,6 +44,11 @@ def parse(content):
 
         elif line.startswith(ext_x_media_sequence):
             _parse_media_sequence(line, data)
+
+        elif line.startswith(ext_x_version):
+            _parse_simple_parameter(line, data)
+        elif line.startswith(ext_x_allow_cache):
+            _parse_simple_parameter(line, data)
 
         elif line.startswith(ext_x_key):
             _parse_key(line, data)
@@ -100,6 +107,12 @@ def _parse_variant_playlist(line, data, state):
                 'stream_info': state.pop('stream_info')}
 
     data['playlists'].append(playlist)
+
+def _parse_simple_parameter(line, data):
+    param, value = line.split(':', 1)
+    param = normalize_attribute(param.replace('#EXT-X-', ''))
+    value = normalize_attribute(value)
+    data[param] = value
 
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')

@@ -59,20 +59,20 @@ PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV = '''
 #EXT-X-MEDIA-SEQUENCE:82400
 #EXT-X-ALLOW-CACHE:NO
 #EXT-X-VERSION:2
-#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/tvglobokey.bin", IV=0X10ef8f758ca555115584bb5b3c687f52
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key.bin", IV=0X10ef8f758ca555115584bb5b3c687f52
 #EXT-X-TARGETDURATION:8
 #EXTINF:8,
-../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82400.ts
+../../../../hls/streamNum82400.ts
 #EXTINF:8,
-../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82401.ts
+../../../../hls/streamNum82401.ts
 #EXTINF:8,
-../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82402.ts
+../../../../hls/streamNum82402.ts
 #EXTINF:8,
-../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82403.ts
+../../../../hls/streamNum82403.ts
 #EXTINF:8,
-../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82404.ts
+../../../../hls/streamNum82404.ts
 #EXTINF:8,
-../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82405.ts
+../../../../hls/streamNum82405.ts
 '''
 
 SIMPLE_PLAYLIST_WITH_TITLE = '''
