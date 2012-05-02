@@ -58,7 +58,7 @@ def _parse_duration(line):
 
 def _parse_ts_chuck(line, data, duration=None):
     data['chunks'].append({'duration': duration,
-                           'title': line})
+                           'uri': line})
 
 def string_to_lines(string):
     return string.strip().split('\n')
