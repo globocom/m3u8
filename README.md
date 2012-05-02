@@ -5,11 +5,11 @@ Python [m3u8](http://tools.ietf.org/html/draft-pantos-http-live-streaming-08) pa
 
 # Documentation
 
-The basic usage is to create a playlist object from a file or directly from a string:
+The basic usage is to create a playlist object from uri, file path or directly from a string:
 
     import m3u8
   
-    m3u8_obj = m3u8.load('/tmp/playlist.m3u8')
+    m3u8_obj = m3u8.load('http://videoserver.com/playlist.m3u8')  # this could also be an absolute filename
     print m3u8_obj.segments
     print m3u8_obj.target_duration
   
@@ -17,9 +17,19 @@ The basic usage is to create a playlist object from a file or directly from a st
   
     m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ... ')
 
-## Variant playlists (variable bitrates)
+## Encryption key
 
-**See [issue 4](https://github.com/globocom/m3u8/issues/4)**
+The segments may be encrypted, in this case the `key` attribute will be an object with all the attributes from
+[#EXT-X-KEY](http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.4):
+- `method`: ex.: "AES-128"
+- `uri`: the key uri, ex.: "http://videoserver.com/key.bin"
+- `iv`: the initialization vector, if available. Otherwise `None`.
+
+If no `#EXT-X-KEY` is found, the `key` attribute will be `None`.
+
+Multiple keys is not supported yet (and has a low priority), follow [issue 1](https://github.com/globocom/m3u8/issues/1) for updates.
+
+## Variant playlists (variable bitrates)
 
 A playlist can have a list to other playlist files, this is used to represent multiple bitrates videos, and it's
 called [variant streams](http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-6.2.4). 
@@ -37,7 +47,7 @@ the playlist object used in the for loop above has a few attributes:
 - `resource`: the url to the stream
 - `stream_info`: a `StreamInfo` object (actually a namedtuple) with all the attributes available to [#EXT-X-STREAM-INF](http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.10)
 
-**note**: the following attributes are not implemented yet, follow [issue 4](https://github.com/globocom/m3u8/issues/4) for updates
+**NOTE: the following attributes are not implemented yet, follow [issue 4](https://github.com/globocom/m3u8/issues/4) for updates**
 
 - `iframe_stream_info`: usually `None`, unless it's a playlist with [I-Frames](http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.13),
    in this case it's also a namedtuple `IFrameStreamInfo` with all the attribute available to [#EXT-X-I-FRAME-STREAM-INF](http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.13)
