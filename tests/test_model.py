@@ -5,7 +5,7 @@ data returned from parser.parse()
 '''
 
 import m3u8
-from playlists import SIMPLE_PLAYLIST
+from playlists import *
 
 def test_target_duration_attribute():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
@@ -146,3 +146,11 @@ def test_allow_cache_attribute():
 
     obj.data = {}
     assert None == obj.allow_cache
+
+# dump to string
+
+def test_dumps_should_build_same_string():
+    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+
+    expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV.replace(', IV', ',IV').strip()
+    assert obj.dumps().strip() == expected

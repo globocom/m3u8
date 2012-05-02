@@ -18,7 +18,26 @@ class M3U8(object):
         Returns the current m3u8 as a string.
         You could also use unicode(<this obj>) or str(<this obj>)
         '''
-        pass
+        output = ['#EXTM3U']
+        if self.media_sequence:
+            output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
+        if self.allow_cache:
+            output.append('#EXT-X-ALLOW-CACHE:' + self.allow_cache.upper())
+        if self.version:
+            output.append('#EXT-X-VERSION:' + self.version)
+        if self.key:
+            output.append(self.key_as_string)
+        if self.target_duration:
+            output.append('#EXT-X-TARGETDURATION:' + str(self.target_duration))
+
+        for segment in self.segments:
+            extinf = '#EXTINF:%s,' % segment.duration
+            if segment.title:
+                extinf += '"%s"' % segment.title
+            output.append(''.join(extinf))
+            output.append(segment.uri)
+
+        return '\n'.join(output)
 
     def dump(self, filename):
         '''
@@ -91,6 +110,21 @@ class M3U8(object):
                    iv=self.data['key'].get('iv'))
 
     @property
+    def key_as_string(self):
+        if not self.key:
+            return ''
+
+        output = [
+            'METHOD=%s' % self.key.method,
+            'URI="%s"' % self.key.uri,
+            ]
+
+        if self.key.iv:
+            output.append('IV=%s' % self.key.iv)
+
+        return '#EXT-X-KEY:' + ','.join(output)
+
+    @property
     def segments(self):
         '''
         Returns an iterable with all .ts segments from playlist, in order.
@@ -152,3 +186,6 @@ class M3U8(object):
                                       stream_info = stream_info))
 
         return playlists
+
+def denormalize_attribute(attribute):
+    return attribute.replace('_','-').upper()
