@@ -14,15 +14,14 @@ def parse(content):
     '''
     Given a M3U8 playlist content returns a dictionary with all data found
     '''
-    data = {}
-
-    expect_extinf = False
+    data = {'chunks': []}
+    next_chuck_duration = None
 
     for line in string_to_lines(content):
 
-        if expect_extinf:
-            _parse_ts_chuck(line, data)
-            expect_extinf = False
+        if next_chuck_duration:
+            _parse_ts_chuck(line, data, next_chuck_duration)
+            next_chuck_duration = None
 
         elif line.startswith(ext_x_targetduration):
             _parse_targetduration(line, data)
@@ -34,7 +33,7 @@ def parse(content):
             _parse_key(line, data)
 
         elif line.startswith(extinf):
-            expect_extinf = True
+            next_chuck_duration = _parse_duration(line)
 
     return data
 
@@ -54,10 +53,12 @@ def _parse_key(line, data):
         name, value = param.split('=', 1)
         data['key'][name.lower()] = remove_quotes(value)
 
-def _parse_ts_chuck(line, data):
-    data.setdefault('chunks', [])
-    data['chunks'].append(line)
+def _parse_duration(line):
+    return int(line.replace(extinf + ':', '').split(',')[0])
 
+def _parse_ts_chuck(line, data, duration=None):
+    data['chunks'].append({'duration': duration,
+                           'title': line})
 
 def string_to_lines(string):
     return string.strip().split('\n')

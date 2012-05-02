@@ -39,7 +39,8 @@ http://media.example.com/fileSequence52-3.ts
 def test_should_parse_simple_playlist_from_string():
     data = m3u8.parse(SIMPLE_PLAYLIST)
     assert 5220 == data['targetduration']
-    assert ['http://media.example.com/entire.ts'] == data['chunks']
+    assert ['http://media.example.com/entire.ts'] == [c['title'] for c in data['chunks']]
+    assert [5220] == [c['duration'] for c in data['chunks']]
 
 def test_should_parse_sliding_window_playlist_from_string():
     data = m3u8.parse(SLIDING_WINDOW_PLAYLIST)
@@ -47,7 +48,8 @@ def test_should_parse_sliding_window_playlist_from_string():
     assert 2680 == data['media_sequence']
     assert ['https://priv.example.com/fileSequence2680.ts',
             'https://priv.example.com/fileSequence2681.ts',
-            'https://priv.example.com/fileSequence2682.ts'] == data['chunks']
+            'https://priv.example.com/fileSequence2682.ts'] == [c['title'] for c in data['chunks']]
+    assert [8, 8, 8] == [c['duration'] for c in data['chunks']]
 
 def test_should_load_playlist_with_encripted_segments_from_string():
     data = m3u8.parse(PLAYLIST_WITH_ENCRIPTED_SEGMENTS)
@@ -57,4 +59,5 @@ def test_should_load_playlist_with_encripted_segments_from_string():
     assert 'https://priv.example.com/key.php?r=52' == data['key']['uri']
     assert ['http://media.example.com/fileSequence52-1.ts',
             'http://media.example.com/fileSequence52-2.ts',
-            'http://media.example.com/fileSequence52-3.ts'] == data['chunks']
+            'http://media.example.com/fileSequence52-3.ts'] == [c['title'] for c in data['chunks']]
+    assert [15, 15, 15] == [c['duration'] for c in data['chunks']]
