@@ -16,12 +16,14 @@ def parse(content):
     '''
     data = {'chunks': []}
     next_chuck_duration = None
+    next_chunk_title = None
 
     for line in string_to_lines(content):
 
         if next_chuck_duration:
-            _parse_ts_chuck(line, data, next_chuck_duration)
+            _parse_ts_chuck(line, data, next_chuck_duration, next_chunk_title)
             next_chuck_duration = None
+            next_chunk_title = None
 
         elif line.startswith(ext_x_targetduration):
             _parse_targetduration(line, data)
@@ -33,7 +35,7 @@ def parse(content):
             _parse_key(line, data)
 
         elif line.startswith(extinf):
-            next_chuck_duration = _parse_duration(line)
+            next_chuck_duration, next_chunk_title = _parse_duration_and_title(line)
 
     return data
 
@@ -53,12 +55,14 @@ def _parse_key(line, data):
         name, value = param.split('=', 1)
         data['key'][name.lower()] = remove_quotes(value)
 
-def _parse_duration(line):
-    return int(line.replace(extinf + ':', '').split(',')[0])
+def _parse_duration_and_title(line):
+    duration, title = line.replace(extinf + ':', '').split(',')
+    return int(duration), remove_quotes(title)
 
-def _parse_ts_chuck(line, data, duration=None):
+def _parse_ts_chuck(line, data, duration=None, title=None):
     data['chunks'].append({'duration': duration,
-                           'uri': line})
+                           'uri': line,
+                           'title': title})
 
 def string_to_lines(string):
     return string.strip().split('\n')
@@ -74,6 +78,6 @@ def remove_quotes(string):
 
     '''
     quotes = ('"', "'")
-    if string[0] in quotes and string[-1] in quotes:
+    if string and string[0] in quotes and string[-1] in quotes:
         return string[1:-1]
     return string

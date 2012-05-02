@@ -57,6 +57,14 @@ PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV = '''
 ../../../../hls-live/streams/live_hls/events/tvglobo/tvglobo/globoNum82405.ts
 '''
 
+SIMPLE_PLAYLIST_WITH_TITLE = '''
+#EXTM3U
+#EXT-X-TARGETDURATION:5220
+#EXTINF:5220,"A sample title"
+http://media.example.com/entire.ts
+#EXT-X-ENDLIST
+'''
+
 def test_should_parse_simple_playlist_from_string():
     data = m3u8.parse(SIMPLE_PLAYLIST)
     assert 5220 == data['targetduration']
@@ -88,3 +96,10 @@ def test_should_load_playlist_with_iv_from_string():
     assert "/hls-key/tvglobokey.bin" == data['key']['uri']
     assert "AES-128" == data['key']['method']
     assert "0X10ef8f758ca555115584bb5b3c687f52" == data['key']['iv']
+
+def test_should_parse_title_from_playlist():
+    data = m3u8.parse(SIMPLE_PLAYLIST_WITH_TITLE)
+    assert 1 == len(data['chunks'])
+    assert 5220 == data['chunks'][0]['duration']
+    assert "A sample title" == data['chunks'][0]['title']
+    assert "http://media.example.com/entire.ts" == data['chunks'][0]['uri']
