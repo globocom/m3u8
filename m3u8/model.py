@@ -120,6 +120,18 @@ class M3U8(object):
         if self.target_duration:
             output.append('#EXT-X-TARGETDURATION:' + str(self.target_duration))
 
+        if self.is_variant:
+            for playlist in self.playlists:
+                stream_inf = []
+                if playlist.stream_info.program_id:
+                    stream_inf.append('PROGRAM-ID=' + playlist.stream_info.program_id)
+                if playlist.stream_info.bandwidth:
+                    stream_inf.append('BANDWIDTH=' + playlist.stream_info.bandwidth)
+                if playlist.stream_info.codecs:
+                    stream_inf.append('CODECS=' + quoted(playlist.stream_info.codecs))
+                output.append('#EXT-X-STREAM-INF:' + ','.join(stream_inf))
+                output.append(playlist.resource)
+
         output.append(str(self.segments))
 
         return '\n'.join(output)

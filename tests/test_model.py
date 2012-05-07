@@ -161,7 +161,7 @@ def test_dumps_should_build_same_string():
     obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
 
     expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV.replace(', IV', ',IV').strip()
-    assert obj.dumps().strip() == expected
+    assert expected == obj.dumps().strip()
 
 def test_dump_should_build_file_with_same_content(tmpdir):
     obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
@@ -182,6 +182,13 @@ def test_dump_should_create_sub_directories(tmpdir):
     obj.dump(filename)
 
     assert_file_content(filename, expected)
+
+def test_dump_should_work_for_variant_streams():
+    obj = m3u8.M3U8(VARIANT_PLAYLIST)
+
+    expected = VARIANT_PLAYLIST.replace(', BANDWIDTH', ',BANDWIDTH').strip()
+
+    assert expected == obj.dumps().strip()
 
 def test_if_basepath_is_passed_segments_and_key_urls_are_normalized():
     basepath = 'http://videoserver.com/hls/live'
