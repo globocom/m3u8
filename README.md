@@ -39,12 +39,12 @@ See an [example here](http://tools.ietf.org/html/draft-pantos-http-live-streamin
     variant_m3u8.is_variant    # in this case will be True
     
     for playlist in variant_m3u8.playlists:
-        playlist.resource
+        playlist.uri
         playlist.stream_info.bandwidth
 
 the playlist object used in the for loop above has a few attributes:
 
-- `resource`: the url to the stream
+- `uri`: the url to the stream
 - `stream_info`: a `StreamInfo` object (actually a namedtuple) with all the attributes available to [#EXT-X-STREAM-INF](http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.10)
 
 **NOTE: the following attributes are not implemented yet, follow [issue 4](https://github.com/globocom/m3u8/issues/4) for updates**

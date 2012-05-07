@@ -53,11 +53,11 @@ def test_should_parse_variant_playlist():
     assert True == data['is_variant']
     assert 4 == len(playlists)
 
-    assert 'http://example.com/low.m3u8' == playlists[0]['resource']
+    assert 'http://example.com/low.m3u8' == playlists[0]['uri']
     assert '1' == playlists[0]['stream_info']['program_id']
     assert '1280000' == playlists[0]['stream_info']['bandwidth']
 
-    assert 'http://example.com/audio-only.m3u8' == playlists[-1]['resource']
+    assert 'http://example.com/audio-only.m3u8' == playlists[-1]['uri']
     assert '1' == playlists[-1]['stream_info']['program_id']
     assert '65000' == playlists[-1]['stream_info']['bandwidth']
     assert 'mp4a.40.5' == playlists[-1]['stream_info']['codecs']

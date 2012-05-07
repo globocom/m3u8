@@ -92,7 +92,7 @@ def _parse_stream_inf(line, data, state):
     state['stream_info'] = stream_info
 
 def _parse_variant_playlist(line, data, state):
-    playlist = {'resource': line,
+    playlist = {'uri': line,
                 'stream_info': state.pop('stream_info')}
 
     data['playlists'].append(playlist)

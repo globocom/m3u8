@@ -95,7 +95,7 @@ class M3U8(object):
             stream_info = StreamInfo(bandwidth = playlist['stream_info']['bandwidth'],
                                      program_id = playlist['stream_info'].get('program_id'),
                                      codecs = playlist['stream_info'].get('codecs'))
-            self.playlists.append(Playlist(resource = playlist['resource'],
+            self.playlists.append(Playlist(uri = playlist['uri'],
                                            stream_info = stream_info))
 
     def __unicode__(self):
@@ -168,6 +168,13 @@ class BasePathMixin(object):
     def basepath(self, newbasepath):
         self.uri = self.uri.replace(self.basepath, newbasepath)
 
+class GroupedBasePathMixin(object):
+
+    def _set_basepath(self, newbasepath):
+        for item in self:
+            item.basepath = newbasepath
+
+    basepath = property(None, _set_basepath)
 
 class Segment(BasePathMixin):
     '''
@@ -200,17 +207,11 @@ class Segment(BasePathMixin):
         return ''.join(output)
 
 
-class SegmentList(list):
+class SegmentList(list, GroupedBasePathMixin):
 
     def __str__(self):
         output = [str(segment) for segment in self]
         return '\n'.join(output)
-
-    def _set_basepath(self, newbasepath):
-        for segment in self:
-            segment.basepath = newbasepath
-
-    basepath = property(None, _set_basepath)
 
     @property
     def uri(self):
@@ -246,24 +247,16 @@ class Key(BasePathMixin):
         return '#EXT-X-KEY:' + ','.join(output)
 
 
-class Playlist(object):
+class Playlist(BasePathMixin):
     '''
     Playlist object representing a link to a variant M3U8 with a specific bitrate.
 
     Each `stream_info` attribute has: `program_id`, `bandwidth` and `codecs`
 
     '''
-    def __init__(self, resource, stream_info):
-        self.resource = resource
+    def __init__(self, uri, stream_info):
+        self.uri = uri
         self.stream_info = stream_info
-
-    @property
-    def basepath(self):
-        return os.path.dirname(self.resource)
-
-    @basepath.setter
-    def basepath(self, newbasepath):
-        self.resource = self.resource.replace(self.basepath, newbasepath)
 
     def __str__(self):
         stream_inf = []
@@ -273,16 +266,10 @@ class Playlist(object):
             stream_inf.append('BANDWIDTH=' + self.stream_info.bandwidth)
         if self.stream_info.codecs:
             stream_inf.append('CODECS=' + quoted(self.stream_info.codecs))
-        return '#EXT-X-STREAM-INF:' + ','.join(stream_inf) + '\n' + self.resource
+        return '#EXT-X-STREAM-INF:' + ','.join(stream_inf) + '\n' + self.uri
 
 
-class PlaylistList(list):
-
-    def _set_basepath(self, newbasepath):
-        for playlist in self:
-            playlist.basepath = newbasepath
-
-    basepath = property(None, _set_basepath)
+class PlaylistList(list, GroupedBasePathMixin):
 
     def __str__(self):
         output = [str(playlist) for playlist in self]

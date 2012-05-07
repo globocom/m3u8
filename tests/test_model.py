@@ -93,10 +93,10 @@ def test_is_variant_attribute():
 
 def test_playlists_attribute():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
-    data = {'playlists': [{'resource': '/url/1.m3u8',
+    data = {'playlists': [{'uri': '/url/1.m3u8',
                            'stream_info': {'program_id': '1',
                                            'bandwidth': '320000'}},
-                          {'resource': '/url/2.m3u8',
+                          {'uri': '/url/2.m3u8',
                            'stream_info': {'program_id': '1',
                                            'bandwidth': '120000',
                                            'codecs': 'mp4a.40.5'}},
@@ -105,25 +105,25 @@ def test_playlists_attribute():
 
     assert 2 == len(obj.playlists)
 
-    assert '/url/1.m3u8' == obj.playlists[0].resource
+    assert '/url/1.m3u8' == obj.playlists[0].uri
     assert '1' == obj.playlists[0].stream_info.program_id
     assert '320000' == obj.playlists[0].stream_info.bandwidth
     assert None == obj.playlists[0].stream_info.codecs
 
-    assert '/url/2.m3u8' == obj.playlists[1].resource
+    assert '/url/2.m3u8' == obj.playlists[1].uri
     assert '1' == obj.playlists[1].stream_info.program_id
     assert '120000' == obj.playlists[1].stream_info.bandwidth
     assert 'mp4a.40.5' == obj.playlists[1].stream_info.codecs
 
 def test_playlists_attribute_without_program_id():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
-    mock_parser_data(obj, {'playlists': [{'resource': '/url/1.m3u8',
+    mock_parser_data(obj, {'playlists': [{'uri': '/url/1.m3u8',
                                           'stream_info': {'bandwidth': '320000'}}
                                          ]})
 
     assert 1 == len(obj.playlists)
 
-    assert '/url/1.m3u8' == obj.playlists[0].resource
+    assert '/url/1.m3u8' == obj.playlists[0].uri
     assert '320000' == obj.playlists[0].stream_info.bandwidth
     assert None == obj.playlists[0].stream_info.codecs
     assert None == obj.playlists[0].stream_info.program_id
