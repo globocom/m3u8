@@ -244,9 +244,9 @@ class Key(BasePathMixin):
 class Playlist(BasePathMixin):
     '''
     Playlist object representing a link to a variant M3U8 with a specific bitrate.
-
     Each `stream_info` attribute has: `program_id`, `bandwidth` and `codecs`
 
+    More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.10
     '''
     def __init__(self, uri, stream_info):
         self.uri = uri
