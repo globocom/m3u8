@@ -190,7 +190,7 @@ def test_dump_should_work_for_variant_streams():
 
     assert expected == obj.dumps().strip()
 
-def test_if_basepath_is_passed_segments_and_key_urls_are_normalized():
+def test_should_normalize_segments_and_key_urls_if_basepath_passed_to_constructor():
     basepath = 'http://videoserver.com/hls/live'
 
     obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV, basepath)
@@ -201,11 +201,20 @@ def test_if_basepath_is_passed_segments_and_key_urls_are_normalized():
         .replace('/hls-key', basepath) \
         .strip()
 
-    result = obj.dumps()
+    assert obj.dumps().strip() == expected
 
-    assert result == expected
+def test_should_normalize_variant_streams_urls_if_basepath_passed_to_constructor():
+    basepath = 'http://videoserver.com/hls/live'
+    obj = m3u8.M3U8(VARIANT_PLAYLIST, basepath)
 
-def test_if_basepath_is_updated_segments_and_key_urls_are_normalized():
+    expected = VARIANT_PLAYLIST \
+        .replace(', BANDWIDTH', ',BANDWIDTH') \
+        .replace('http://example.com', basepath) \
+        .strip()
+
+    assert obj.dumps().strip() == expected
+
+def test_should_normalize_segments_and_key_urls_if_basepath_attribute_updated():
     basepath = 'http://videoserver.com/hls/live'
 
     obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
@@ -217,10 +226,21 @@ def test_if_basepath_is_updated_segments_and_key_urls_are_normalized():
         .replace('/hls-key', basepath) \
         .strip()
 
-    result = obj.dumps()
+    assert obj.dumps() == expected
 
-    assert result == expected
+def test_should_normalize_segments_and_key_urls_if_basepath_attribute_updated():
+    basepath = 'http://videoserver.com/hls/live'
 
+    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    obj.basepath = basepath
+
+    expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV \
+        .replace(', IV', ',IV') \
+        .replace('../../../../hls', basepath) \
+        .replace('/hls-key', basepath) \
+        .strip()
+
+    assert obj.dumps().strip() == expected
 
 
 # custom asserts

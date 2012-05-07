@@ -38,6 +38,10 @@ class M3U8(object):
 
         If true, `playlists` if a list of the playlists available.
 
+      `playlists`
+        If this is a variant playlist (`is_variant` is True), returns a list of
+        Playlist objects
+
       `target_duration`
         Returns the EXT-X-TARGETDURATION as an integer
         http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.2
@@ -84,6 +88,16 @@ class M3U8(object):
             self.files.append(self.key.uri)
         self.files.extend(self.segments.uri)
 
+        StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'codecs'])
+
+        self.playlists = PlaylistList()
+        for playlist in self.data.get('playlists', []):
+            stream_info = StreamInfo(bandwidth = playlist['stream_info']['bandwidth'],
+                                     program_id = playlist['stream_info'].get('program_id'),
+                                     codecs = playlist['stream_info'].get('codecs'))
+            self.playlists.append(Playlist(resource = playlist['resource'],
+                                           stream_info = stream_info))
+
     def __unicode__(self):
         return self.dumps()
 
@@ -102,6 +116,7 @@ class M3U8(object):
         if self.key:
             self.key.basepath = self.basepath
         self.segments.basepath = self.basepath
+        self.playlists.basepath = self.basepath
 
     def dumps(self):
         '''
@@ -119,18 +134,8 @@ class M3U8(object):
             output.append(str(self.key))
         if self.target_duration:
             output.append('#EXT-X-TARGETDURATION:' + str(self.target_duration))
-
         if self.is_variant:
-            for playlist in self.playlists:
-                stream_inf = []
-                if playlist.stream_info.program_id:
-                    stream_inf.append('PROGRAM-ID=' + playlist.stream_info.program_id)
-                if playlist.stream_info.bandwidth:
-                    stream_inf.append('BANDWIDTH=' + playlist.stream_info.bandwidth)
-                if playlist.stream_info.codecs:
-                    stream_inf.append('CODECS=' + quoted(playlist.stream_info.codecs))
-                output.append('#EXT-X-STREAM-INF:' + ','.join(stream_inf))
-                output.append(playlist.resource)
+            output.append(str(self.playlists))
 
         output.append(str(self.segments))
 
@@ -152,36 +157,6 @@ class M3U8(object):
         except OSError as error:
             if error.errno != errno.EEXIST:
                 raise
-
-    @property
-    def playlists(self):
-        '''
-        If this is a variant playlist (`is_variant` is True), returns a list of
-        Playlist objects, each one representing a link to another M3U8 with
-        a specific bitrate.
-
-        Each object in the list has the following attributes:
-
-        `resource`
-          url to the m3u8
-
-        `stream_info`
-          object with all attributes from EXT-X-STREAM-INF (`program_id`, `bandwidth` and `codecs`)
-
-        '''
-        Playlist = namedtuple('Playlist', ['resource', 'stream_info'])
-        StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'codecs'])
-
-        playlists = []
-        for playlist in self.data.get('playlists', []):
-            stream_info = StreamInfo(bandwidth = playlist['stream_info']['bandwidth'],
-                                     program_id = playlist['stream_info'].get('program_id'),
-                                     codecs = playlist['stream_info'].get('codecs'))
-            playlists.append(Playlist(resource = playlist['resource'],
-                                      stream_info = stream_info))
-
-        return playlists
-
 
 class BasePathMixin(object):
 
@@ -271,7 +246,47 @@ class Key(BasePathMixin):
         return '#EXT-X-KEY:' + ','.join(output)
 
 
+class Playlist(object):
+    '''
+    Playlist object representing a link to a variant M3U8 with a specific bitrate.
 
+    Each `stream_info` attribute has: `program_id`, `bandwidth` and `codecs`
+
+    '''
+    def __init__(self, resource, stream_info):
+        self.resource = resource
+        self.stream_info = stream_info
+
+    @property
+    def basepath(self):
+        return os.path.dirname(self.resource)
+
+    @basepath.setter
+    def basepath(self, newbasepath):
+        self.resource = self.resource.replace(self.basepath, newbasepath)
+
+    def __str__(self):
+        stream_inf = []
+        if self.stream_info.program_id:
+            stream_inf.append('PROGRAM-ID=' + self.stream_info.program_id)
+        if self.stream_info.bandwidth:
+            stream_inf.append('BANDWIDTH=' + self.stream_info.bandwidth)
+        if self.stream_info.codecs:
+            stream_inf.append('CODECS=' + quoted(self.stream_info.codecs))
+        return '#EXT-X-STREAM-INF:' + ','.join(stream_inf) + '\n' + self.resource
+
+
+class PlaylistList(list):
+
+    def _set_basepath(self, newbasepath):
+        for playlist in self:
+            playlist.basepath = newbasepath
+
+    basepath = property(None, _set_basepath)
+
+    def __str__(self):
+        output = [str(playlist) for playlist in self]
+        return '\n'.join(output)
 
 def denormalize_attribute(attribute):
     return attribute.replace('_','-').upper()
