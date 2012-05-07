@@ -32,10 +32,36 @@ class M3U8(object):
      `segments`
        a `SegmentList` object, represents the list of `Segment`s from this playlist
 
+     `is_variant`
+        Returns true if this M3U8 is a variant playlist, with links to
+        other M3U8s with different bitrates.
 
-     .. TODO: document other attributes ..
+        If true, `playlists` if a list of the playlists available.
+
+      `target_duration`
+        Returns the EXT-X-TARGETDURATION as an integer
+        http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.2
+
+      `media_sequence`
+        Returns the EXT-X-MEDIA-SEQUENCE as an integer
+        http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.3
+
+      `version`
+        Return the EXT-X-VERSION as is
+
+      `allow_cache`
+        Return the EXT-X-ALLOW-CACHE as is
 
     '''
+
+    simple_attributes = (
+        # obj attribute      # parser attribute
+        ('is_variant',       'is_variant'),
+        ('target_duration',  'targetduration'),
+        ('media_sequence',   'media_sequence'),
+        ('version',          'version'),
+        ('allow_cache',      'allow_cache'),
+        )
 
     def __init__(self, content, basepath=None):
         self.data = parser.parse(content)
@@ -45,6 +71,8 @@ class M3U8(object):
     def _initialize_attributes(self):
         self.key = Key(**self.data['key']) if 'key' in self.data else None
         self.segments = SegmentList([ Segment(**params) for params in self.data['segments'] ])
+        for attr, param in self.simple_attributes:
+            setattr(self, attr, self.data.get(param))
 
     def __unicode__(self):
         return self.dumps()
@@ -102,47 +130,6 @@ class M3U8(object):
         except OSError as error:
             if error.errno != errno.EEXIST:
                 raise
-
-    @property
-    def is_variant(self):
-        '''
-        Returns true if this M3U8 is a variant playlist, with links to
-        other M3U8s with different bitrates.
-
-        If true, `playlists` if a list of the playlists available.
-
-        '''
-        return self.data.get('is_variant', False)
-
-    @property
-    def target_duration(self):
-        '''
-        Returns the EXT-X-TARGETDURATION as an integer
-        http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.2
-        '''
-        return self.data.get('targetduration')
-
-    @property
-    def media_sequence(self):
-        '''
-        Returns the EXT-X-MEDIA-SEQUENCE as an integer
-        http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.3
-        '''
-        return self.data.get('media_sequence')
-
-    @property
-    def version(self):
-        '''
-        Return the EXT-X-VERSION as is
-        '''
-        return self.data.get('version')
-
-    @property
-    def allow_cache(self):
-        '''
-        Return the EXT-X-ALLOW-CACHE as is
-        '''
-        return self.data.get('allow_cache')
 
     @property
     def files(self):
