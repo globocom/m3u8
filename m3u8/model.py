@@ -78,7 +78,8 @@ class M3U8(object):
 
     def _initialize_attributes(self):
         self.key = Key(**self.data['key']) if 'key' in self.data else None
-        self.segments = SegmentList([ Segment(**params) for params in self.data['segments'] ])
+        self.segments = SegmentList([ Segment(**params)
+                                      for params in self.data['segments'] ])
 
         for attr, param in self.simple_attributes:
             setattr(self, attr, self.data.get(param))
@@ -88,15 +89,8 @@ class M3U8(object):
             self.files.append(self.key.uri)
         self.files.extend(self.segments.uri)
 
-        StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'codecs'])
-
-        self.playlists = PlaylistList()
-        for playlist in self.data.get('playlists', []):
-            stream_info = StreamInfo(bandwidth = playlist['stream_info']['bandwidth'],
-                                     program_id = playlist['stream_info'].get('program_id'),
-                                     codecs = playlist['stream_info'].get('codecs'))
-            self.playlists.append(Playlist(uri = playlist['uri'],
-                                           stream_info = stream_info))
+        self.playlists = PlaylistList([ Playlist(**playlist)
+                                        for playlist in self.data.get('playlists', []) ])
 
     def __unicode__(self):
         return self.dumps()
@@ -256,7 +250,9 @@ class Playlist(BasePathMixin):
     '''
     def __init__(self, uri, stream_info):
         self.uri = uri
-        self.stream_info = stream_info
+        self.stream_info = StreamInfo(bandwidth=stream_info['bandwidth'],
+                                      program_id=stream_info.get('program_id'),
+                                      codecs=stream_info.get('codecs'))
 
     def __str__(self):
         stream_inf = []
@@ -268,12 +264,14 @@ class Playlist(BasePathMixin):
             stream_inf.append('CODECS=' + quoted(self.stream_info.codecs))
         return '#EXT-X-STREAM-INF:' + ','.join(stream_inf) + '\n' + self.uri
 
+StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'codecs'])
 
 class PlaylistList(list, GroupedBasePathMixin):
 
     def __str__(self):
         output = [str(playlist) for playlist in self]
         return '\n'.join(output)
+
 
 def denormalize_attribute(attribute):
     return attribute.replace('_','-').upper()
