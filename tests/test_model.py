@@ -144,6 +144,17 @@ def test_allow_cache_attribute():
     mock_parser_data(obj, {})
     assert None == obj.allow_cache
 
+def test_files_attribute_should_list_all_files_including_segments_and_key():
+    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS)
+    files = [
+        'https://priv.example.com/key.php?r=52',
+        'http://media.example.com/fileSequence52-1.ts',
+        'http://media.example.com/fileSequence52-2.ts',
+        'http://media.example.com/fileSequence52-3.ts',
+        ]
+    assert files == obj.files
+
+
 # dump m3u8
 
 def test_dumps_should_build_same_string():

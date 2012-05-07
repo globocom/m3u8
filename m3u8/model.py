@@ -52,6 +52,10 @@ class M3U8(object):
       `allow_cache`
         Return the EXT-X-ALLOW-CACHE as is
 
+      `files`
+        Returns an iterable with all files from playlist, in order. This includes
+        segments and key uri, if present.
+
     '''
 
     simple_attributes = (
@@ -71,8 +75,14 @@ class M3U8(object):
     def _initialize_attributes(self):
         self.key = Key(**self.data['key']) if 'key' in self.data else None
         self.segments = SegmentList([ Segment(**params) for params in self.data['segments'] ])
+
         for attr, param in self.simple_attributes:
             setattr(self, attr, self.data.get(param))
+
+        self.files = []
+        if self.key:
+            self.files.append(self.key.uri)
+        self.files.extend(self.segments.uri)
 
     def __unicode__(self):
         return self.dumps()
@@ -130,14 +140,6 @@ class M3U8(object):
         except OSError as error:
             if error.errno != errno.EEXIST:
                 raise
-
-    @property
-    def files(self):
-        '''
-        Returns an iterable with all files from playlist, in order. This includes
-        segments and key uri, if present.
-        '''
-        raise NotImplementedError
 
     @property
     def playlists(self):
@@ -223,6 +225,9 @@ class SegmentList(list):
 
     basepath = property(None, _set_basepath)
 
+    @property
+    def uri(self):
+        return [seg.uri for seg in self]
 
 class Key(BasePathMixin):
     '''
