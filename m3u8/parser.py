@@ -32,7 +32,7 @@ def parse(content):
     for line in string_to_lines(content):
 
         if state['expect_segment']:
-            _parse_ts_chuck(line, data, state)
+            _parse_ts_chunk(line, data, state)
             state['expect_segment'] = False
 
         elif state['expect_playlist']:
@@ -72,7 +72,7 @@ def _parse_extinf(line, data, state):
     duration, title = line.replace(extinf + ':', '').split(',')
     state['segment'] = {'duration': int(duration), 'title': remove_quotes(title)}
 
-def _parse_ts_chuck(line, data, state):
+def _parse_ts_chunk(line, data, state):
     segment = state.pop('segment')
     segment['uri'] = line
     data['segments'].append(segment)
