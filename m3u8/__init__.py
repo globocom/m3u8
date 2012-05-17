@@ -1,9 +1,9 @@
 from urllib2 import urlopen
 
-from m3u8.model import M3U8
+from m3u8.model import M3U8, Playlist
 from m3u8.parser import parse
 
-__all__ = 'M3U8', 'loads', 'load', 'parse'
+__all__ = 'M3U8', 'Playlist', 'loads', 'load', 'parse'
 
 def loads(content):
     '''

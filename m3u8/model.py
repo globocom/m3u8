@@ -71,15 +71,18 @@ class M3U8(object):
         ('allow_cache',      'allow_cache'),
         )
 
-    def __init__(self, content, basepath=None):
-        self.data = parser.parse(content)
+    def __init__(self, content=None, basepath=None):
+        if content is not None:
+            self.data = parser.parse(content)
+        else:
+            self.data = {}
         self._initialize_attributes()
         self.basepath = basepath
 
     def _initialize_attributes(self):
         self.key = Key(**self.data['key']) if 'key' in self.data else None
         self.segments = SegmentList([ Segment(**params)
-                                      for params in self.data['segments'] ])
+                                      for params in self.data.get('segments', []) ])
 
         for attr, param in self.simple_attributes:
             setattr(self, attr, self.data.get(param))
@@ -111,6 +114,10 @@ class M3U8(object):
             self.key.basepath = self.basepath
         self.segments.basepath = self.basepath
         self.playlists.basepath = self.basepath
+
+    def add_playlist(self, playlist):
+        self.is_variant = True
+        self.playlists.append(playlist)
 
     def dumps(self):
         '''
