@@ -25,6 +25,9 @@ class M3U8(object):
             http://vid.com/segment1.ts -->  http://videoserver.com/hls/segment1.ts
 
        can be passed as parameter or setted as an attribute to ``M3U8`` object.
+     `baseuri`
+      uri the playlist comes from. it is propagated to SegmentList and Key
+      ex.: http://example.com/path/to
 
     Attributes:
 
@@ -61,6 +64,10 @@ class M3U8(object):
       `files`
         Returns an iterable with all files from playlist, in order. This includes
         segments and key uri, if present.
+
+      `baseuri`
+        It is a property (getter and setter) used by
+        SegmentList and Key to have absolute URIs.
 
     '''
 
@@ -217,6 +224,8 @@ class Segment(BasePathMixin):
     `duration`
       duration attribute from EXTINF paramter
 
+    `baseuri`
+      uri the key comes from in URI hierarchy. ex.: http://example.com/path/to
     '''
 
     def __init__(self, uri, baseuri, duration=None, title=None):
@@ -255,6 +264,9 @@ class Key(BasePathMixin):
 
     `uri`
       is a string. ex:: "https://priv.example.com/key.php?r=52"
+
+    `baseuri`
+      uri the key comes from in URI hierarchy. ex.: http://example.com/path/to
 
     `iv`
       initialization vector. a string representing a hexadecimal number. ex.: 0X12A
