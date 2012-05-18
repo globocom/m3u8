@@ -73,7 +73,7 @@ class M3U8(object):
         ('allow_cache',      'allow_cache'),
         )
 
-    def __init__(self, content=None, basepath=None, baseuri=''):
+    def __init__(self, content=None, basepath=None, baseuri=None):
         if content is not None:
             self.data = parser.parse(content)
         else:
@@ -178,6 +178,8 @@ class BasePathMixin(object):
         if parser.is_url(self.uri):
             return self.uri
         else:
+            if self.baseuri is None:
+                raise ValueError('There can not be `absolute_uri` with no `baseuri` set')
             return _urijoin(self.baseuri, self.uri)
 
     @property

@@ -1,6 +1,7 @@
 import os
 import urlparse
 import m3u8
+import pytest
 from playlists import *
 
 def test_loads_should_create_object_from_string():
@@ -74,3 +75,11 @@ def test_load_should_create_object_from_uri_with_relative_segments():
     assert expected_ts3_abspath  == obj.segments[2].absolute_uri
     assert expected_ts4_path  == obj.segments[3].uri
     assert expected_ts4_abspath  == obj.segments[3].absolute_uri
+
+def test_there_should_not_be_absolute_uris_with_loads():
+    with open(RELATIVE_PLAYLIST_FILENAME) as f:
+        content = f.read()
+    obj = m3u8.loads(content)
+    with pytest.raises(ValueError) as e:
+        obj.key.absolute_uri
+    assert str(e.value) == 'There can not be `absolute_uri` with no `baseuri` set'
