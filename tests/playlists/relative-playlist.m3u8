@@ -1,0 +1,11 @@
+#EXTM3U
+#EXT-X-TARGETDURATION:5220
+#EXTINF:5220,
+/entire1.ts
+#EXTINF:5220,
+../entire2.ts
+#EXTINF:5220,
+../../entire3.ts
+#EXTINF:5220,
+entire4.ts
+#EXT-X-ENDLIST

@@ -13,6 +13,11 @@ def simple():
     response.set_header('Content-Type', 'application/vnd.apple.mpegurl')
     return m3u8_file('simple-playlist.m3u8')
 
+@route('/path/to/relative-playlist.m3u8')
+def simple():
+    response.set_header('Content-Type', 'application/vnd.apple.mpegurl')
+    return m3u8_file('relative-playlist.m3u8')
+
 def m3u8_file(filename):
     with open(join(playlists, filename)) as fileobj:
         return fileobj.read().strip()
