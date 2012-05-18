@@ -242,6 +242,26 @@ def test_should_normalize_segments_and_key_urls_if_basepath_attribute_updated():
 
     assert obj.dumps().strip() == expected
 
+def test_m3u8_should_propagate_baseuri_to_segments():
+    with open(RELATIVE_PLAYLIST_FILENAME) as f:
+        content = f.read()
+    obj = m3u8.M3U8(content, baseuri='/any/path')
+    assert '/entire1.ts' == obj.segments[0].uri
+    assert '/any/path/entire1.ts' == obj.segments[0].absolute_uri
+    obj.baseuri = '/any/where/'
+    assert '/entire1.ts' == obj.segments[0].uri
+    assert '/any/where/entire1.ts' == obj.segments[0].absolute_uri
+
+def test_m3u8_should_propagate_baseuri_to_key():
+    with open(RELATIVE_PLAYLIST_FILENAME) as f:
+        content = f.read()
+    obj = m3u8.M3U8(content, baseuri='/any/path')
+    assert '../key.bin' == obj.key.uri
+    assert '/any/key.bin' == obj.key.absolute_uri
+    obj.baseuri = '/any/where/'
+    assert '../key.bin' == obj.key.uri
+    assert '/any/key.bin' == obj.key.absolute_uri
+
 
 # custom asserts
 

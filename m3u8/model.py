@@ -1,5 +1,7 @@
 import os
+import re
 import errno
+import urlparse
 from collections import namedtuple
 
 from m3u8 import parser
@@ -71,17 +73,18 @@ class M3U8(object):
         ('allow_cache',      'allow_cache'),
         )
 
-    def __init__(self, content=None, basepath=None):
+    def __init__(self, content=None, basepath=None, baseuri=''):
         if content is not None:
             self.data = parser.parse(content)
         else:
             self.data = {}
+        self._baseuri = baseuri
         self._initialize_attributes()
         self.basepath = basepath
 
     def _initialize_attributes(self):
-        self.key = Key(**self.data['key']) if 'key' in self.data else None
-        self.segments = SegmentList([ Segment(**params)
+        self.key = Key(baseuri=self.baseuri, **self.data['key']) if 'key' in self.data else None
+        self.segments = SegmentList([ Segment(baseuri=self.baseuri, **params)
                                       for params in self.data.get('segments', []) ])
 
         for attr, param in self.simple_attributes:
@@ -97,6 +100,15 @@ class M3U8(object):
 
     def __unicode__(self):
         return self.dumps()
+
+    @property
+    def baseuri(self):
+        return self._baseuri
+    
+    @baseuri.setter
+    def baseuri(self, new_baseuri):
+        self._baseuri = new_baseuri
+        self.segments.baseuri = new_baseuri
 
     @property
     def basepath(self):
@@ -162,6 +174,13 @@ class M3U8(object):
 class BasePathMixin(object):
 
     @property
+    def absolute_uri(self):
+        if parser.is_url(self.uri):
+            return self.uri
+        else:
+            return _urijoin(self.baseuri, self.uri)
+
+    @property
     def basepath(self):
         return os.path.dirname(self.uri)
 
@@ -170,6 +189,12 @@ class BasePathMixin(object):
         self.uri = self.uri.replace(self.basepath, newbasepath)
 
 class GroupedBasePathMixin(object):
+
+    def _set_baseuri(self, new_baseuri):
+        for item in self:
+            item.baseuri = new_baseuri
+
+    baseuri = property(None, _set_baseuri)
 
     def _set_basepath(self, newbasepath):
         for item in self:
@@ -192,10 +217,11 @@ class Segment(BasePathMixin):
 
     '''
 
-    def __init__(self, uri, duration=None, title=None):
+    def __init__(self, uri, baseuri, duration=None, title=None):
         self.uri = uri
         self.duration = duration
         self.title = title
+        self.baseuri = baseuri
 
     def __str__(self):
         output = ['#EXTINF:%s,' % self.duration]
@@ -232,10 +258,11 @@ class Key(BasePathMixin):
       initialization vector. a string representing a hexadecimal number. ex.: 0X12A
 
     '''
-    def __init__(self, method, uri, iv=None):
+    def __init__(self, method, uri, baseuri, iv=None):
         self.method = method
         self.uri = uri
         self.iv = iv
+        self.baseuri = baseuri
 
     def __str__(self):
         output = [
@@ -285,3 +312,12 @@ def denormalize_attribute(attribute):
 
 def quoted(string):
     return '"%s"' % string
+
+def _urijoin(baseuri, path):
+    if parser.is_url(baseuri):
+        parsed_url = urlparse.urlparse(baseuri)
+        prefix = parsed_url.scheme + '://' + parsed_url.netloc
+        new_path = os.path.normpath(parsed_url.path + '/' + path)
+        return urlparse.urljoin(prefix, new_path)
+    else:
+        return os.path.normpath(os.path.join(baseuri, path.strip('/')))

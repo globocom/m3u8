@@ -2,7 +2,7 @@
 M3U8 parser.
 
 '''
-
+import re
 from collections import namedtuple
 
 ext_x_targetduration = '#EXT-X-TARGETDURATION'
@@ -123,3 +123,6 @@ def remove_quotes(string):
 
 def normalize_attribute(attribute):
     return attribute.replace('-', '_').lower().strip()
+
+def is_url(uri):
+    return re.match(r'https?://', uri) is not None
