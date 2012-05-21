@@ -30,6 +30,7 @@ def parse(content):
         }
 
     for line in string_to_lines(content):
+        line = line.strip()
 
         if state['expect_segment']:
             _parse_ts_chunk(line, data, state)
