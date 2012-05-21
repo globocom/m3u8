@@ -83,3 +83,7 @@ def test_there_should_not_be_absolute_uris_with_loads():
     with pytest.raises(ValueError) as e:
         obj.key.absolute_uri
     assert str(e.value) == 'There can not be `absolute_uri` with no `baseuri` set'
+
+def test_absolute_uri_should_handle_empty_baseuri_path():
+    key = m3u8.model.Key(method='AES', uri='/key.bin', baseuri='http://example.com')
+    assert 'http://example.com/key.bin' == key.absolute_uri

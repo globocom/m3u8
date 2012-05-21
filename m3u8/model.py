@@ -332,6 +332,6 @@ def _urijoin(baseuri, path):
         parsed_url = urlparse.urlparse(baseuri)
         prefix = parsed_url.scheme + '://' + parsed_url.netloc
         new_path = os.path.normpath(parsed_url.path + '/' + path)
-        return urlparse.urljoin(prefix, new_path)
+        return urlparse.urljoin(prefix, new_path.strip('/'))
     else:
         return os.path.normpath(os.path.join(baseuri, path.strip('/')))
