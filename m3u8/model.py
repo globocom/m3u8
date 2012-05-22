@@ -102,7 +102,7 @@ class M3U8(object):
             self.files.append(self.key.uri)
         self.files.extend(self.segments.uri)
 
-        self.playlists = PlaylistList([ Playlist(**playlist)
+        self.playlists = PlaylistList([ Playlist(baseuri=self.baseuri, **playlist)
                                         for playlist in self.data.get('playlists', []) ])
 
     def __unicode__(self):
@@ -296,8 +296,9 @@ class Playlist(BasePathMixin):
 
     More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.10
     '''
-    def __init__(self, uri, stream_info):
+    def __init__(self, uri, stream_info, baseuri):
         self.uri = uri
+        self.baseuri = baseuri
         self.stream_info = StreamInfo(bandwidth=stream_info['bandwidth'],
                                       program_id=stream_info.get('program_id'),
                                       codecs=stream_info.get('codecs'))
