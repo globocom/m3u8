@@ -13,6 +13,11 @@ ext_x_version = '#EXT-X-VERSION'
 ext_x_allow_cache = '#EXT-X-ALLOW-CACHE'
 extinf = '#EXTINF'
 
+'''
+http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.2
+http://stackoverflow.com/questions/2785755/how-to-split-but-ignore-separators-in-quoted-strings-in-python
+'''
+ATTRIBUTELISTPATTERN = re.compile(r'''((?:[^,"']|"[^"]*"|'[^']*')+)''')
 
 def parse(content):
     '''
@@ -63,7 +68,7 @@ def parse(content):
     return data
 
 def _parse_key(line, data):
-    params = line.replace(ext_x_key + ':', '').split(',')
+    params = ATTRIBUTELISTPATTERN.split(line.replace(ext_x_key + ':', ''))[1::2]
     data['key'] = {}
     for param in params:
         name, value = param.split('=', 1)
@@ -71,7 +76,7 @@ def _parse_key(line, data):
 
 def _parse_extinf(line, data, state):
     duration, title = line.replace(extinf + ':', '').split(',')
-    state['segment'] = {'duration': int(duration), 'title': remove_quotes(title)}
+    state['segment'] = {'duration': float(duration), 'title': remove_quotes(title)}
 
 def _parse_ts_chunk(line, data, state):
     segment = state.pop('segment')
@@ -79,7 +84,7 @@ def _parse_ts_chunk(line, data, state):
     data['segments'].append(segment)
 
 def _parse_stream_inf(line, data, state):
-    params = line.replace(ext_x_stream_inf + ':', '').split(',')
+    params = ATTRIBUTELISTPATTERN.split(line.replace(ext_x_stream_inf + ':', ''))[1::2]
 
     stream_info = {}
     for param in params:
