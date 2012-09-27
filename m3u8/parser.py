@@ -46,7 +46,7 @@ def parse(content):
             state['expect_playlist'] = False
 
         elif line.startswith(ext_x_targetduration):
-            _parse_simple_parameter(line, data, int)
+            _parse_simple_parameter(line, data, float)
         elif line.startswith(ext_x_media_sequence):
             _parse_simple_parameter(line, data, int)
         elif line.startswith(ext_x_version):
