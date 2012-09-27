@@ -25,10 +25,11 @@ Encryption key
 --------------
 
 The segments may be encrypted, in this case the ``key`` attribute will
-be an object with all the attributes from `#EXT-X-KEY`_: - ``method``:
-ex.: "AES-128" - ``uri``: the key uri, ex.:
-"http://videoserver.com/key.bin" - ``iv``: the initialization vector, if
-available. Otherwise ``None``.
+be an object with all the attributes from `#EXT-X-KEY`_:
+
+-  ``method``: ex.: "AES-128"
+-  ``uri``: the key uri, ex.: "http://videoserver.com/key.bin"
+-  ``iv``: the initialization vector, if available. Otherwise ``None``.
 
 If no ``#EXT-X-KEY`` is found, the ``key`` attribute will be ``None``.
 
