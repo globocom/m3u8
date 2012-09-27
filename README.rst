@@ -33,7 +33,7 @@ be an object with all the attributes from `#EXT-X-KEY`_:
 
 If no ``#EXT-X-KEY`` is found, the ``key`` attribute will be ``None``.
 
-Multiple keys is not supported yet (and has a low priority), follow
+Multiple keys are not supported yet (and has a low priority), follow
 `issue 1`_ for updates.
 
 Variant playlists (variable bitrates)
@@ -79,7 +79,7 @@ Running Tests
 Contributing
 ============
 
-All contribution is welcome! If, and only if, it
+All contribution is welcome, but we will merge a pull request if, and only if, it
 
 -  has tests
 -  follows the code conventions
