@@ -58,8 +58,8 @@ the playlist object used in the for loop above has a few attributes:
 -  ``stream_info``: a ``StreamInfo`` object (actually a namedtuple) with
    all the attributes available to `#EXT-X-STREAM-INF`_
 
-**NOTE: the following attributes are not implemented yet, follow `issue
-4`_ for updates**
+**NOTE: the following attributes are not implemented yet**, follow
+`issue 4`_ for updates
 
 -  ``iframe_stream_info``: usually ``None``, unless it's a playlist with
    `I-Frames`_, in this case it's also a namedtuple ``IFrameStreamInfo``
