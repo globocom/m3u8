@@ -88,7 +88,7 @@ If you plan to implement a new feature or something that will take more
 than a few minutes, please open an issue to make sure we don't work on
 the same thing.
 
-.. _m3u8: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08
+.. _m3u8: http://tools.ietf.org/html/draft-pantos-http-live-streaming-09
 .. _#EXT-X-KEY: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.4
 .. _issue 1: https://github.com/globocom/m3u8/issues/1
 .. _variant streams: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-6.2.4
