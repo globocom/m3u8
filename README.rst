@@ -26,8 +26,8 @@ Encryption key
 
 The segments may be encrypted, in this case the ``key`` attribute will
 be an object with all the attributes from `#EXT-X-KEY`_: - ``method``:
-ex.: “AES-128” - ``uri``: the key uri, ex.:
-“http://videoserver.com/key.bin” - ``iv``: the initialization vector, if
+ex.: "AES-128" - ``uri``: the key uri, ex.:
+"http://videoserver.com/key.bin" - ``iv``: the initialization vector, if
 available. Otherwise ``None``.
 
 If no ``#EXT-X-KEY`` is found, the ``key`` attribute will be ``None``.
@@ -39,7 +39,7 @@ Variant playlists (variable bitrates)
 -------------------------------------
 
 A playlist can have a list to other playlist files, this is used to
-represent multiple bitrates videos, and it’s called `variant streams`_.
+represent multiple bitrates videos, and it's called `variant streams`_.
 See an `example here`_.
 
 ::
@@ -60,11 +60,11 @@ the playlist object used in the for loop above has a few attributes:
 **NOTE: the following attributes are not implemented yet, follow `issue
 4`_ for updates**
 
--  ``iframe_stream_info``: usually ``None``, unless it’s a playlist with
-   `I-Frames`_, in this case it’s also a namedtuple ``IFrameStreamInfo``
+-  ``iframe_stream_info``: usually ``None``, unless it's a playlist with
+   `I-Frames`_, in this case it's also a namedtuple ``IFrameStreamInfo``
    with all the attribute available to `#EXT-X-I-FRAME-STREAM-INF`_
--  ``alternative_audios``: it’s an empty list, unless it’s a playlist
-   with `Alternative audio`_, in this case it’s a list with ``Media``
+-  ``alternative_audios``: its an empty list, unless it's a playlist
+   with `Alternative audio`_, in this case it's a list with ``Media``
    objects with all the attributes available to `#X-EXT-MEDIA`_
 -  ``alternative_videos``: same as ``alternative_audios``
 
@@ -84,7 +84,7 @@ All contribution is welcome! If, and only if, it
 -  follows the code conventions
 
 If you plan to implement a new feature or something that will take more
-than a few minutes, please open an issue to make sure we don’t work on
+than a few minutes, please open an issue to make sure we don't work on
 the same thing.
 
 .. _m3u8: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08
@@ -98,4 +98,3 @@ the same thing.
 .. _#EXT-X-I-FRAME-STREAM-INF: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.13
 .. _Alternative audio: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.7
 .. _#X-EXT-MEDIA: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.9
-
