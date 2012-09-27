@@ -65,7 +65,7 @@ def test_should_parse_variant_playlist():
     assert 'http://example.com/audio-only.m3u8' == playlists[-1]['uri']
     assert '1' == playlists[-1]['stream_info']['program_id']
     assert '65000' == playlists[-1]['stream_info']['bandwidth']
-    assert 'mp4a.40.5' == playlists[-1]['stream_info']['codecs']
+    assert 'mp4a.40.5,avc1.42801e' == playlists[-1]['stream_info']['codecs']
 
 def test_should_parse_ALLOW_CACHE():
     data = m3u8.parse(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)

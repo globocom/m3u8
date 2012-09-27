@@ -57,7 +57,7 @@ http://example.com/low.m3u8
 http://example.com/mid.m3u8
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=7680000
 http://example.com/hi.m3u8
-#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,CODECS="mp4a.40.5"
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,CODECS="mp4a.40.5,avc1.42801e"
 http://example.com/audio-only.m3u8
 '''
 
