@@ -1,10 +1,12 @@
-import os
-import re
-import errno
-import urlparse
 from collections import namedtuple
+import os
+import errno
+import math
+import urlparse
+import re
 
 from m3u8 import parser
+
 
 class M3U8(object):
     '''
@@ -153,7 +155,7 @@ class M3U8(object):
         if self.key:
             output.append(str(self.key))
         if self.target_duration:
-            output.append('#EXT-X-TARGETDURATION:' + str(self.target_duration))
+            output.append('#EXT-X-TARGETDURATION:' + int_or_float_to_string(self.target_duration))
         if self.is_variant:
             output.append(str(self.playlists))
 
@@ -235,7 +237,7 @@ class Segment(BasePathMixin):
         self.baseuri = baseuri
 
     def __str__(self):
-        output = ['#EXTINF:%s,' % self.duration]
+        output = ['#EXTINF:%s,' % int_or_float_to_string(self.duration)]
         if self.title:
             output.append(quoted(self.title))
 
@@ -336,3 +338,6 @@ def _urijoin(baseuri, path):
         return urlparse.urljoin(prefix, new_path.strip('/'))
     else:
         return os.path.normpath(os.path.join(baseuri, path.strip('/')))
+
+def int_or_float_to_string(number):
+    return str(int(number)) if number == math.floor(number) else str(number)

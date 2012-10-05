@@ -158,10 +158,11 @@ def test_files_attribute_should_list_all_files_including_segments_and_key():
 # dump m3u8
 
 def test_dumps_should_build_same_string():
-    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
-
-    expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV.replace(', IV', ',IV').strip()
-    assert expected == obj.dumps().strip()
+    playlists = [PLAYLIST_WITH_NON_INTEGER_DURATION, PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV]
+    for playlist in playlists:
+        obj = m3u8.M3U8(playlist)
+        expected = playlist.replace(', IV', ',IV').strip()
+        assert expected == obj.dumps().strip()
 
 def test_dump_should_build_file_with_same_content(tmpdir):
     obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)

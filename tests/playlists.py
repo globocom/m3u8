@@ -14,6 +14,13 @@ SIMPLE_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/simple-pla
 
 SIMPLE_PLAYLIST_URI = TEST_HOST + '/simple.m3u8'
 
+PLAYLIST_WITH_NON_INTEGER_DURATION = '''
+#EXTM3U
+#EXT-X-TARGETDURATION:5220.5
+#EXTINF:5220.5,
+http://media.example.com/entire.ts
+'''
+
 SLIDING_WINDOW_PLAYLIST = '''
 #EXTM3U
 #EXT-X-TARGETDURATION:8
@@ -50,7 +57,7 @@ http://example.com/low.m3u8
 http://example.com/mid.m3u8
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=7680000
 http://example.com/hi.m3u8
-#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,CODECS="mp4a.40.5"
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,CODECS="mp4a.40.5,avc1.42801e"
 http://example.com/audio-only.m3u8
 '''
 

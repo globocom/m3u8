@@ -7,6 +7,11 @@ def test_should_parse_simple_playlist_from_string():
     assert ['http://media.example.com/entire.ts'] == [c['uri'] for c in data['segments']]
     assert [5220] == [c['duration'] for c in data['segments']]
 
+def test_should_parse_non_integer_duration_from_playlist_string():
+    data = m3u8.parse(PLAYLIST_WITH_NON_INTEGER_DURATION)
+    assert 5220.5 == data['targetduration']
+    assert [5220.5] == [c['duration'] for c in data['segments']]
+
 def test_should_parse_simple_playlist_from_string_with_different_linebreaks():
     data = m3u8.parse(SIMPLE_PLAYLIST.replace('\n', '\r\n'))
     assert 5220 == data['targetduration']
@@ -60,7 +65,7 @@ def test_should_parse_variant_playlist():
     assert 'http://example.com/audio-only.m3u8' == playlists[-1]['uri']
     assert '1' == playlists[-1]['stream_info']['program_id']
     assert '65000' == playlists[-1]['stream_info']['bandwidth']
-    assert 'mp4a.40.5' == playlists[-1]['stream_info']['codecs']
+    assert 'mp4a.40.5,avc1.42801e' == playlists[-1]['stream_info']['codecs']
 
 def test_should_parse_ALLOW_CACHE():
     data = m3u8.parse(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
