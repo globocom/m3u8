@@ -45,6 +45,10 @@ class M3U8(object):
 
         If true, `playlists` if a list of the playlists available.
 
+     `is_endlist`
+        Returns true if EXT-X-ENDLIST tag present in M3U8.
+        http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.8
+
       `playlists`
         If this is a variant playlist (`is_variant` is True), returns a list of
         Playlist objects
@@ -76,6 +80,7 @@ class M3U8(object):
     simple_attributes = (
         # obj attribute      # parser attribute
         ('is_variant',       'is_variant'),
+        ('is_endlist',       'is_endlist'),
         ('target_duration',  'targetduration'),
         ('media_sequence',   'media_sequence'),
         ('version',          'version'),
@@ -160,6 +165,9 @@ class M3U8(object):
             output.append(str(self.playlists))
 
         output.append(str(self.segments))
+
+        if self.is_endlist:
+            output.append('#EXT-X-ENDLIST')
 
         return '\n'.join(output)
 
