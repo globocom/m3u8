@@ -11,6 +11,7 @@ ext_x_key = '#EXT-X-KEY'
 ext_x_stream_inf = '#EXT-X-STREAM-INF'
 ext_x_version = '#EXT-X-VERSION'
 ext_x_allow_cache = '#EXT-X-ALLOW-CACHE'
+ext_x_endlist = '#EXT-X-ENDLIST'
 extinf = '#EXTINF'
 
 '''
@@ -25,6 +26,7 @@ def parse(content):
     '''
     data = {
         'is_variant': False,
+        'is_endlist': False,
         'playlists': [],
         'segments': [],
         }
@@ -64,6 +66,9 @@ def parse(content):
         elif line.startswith(ext_x_stream_inf):
             state['expect_playlist'] = True
             _parse_stream_inf(line, data, state)
+
+        elif line.startswith(ext_x_endlist):
+            data['is_endlist'] = True
 
     return data
 

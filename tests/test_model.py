@@ -91,6 +91,15 @@ def test_is_variant_attribute():
     mock_parser_data(obj, {'is_variant': True})
     assert obj.is_variant
 
+def test_is_endlist_attribute():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    mock_parser_data(obj, {'is_endlist': False})
+    assert not obj.is_endlist
+
+    obj = m3u8.M3U8(SLIDING_WINDOW_PLAYLIST)
+    mock_parser_data(obj, {'is_endlist': True})
+    assert obj.is_endlist
+
 def test_playlists_attribute():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
     data = {'playlists': [{'uri': '/url/1.m3u8',
@@ -190,6 +199,21 @@ def test_dump_should_work_for_variant_streams():
     expected = VARIANT_PLAYLIST.replace(', BANDWIDTH', ',BANDWIDTH').strip()
 
     assert expected == obj.dumps().strip()
+
+def test_should_dump_with_endlist_tag():
+    obj = m3u8.M3U8(SLIDING_WINDOW_PLAYLIST)
+    obj.is_endlist= True
+
+    assert '#EXT-X-ENDLIST' in obj.dumps().splitlines()
+
+def test_should_dump_without_endlist_tag():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj.is_endlist = False
+
+    expected  = SIMPLE_PLAYLIST.strip().splitlines()
+    expected.remove('#EXT-X-ENDLIST')
+
+    assert expected == obj.dumps().strip().splitlines()
 
 def test_should_normalize_segments_and_key_urls_if_basepath_passed_to_constructor():
     basepath = 'http://videoserver.com/hls/live'
