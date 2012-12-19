@@ -67,6 +67,13 @@ def test_should_parse_variant_playlist():
     assert '65000' == playlists[-1]['stream_info']['bandwidth']
     assert 'mp4a.40.5,avc1.42801e' == playlists[-1]['stream_info']['codecs']
 
+def test_should_parse_endlist_playlist():
+    data = m3u8.parse(SIMPLE_PLAYLIST)
+    assert True == data['is_endlist']
+
+    data = m3u8.parse(SLIDING_WINDOW_PLAYLIST)
+    assert False == data['is_endlist']
+
 def test_should_parse_ALLOW_CACHE():
     data = m3u8.parse(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
     assert 'no' == data['allow_cache']
