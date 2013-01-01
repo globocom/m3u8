@@ -311,6 +311,7 @@ class Playlist(BasePathMixin):
         self.baseuri = baseuri
         self.stream_info = StreamInfo(bandwidth=stream_info['bandwidth'],
                                       program_id=stream_info.get('program_id'),
+                                      resolution=stream_info.get('resolution'),
                                       codecs=stream_info.get('codecs'))
 
     def __str__(self):
@@ -319,11 +320,13 @@ class Playlist(BasePathMixin):
             stream_inf.append('PROGRAM-ID=' + self.stream_info.program_id)
         if self.stream_info.bandwidth:
             stream_inf.append('BANDWIDTH=' + self.stream_info.bandwidth)
+        if self.stream_info.resolution:
+            stream_inf.append('RESOLUTION=' + self.stream_info.resolution)
         if self.stream_info.codecs:
             stream_inf.append('CODECS=' + quoted(self.stream_info.codecs))
         return '#EXT-X-STREAM-INF:' + ','.join(stream_inf) + '\n' + self.uri
 
-StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'codecs'])
+StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'resolution', 'codecs'])
 
 class PlaylistList(list, GroupedBasePathMixin):
 
