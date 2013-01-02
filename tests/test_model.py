@@ -145,6 +145,13 @@ def test_playlists_attribute_with_resolution():
     assert '512x288' == obj.playlists[0].stream_info.resolution
     assert None == obj.playlists[1].stream_info.resolution
 
+def test_playlists_attribute_with_resolution():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST_WITH_RESOLUTION)
+
+    expected = SIMPLE_PLAYLIST_WITH_RESOLUTION.strip().splitlines()
+
+    assert expected == obj.dumps().strip().splitlines()
+
 def test_version_attribute():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'version': '2'})
