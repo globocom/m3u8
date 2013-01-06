@@ -302,15 +302,25 @@ class Key(BasePathMixin):
 class Playlist(BasePathMixin):
     '''
     Playlist object representing a link to a variant M3U8 with a specific bitrate.
-    Each `stream_info` attribute has: `program_id`, `bandwidth` and `codecs`
+    Each `stream_info` attribute has: `program_id`, `bandwidth`, `resolution` and `codecs`
+    `resolution` is a tuple (h, v) of integers
 
     More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.10
     '''
     def __init__(self, uri, stream_info, baseuri):
         self.uri = uri
         self.baseuri = baseuri
+
+        resolution = stream_info.get('resolution')
+        if resolution != None:
+            values = resolution.split('x')
+            resolution_pair = (int(values[0]), int(values[1]))
+        else:
+            resolution_pair = None
+
         self.stream_info = StreamInfo(bandwidth=stream_info['bandwidth'],
                                       program_id=stream_info.get('program_id'),
+                                      resolution=resolution_pair,
                                       codecs=stream_info.get('codecs'))
 
     def __str__(self):
@@ -319,11 +329,14 @@ class Playlist(BasePathMixin):
             stream_inf.append('PROGRAM-ID=' + self.stream_info.program_id)
         if self.stream_info.bandwidth:
             stream_inf.append('BANDWIDTH=' + self.stream_info.bandwidth)
+        if self.stream_info.resolution:
+            res = str(self.stream_info.resolution[0]) + 'x' + str(self.stream_info.resolution[1])
+            stream_inf.append('RESOLUTION=' + res)
         if self.stream_info.codecs:
             stream_inf.append('CODECS=' + quoted(self.stream_info.codecs))
         return '#EXT-X-STREAM-INF:' + ','.join(stream_inf) + '\n' + self.uri
 
-StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'codecs'])
+StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'resolution', 'codecs'])
 
 class PlaylistList(list, GroupedBasePathMixin):
 
