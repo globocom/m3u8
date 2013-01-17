@@ -90,6 +90,14 @@ http://media.example.com/entire.ts
 #EXT-X-ENDLIST
 '''
 
+SIMPLE_PLAYLIST_WITH_RESOLUTION = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=445000,RESOLUTION=512x288,CODECS="avc1.77.30, mp4a.40.5"
+index_0_av.m3u8?e=b471643725c47acd
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=45000,CODECS="mp4a.40.5"
+index_0_a.m3u8?e=b471643725c47acd
+'''
+
 RELATIVE_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/relative-playlist.m3u8'))
 
 RELATIVE_PLAYLIST_URI = TEST_HOST + '/path/to/relative-playlist.m3u8'

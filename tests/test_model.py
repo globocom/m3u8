@@ -137,6 +137,13 @@ def test_playlists_attribute_without_program_id():
     assert None == obj.playlists[0].stream_info.codecs
     assert None == obj.playlists[0].stream_info.program_id
 
+def test_playlists_attribute_with_resolution():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST_WITH_RESOLUTION)
+
+    assert 2 == len(obj.playlists)
+    assert (512, 288) == obj.playlists[0].stream_info.resolution
+    assert None == obj.playlists[1].stream_info.resolution
+
 def test_version_attribute():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'version': '2'})
@@ -172,6 +179,13 @@ def test_dumps_should_build_same_string():
         obj = m3u8.M3U8(playlist)
         expected = playlist.replace(', IV', ',IV').strip()
         assert expected == obj.dumps().strip()
+
+def test_dump_playlists_with_resolution():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST_WITH_RESOLUTION)
+
+    expected = SIMPLE_PLAYLIST_WITH_RESOLUTION.strip().splitlines()
+
+    assert expected == obj.dumps().strip().splitlines()
 
 def test_dump_should_build_file_with_same_content(tmpdir):
     obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
