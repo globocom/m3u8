@@ -5,10 +5,29 @@ M3U8 parser.
 import re
 from collections import namedtuple
 
+'''
+Standard Tags
+'''
+extm3u = '#EXTM3U'
+extinf = '#EXTINF'
+
+'''
+New Tags
+'''
+ext_x_byterange = '#EXT-X-BYTERANGE'
 ext_x_targetduration = '#EXT-X-TARGETDURATION'
 ext_x_media_sequence = '#EXT-X-MEDIA-SEQUENCE'
 ext_x_key = '#EXT-X-KEY'
+ext_x_program_date_time = '#EXT-X-PROGRAM-DATE-TIME'
+ext_x_allow_cache = '#EXT-X-ALLOW-CACHE'
+ext_x_playlist_type = '#EXT-X-PLAYLIST-TYPE'
+ext_x_endlist = '#EXT-X-ENDLIST'
+ext_x_media = '#EXT-X-MEDIA'
 ext_x_stream_inf = '#EXT-X-STREAM-INF'
+ext_x_discontinuity = '#EXT-X-DISCONTINUITY'
+ext_x_i_frames_only = '#EXT-X-I-FRAMES-ONLY'
+ext_x_map = '#EXT-X-MAP'
+ext_x_i_frame_inf ='#EXT-X-I-FRAME-STREAM-INF'
 ext_x_version = '#EXT-X-VERSION'
 ext_x_allow_cache = '#EXT-X-ALLOW-CACHE'
 ext_x_endlist = '#EXT-X-ENDLIST'
@@ -27,8 +46,11 @@ def parse(content):
     data = {
         'is_variant': False,
         'is_endlist': False,
+        'is_i_frames_only': False,
         'playlists': [],
         'segments': [],
+        'map': None,
+        'currentKey': None,
         }
 
     state = {
@@ -47,6 +69,8 @@ def parse(content):
             _parse_variant_playlist(line, data, state)
             state['expect_playlist'] = False
 
+        elif line == ext_x_i_frames_only:
+            data['is_i_frames_only'] = True
         elif line.startswith(ext_x_targetduration):
             _parse_simple_parameter(line, data, float)
         elif line.startswith(ext_x_media_sequence):
@@ -55,6 +79,9 @@ def parse(content):
             _parse_simple_parameter(line, data)
         elif line.startswith(ext_x_allow_cache):
             _parse_simple_parameter(line, data)
+        elif line.startswith(ext_x_playlist_type):
+            _parse_simple_parameter(line, data)
+
 
         elif line.startswith(ext_x_key):
             _parse_key(line, data)
@@ -70,14 +97,20 @@ def parse(content):
         elif line.startswith(ext_x_endlist):
             data['is_endlist'] = True
 
+        elif line.startswith(ext_x_i_frame_inf):
+            _parse_i_frame_inf(line, data)
+
+        elif line.startswith(ext_x_map):
+            _parse_map(line, data)
+
     return data
 
 def _parse_key(line, data):
     params = ATTRIBUTELISTPATTERN.split(line.replace(ext_x_key + ':', ''))[1::2]
-    data['key'] = {}
+    data['currentKey'] = {}
     for param in params:
         name, value = param.split('=', 1)
-        data['key'][normalize_attribute(name)] = remove_quotes(value)
+        data['currentKey'][normalize_attribute(name)] = remove_quotes(value)
 
 def _parse_extinf(line, data, state):
     duration, title = line.replace(extinf + ':', '').split(',')
@@ -101,6 +134,14 @@ def _parse_stream_inf(line, data, state):
 
     data['is_variant'] = True
     state['stream_info'] = stream_info
+
+def _parse_map(line, data):
+    params = ATTRIBUTELISTPATTERN.split(line.replace(ext_x_map + ':',''))[1::2]
+    x_map = {}
+    for param in params:
+        name, value = param.split('=', 1)
+        x_map[normalize_attribute(name)] = value
+    data['map'] = x_map
 
 def _parse_variant_playlist(line, data, state):
     playlist = {'uri': line,

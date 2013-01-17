@@ -49,6 +49,10 @@ class M3U8(object):
         Returns true if EXT-X-ENDLIST tag present in M3U8.
         http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.8
 
+      `is_i_frames_only`
+        Returns true if the EXT-X-I-FRAMES-ONLY tag presents. It indicates that 
+        each media segment in the Playlist describes a single I-frame.
+
       `playlists`
         If this is a variant playlist (`is_variant` is True), returns a list of
         Playlist objects
@@ -81,6 +85,7 @@ class M3U8(object):
         # obj attribute      # parser attribute
         ('is_variant',       'is_variant'),
         ('is_endlist',       'is_endlist'),
+        ('is_i_frames_only', 'is_i_frames_only'),
         ('target_duration',  'targetduration'),
         ('media_sequence',   'media_sequence'),
         ('version',          'version'),
@@ -97,7 +102,7 @@ class M3U8(object):
         self.basepath = basepath
 
     def _initialize_attributes(self):
-        self.key = Key(baseuri=self.baseuri, **self.data['key']) if 'key' in self.data else None
+        self.key = Key(baseuri=self.baseuri, **self.data['currentKey']) if 'currentKey' in self.data else None
         self.segments = SegmentList([ Segment(baseuri=self.baseuri, **params)
                                       for params in self.data.get('segments', []) ])
 
@@ -151,6 +156,8 @@ class M3U8(object):
         You could also use unicode(<this obj>) or str(<this obj>)
         '''
         output = ['#EXTM3U']
+        if self.is_i_frames_only:
+            output.append('#EXT-X-I-FRAMES-ONLY')
         if self.media_sequence:
             output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
         if self.allow_cache:
@@ -270,7 +277,7 @@ class Key(BasePathMixin):
     Key used to encrypt the segments in a m3u8 playlist (EXT-X-KEY)
 
     `method`
-      is a string. ex.: "AES-128"
+      is a string. ex.: "NONE", "AES-128", "SAMPLE-AES"
 
     `uri`
       is a string. ex:: "https://priv.example.com/key.php?r=52"
@@ -280,21 +287,37 @@ class Key(BasePathMixin):
 
     `iv`
       initialization vector. a string representing a hexadecimal number. ex.: 0X12A
+      since protocol version 2.
+
+    `keyformat`
+      how the key is represented in the resource identified by the URI.
+      since protocol version 5.
+
+    `keyformatversions`
+      an optional quoted string containing one or more positive integers separated
+     by the "/" character (for example, "1/3"). Default value is "1".
+      since protocol version 5.
 
     '''
-    def __init__(self, method, uri, baseuri, iv=None):
+    def __init__(self, method, uri, baseuri, iv=None, keyformat="identity", keyformatversions="1"):
         self.method = method
         self.uri = uri
         self.iv = iv
         self.baseuri = baseuri
+        self.keyformat = keyformat
+        self.keyformatversions = keyformatversions
 
     def __str__(self):
         output = [
             'METHOD=%s' % self.method,
-            'URI="%s"' % self.uri,
+            'URI=%s' % quoted(self.uri),
             ]
         if self.iv:
             output.append('IV=%s' % self.iv)
+        if self.keyformat and self.keyformat != "identity":
+            output.append('KEYFORMAT=%s' % quoted(self.keyformat))
+        if self.keyformatversions and self.keyformatversions != "1":
+            output.append('KEYFORMATVERSIONS=%s' % quoted(self.keyformatversions))
 
         return '#EXT-X-KEY:' + ','.join(output)
 
