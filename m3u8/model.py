@@ -441,6 +441,8 @@ class M3U8:
             fileobj.write(self.dumps())
 
     def _create_sub_directories(self, filename):
+        if (os.path.isabs(filename) == False):
+            filename = os.path.join(os.getcwd(), filename)
         basename = os.path.dirname(filename)
         if basename:
             os.makedirs(basename, exist_ok=True)
