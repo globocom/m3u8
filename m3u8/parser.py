@@ -3,7 +3,6 @@ M3U8 parser.
 
 '''
 import re
-from collections import namedtuple
 
 '''
 Standard Tags
@@ -27,7 +26,7 @@ ext_x_stream_inf = '#EXT-X-STREAM-INF'
 ext_x_discontinuity = '#EXT-X-DISCONTINUITY'
 ext_x_i_frames_only = '#EXT-X-I-FRAMES-ONLY'
 ext_x_map = '#EXT-X-MAP'
-ext_x_i_frame_inf ='#EXT-X-I-FRAME-STREAM-INF'
+ext_x_i_frame_inf = '#EXT-X-I-FRAME-STREAM-INF'
 ext_x_version = '#EXT-X-VERSION'
 ext_x_allow_cache = '#EXT-X-ALLOW-CACHE'
 ext_x_endlist = '#EXT-X-ENDLIST'
@@ -38,6 +37,7 @@ http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.2
 http://stackoverflow.com/questions/2785755/how-to-split-but-ignore-separators-in-quoted-strings-in-python
 '''
 ATTRIBUTELISTPATTERN = re.compile(r'''((?:[^,"']|"[^"]*"|'[^']*')+)''')
+
 
 def parse(content):
     '''
@@ -82,7 +82,6 @@ def parse(content):
         elif line.startswith(ext_x_playlist_type):
             _parse_simple_parameter(line, data)
 
-
         elif line.startswith(ext_x_key):
             _parse_key(line, data)
 
@@ -105,6 +104,7 @@ def parse(content):
 
     return data
 
+
 def _parse_key(line, data):
     params = ATTRIBUTELISTPATTERN.split(line.replace(ext_x_key + ':', ''))[1::2]
     data['currentKey'] = {}
@@ -112,14 +112,17 @@ def _parse_key(line, data):
         name, value = param.split('=', 1)
         data['currentKey'][normalize_attribute(name)] = remove_quotes(value)
 
+
 def _parse_extinf(line, data, state):
     duration, title = line.replace(extinf + ':', '').split(',')
     state['segment'] = {'duration': float(duration), 'title': remove_quotes(title)}
+
 
 def _parse_ts_chunk(line, data, state):
     segment = state.pop('segment')
     segment['uri'] = line
     data['segments'].append(segment)
+
 
 def _parse_stream_inf(line, data, state):
     params = ATTRIBUTELISTPATTERN.split(line.replace(ext_x_stream_inf + ':', ''))[1::2]
@@ -135,13 +138,19 @@ def _parse_stream_inf(line, data, state):
     data['is_variant'] = True
     state['stream_info'] = stream_info
 
+
+def _parse_i_frame_inf(line, data):
+    pass
+
+
 def _parse_map(line, data):
-    params = ATTRIBUTELISTPATTERN.split(line.replace(ext_x_map + ':',''))[1::2]
+    params = ATTRIBUTELISTPATTERN.split(line.replace(ext_x_map + ':', ''))[1::2]
     x_map = {}
     for param in params:
         name, value = param.split('=', 1)
         x_map[normalize_attribute(name)] = value
     data['map'] = x_map
+
 
 def _parse_variant_playlist(line, data, state):
     playlist = {'uri': line,
@@ -149,14 +158,17 @@ def _parse_variant_playlist(line, data, state):
 
     data['playlists'].append(playlist)
 
+
 def _parse_simple_parameter(line, data, cast_to=str):
     param, value = line.split(':', 1)
     param = normalize_attribute(param.replace('#EXT-X-', ''))
     value = normalize_attribute(value)
     data[param] = cast_to(value)
 
+
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')
+
 
 def remove_quotes(string):
     '''
@@ -173,8 +185,10 @@ def remove_quotes(string):
         return string[1:-1]
     return string
 
+
 def normalize_attribute(attribute):
     return attribute.replace('-', '_').lower().strip()
+
 
 def is_url(uri):
     return re.match(r'https?://', uri) is not None
