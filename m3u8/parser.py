@@ -26,7 +26,7 @@ ext_x_stream_inf = '#EXT-X-STREAM-INF'
 ext_x_discontinuity = '#EXT-X-DISCONTINUITY'
 ext_x_i_frames_only = '#EXT-X-I-FRAMES-ONLY'
 ext_x_map = '#EXT-X-MAP'
-ext_x_i_frame_inf = '#EXT-X-I-FRAME-STREAM-INF'
+ext_x_i_frame_stream_inf = '#EXT-X-I-FRAME-STREAM-INF'
 ext_x_version = '#EXT-X-VERSION'
 ext_x_allow_cache = '#EXT-X-ALLOW-CACHE'
 ext_x_endlist = '#EXT-X-ENDLIST'
@@ -50,24 +50,40 @@ def parse(content):
         'playlists': [],
         'segments': [],
         'map': None,
-        'currentKey': None,
+        'iframe_playlists': []
         }
 
     state = {
         'expect_segment': False,
         'expect_playlist': False,
+        'expect_i_frame_playlist': False
         }
 
     for line in string_to_lines(content):
         line = line.strip()
 
-        if state['expect_segment']:
+        if line.startswith(ext_x_byterange):
+            _parse_simple_parameter(line, data)
+            state['expect_segment'] = True
+
+        elif line.startswith(extinf):
+            _parse_extinf(line, data, state)
+            state['expect_segment'] = True
+
+        elif line.startswith(ext_x_key):
+            _parse_key(line, data, state)
+
+        elif state['expect_segment']:
             _parse_ts_chunk(line, data, state)
             state['expect_segment'] = False
 
         elif state['expect_playlist']:
             _parse_variant_playlist(line, data, state)
             state['expect_playlist'] = False
+
+        elif state['expect_i_frame_playlist']:
+            _parse_i_frame_playlist(line, data, state)
+            state['expect_i_frame_playlist'] = False
 
         elif line == ext_x_i_frames_only:
             data['is_i_frames_only'] = True
@@ -82,22 +98,16 @@ def parse(content):
         elif line.startswith(ext_x_playlist_type):
             _parse_simple_parameter(line, data)
 
-        elif line.startswith(ext_x_key):
-            _parse_key(line, data)
-
-        elif line.startswith(extinf):
-            _parse_extinf(line, data, state)
-            state['expect_segment'] = True
-
         elif line.startswith(ext_x_stream_inf):
-            state['expect_playlist'] = True
             _parse_stream_inf(line, data, state)
+            state['expect_playlist'] = True
 
         elif line.startswith(ext_x_endlist):
             data['is_endlist'] = True
 
-        elif line.startswith(ext_x_i_frame_inf):
-            _parse_i_frame_inf(line, data)
+        elif line.startswith(ext_x_i_frame_stream_inf):
+            _parse_i_frame_stream_info(line, data, state)
+            state['expect_i_frame_playlist'] = True
 
         elif line.startswith(ext_x_map):
             _parse_map(line, data)
@@ -105,12 +115,12 @@ def parse(content):
     return data
 
 
-def _parse_key(line, data):
+def _parse_key(line, data, state):
     params = ATTRIBUTELISTPATTERN.split(line.replace(ext_x_key + ':', ''))[1::2]
-    data['currentKey'] = {}
+    data['key'] = {}
     for param in params:
         name, value = param.split('=', 1)
-        data['currentKey'][normalize_attribute(name)] = remove_quotes(value)
+        data['key'][normalize_attribute(name)] = remove_quotes(value)
 
 
 def _parse_extinf(line, data, state):
@@ -121,6 +131,11 @@ def _parse_extinf(line, data, state):
 def _parse_ts_chunk(line, data, state):
     segment = state.pop('segment')
     segment['uri'] = line
+    if 'key' in data:
+        segment['key'] = data['key']
+    if 'byterange' in data:
+        segment['byterange'] = data['byterange']
+        del data['byterange']
     data['segments'].append(segment)
 
 
@@ -139,8 +154,21 @@ def _parse_stream_inf(line, data, state):
     state['stream_info'] = stream_info
 
 
-def _parse_i_frame_inf(line, data):
-    pass
+def _parse_i_frame_stream_info(line, data, state):
+    '''
+    http://tools.ietf.org/html/draft-pantos-http-live-streaming-10#section-3.4.14
+    '''
+    params = ATTRIBUTELISTPATTERN.split(line.replace(ext_x_i_frame_stream_inf + ':', ''))[1::2]
+
+    i_frame_stream_info = {}
+    for param in params:
+        name, value = param.split('=', 1)
+        i_frame_stream_info[normalize_attribute(name)] = value
+
+    if 'uri' not in i_frame_stream_info and 'bandwidth' not in i_frame_stream_info:
+        pass
+
+    state['i_frame_stream_info'] = i_frame_stream_info
 
 
 def _parse_map(line, data):
@@ -157,6 +185,14 @@ def _parse_variant_playlist(line, data, state):
                 'stream_info': state.pop('stream_info')}
 
     data['playlists'].append(playlist)
+
+
+def _parse_i_frame_playlist(line, data, state):
+    inf = state.pop('i_frame_stream_info')
+    playlist = {'uri': inf['uri'],
+                'stream_info': inf}
+
+    data['iframe_playlists'].append(playlist)
 
 
 def _parse_simple_parameter(line, data, cast_to=str):
