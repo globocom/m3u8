@@ -34,7 +34,7 @@ class M3U8(object):
     Attributes:
 
      `key`
-       a `Key` object, resepents the LAST `Key` from this playlist
+       a `Key` object, represents the LAST `Key` from this playlist
 
      `segments`
        a `SegmentList` object, represents the list of `Segment`s from this playlist
