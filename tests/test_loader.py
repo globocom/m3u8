@@ -3,6 +3,7 @@ import urlparse
 import m3u8
 import pytest
 from playlists import *
+from urllib2 import urlopen
 
 def test_loads_should_create_object_from_string():
     obj = m3u8.loads(SIMPLE_PLAYLIST)
@@ -16,8 +17,22 @@ def test_load_should_create_object_from_file():
     assert 5220 == obj.target_duration
     assert 'http://media.example.com/entire.ts' == obj.segments[0].uri
 
+def test_load_should_create_object_from_file_via_stream():
+    stream = open(SIMPLE_PLAYLIST_FILENAME)
+    obj = m3u8.load(SIMPLE_PLAYLIST_FILENAME, stream)
+    assert isinstance(obj, m3u8.M3U8)
+    assert 5220 == obj.target_duration
+    assert 'http://media.example.com/entire.ts' == obj.segments[0].uri
+
 def test_load_should_create_object_from_uri():
     obj = m3u8.load(SIMPLE_PLAYLIST_URI)
+    assert isinstance(obj, m3u8.M3U8)
+    assert 5220 == obj.target_duration
+    assert 'http://media.example.com/entire.ts' == obj.segments[0].uri
+
+def test_load_should_create_object_from_uri_via_stream():
+    stream = urlopen(SIMPLE_PLAYLIST_URI)
+    obj = m3u8.load(SIMPLE_PLAYLIST_URI, stream)
     assert isinstance(obj, m3u8.M3U8)
     assert 5220 == obj.target_duration
     assert 'http://media.example.com/entire.ts' == obj.segments[0].uri
