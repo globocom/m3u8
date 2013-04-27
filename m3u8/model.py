@@ -353,10 +353,7 @@ def quoted(string):
 
 def _urijoin(baseuri, path):
     if parser.is_url(baseuri):
-        parsed_url = urlparse.urlparse(baseuri)
-        prefix = parsed_url.scheme + '://' + parsed_url.netloc
-        new_path = os.path.normpath(parsed_url.path + '/' + path)
-        return urlparse.urljoin(prefix, new_path.strip('/'))
+        return urlparse.urljoin(baseuri + '/', path.strip('/'))
     else:
         return os.path.normpath(os.path.join(baseuri, path.strip('/')))
 

@@ -29,7 +29,7 @@ def _load_from_uri(uri):
     content = urlopen(uri).read().strip()
     parsed_url = urlparse.urlparse(uri)
     prefix = parsed_url.scheme + '://' + parsed_url.netloc
-    basepath = os.path.normpath(parsed_url.path + '/..')
+    basepath = os.path.dirname(parsed_url.path)
     baseuri = urlparse.urljoin(prefix, basepath)
     return M3U8(content, baseuri=baseuri)
 
