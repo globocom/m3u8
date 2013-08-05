@@ -30,12 +30,12 @@ def _load_from_uri(uri):
     parsed_url = urlparse.urlparse(uri)
     prefix = parsed_url.scheme + '://' + parsed_url.netloc
     basepath = os.path.normpath(parsed_url.path + '/..')
-    baseuri = urlparse.urljoin(prefix, basepath)
-    return M3U8(content, baseuri=baseuri)
+    base_uri = urlparse.urljoin(prefix, basepath)
+    return M3U8(content, base_uri=base_uri)
 
 def _load_from_file(uri):
     with open(uri) as fileobj:
         raw_content = fileobj.read().strip()
-    baseuri = os.path.dirname(uri)
-    return M3U8(raw_content, baseuri=baseuri)
+    base_uri = os.path.dirname(uri)
+    return M3U8(raw_content, base_uri=base_uri)
 

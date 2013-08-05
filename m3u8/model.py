@@ -27,7 +27,7 @@ class M3U8(object):
             http://vid.com/segment1.ts -->  http://videoserver.com/hls/segment1.ts
 
        can be passed as parameter or setted as an attribute to ``M3U8`` object.
-     `baseuri`
+     `base_uri`
       uri the playlist comes from. it is propagated to SegmentList and Key
       ex.: http://example.com/path/to
 
@@ -71,7 +71,7 @@ class M3U8(object):
         Returns an iterable with all files from playlist, in order. This includes
         segments and key uri, if present.
 
-      `baseuri`
+      `base_uri`
         It is a property (getter and setter) used by
         SegmentList and Key to have absolute URIs.
 
@@ -87,18 +87,18 @@ class M3U8(object):
         ('allow_cache',      'allow_cache'),
         )
 
-    def __init__(self, content=None, basepath=None, baseuri=None):
+    def __init__(self, content=None, basepath=None, base_uri=None):
         if content is not None:
             self.data = parser.parse(content)
         else:
             self.data = {}
-        self._baseuri = baseuri
+        self._base_uri = base_uri
         self._initialize_attributes()
         self.basepath = basepath
 
     def _initialize_attributes(self):
-        self.key = Key(baseuri=self.baseuri, **self.data['key']) if 'key' in self.data else None
-        self.segments = SegmentList([ Segment(baseuri=self.baseuri, **params)
+        self.key = Key(base_uri=self.base_uri, **self.data['key']) if 'key' in self.data else None
+        self.segments = SegmentList([ Segment(base_uri=self.base_uri, **params)
                                       for params in self.data.get('segments', []) ])
 
         for attr, param in self.simple_attributes:
@@ -109,20 +109,20 @@ class M3U8(object):
             self.files.append(self.key.uri)
         self.files.extend(self.segments.uri)
 
-        self.playlists = PlaylistList([ Playlist(baseuri=self.baseuri, **playlist)
+        self.playlists = PlaylistList([ Playlist(base_uri=self.base_uri, **playlist)
                                         for playlist in self.data.get('playlists', []) ])
 
     def __unicode__(self):
         return self.dumps()
 
     @property
-    def baseuri(self):
-        return self._baseuri
-    
-    @baseuri.setter
-    def baseuri(self, new_baseuri):
-        self._baseuri = new_baseuri
-        self.segments.baseuri = new_baseuri
+    def base_uri(self):
+        return self._base_uri
+
+    @base_uri.setter
+    def base_uri(self, new_base_uri):
+        self._base_uri = new_base_uri
+        self.segments.base_uri = new_base_uri
 
     @property
     def basepath(self):
@@ -195,9 +195,9 @@ class BasePathMixin(object):
         if parser.is_url(self.uri):
             return self.uri
         else:
-            if self.baseuri is None:
-                raise ValueError('There can not be `absolute_uri` with no `baseuri` set')
-            return _urijoin(self.baseuri, self.uri)
+            if self.base_uri is None:
+                raise ValueError('There can not be `absolute_uri` with no `base_uri` set')
+            return _urijoin(self.base_uri, self.uri)
 
     @property
     def basepath(self):
@@ -209,11 +209,11 @@ class BasePathMixin(object):
 
 class GroupedBasePathMixin(object):
 
-    def _set_baseuri(self, new_baseuri):
+    def _set_base_uri(self, new_base_uri):
         for item in self:
-            item.baseuri = new_baseuri
+            item.base_uri = new_base_uri
 
-    baseuri = property(None, _set_baseuri)
+    base_uri = property(None, _set_base_uri)
 
     def _set_basepath(self, newbasepath):
         for item in self:
@@ -234,15 +234,15 @@ class Segment(BasePathMixin):
     `duration`
       duration attribute from EXTINF paramter
 
-    `baseuri`
+    `base_uri`
       uri the key comes from in URI hierarchy. ex.: http://example.com/path/to
     '''
 
-    def __init__(self, uri, baseuri, duration=None, title=None):
+    def __init__(self, uri, base_uri, duration=None, title=None):
         self.uri = uri
         self.duration = duration
         self.title = title
-        self.baseuri = baseuri
+        self.base_uri = base_uri
 
     def __str__(self):
         output = ['#EXTINF:%s,' % int_or_float_to_string(self.duration)]
@@ -275,18 +275,18 @@ class Key(BasePathMixin):
     `uri`
       is a string. ex:: "https://priv.example.com/key.php?r=52"
 
-    `baseuri`
+    `base_uri`
       uri the key comes from in URI hierarchy. ex.: http://example.com/path/to
 
     `iv`
       initialization vector. a string representing a hexadecimal number. ex.: 0X12A
 
     '''
-    def __init__(self, method, uri, baseuri, iv=None):
+    def __init__(self, method, uri, base_uri, iv=None):
         self.method = method
         self.uri = uri
         self.iv = iv
-        self.baseuri = baseuri
+        self.base_uri = base_uri
 
     def __str__(self):
         output = [
@@ -307,9 +307,9 @@ class Playlist(BasePathMixin):
 
     More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.10
     '''
-    def __init__(self, uri, stream_info, baseuri):
+    def __init__(self, uri, stream_info, base_uri):
         self.uri = uri
-        self.baseuri = baseuri
+        self.base_uri = base_uri
 
         resolution = stream_info.get('resolution')
         if resolution != None:
@@ -351,14 +351,14 @@ def denormalize_attribute(attribute):
 def quoted(string):
     return '"%s"' % string
 
-def _urijoin(baseuri, path):
-    if parser.is_url(baseuri):
-        parsed_url = urlparse.urlparse(baseuri)
+def _urijoin(base_uri, path):
+    if parser.is_url(base_uri):
+        parsed_url = urlparse.urlparse(base_uri)
         prefix = parsed_url.scheme + '://' + parsed_url.netloc
         new_path = os.path.normpath(parsed_url.path + '/' + path)
         return urlparse.urljoin(prefix, new_path.strip('/'))
     else:
-        return os.path.normpath(os.path.join(baseuri, path.strip('/')))
+        return os.path.normpath(os.path.join(base_uri, path.strip('/')))
 
 def int_or_float_to_string(number):
     return str(int(number)) if number == math.floor(number) else str(number)
