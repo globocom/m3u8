@@ -18,10 +18,10 @@ class M3U8(object):
      `content`
        the m3u8 content as string
 
-     `basepath`
-       all urls (key and segments url) will be updated with this basepath,
+     `base_path`
+       all urls (key and segments url) will be updated with this base_path,
        ex.:
-           basepath = "http://videoserver.com/hls"
+           base_path = "http://videoserver.com/hls"
 
             /foo/bar/key.bin           -->  http://videoserver.com/hls/key.bin
             http://vid.com/segment1.ts -->  http://videoserver.com/hls/segment1.ts
@@ -87,14 +87,14 @@ class M3U8(object):
         ('allow_cache',      'allow_cache'),
         )
 
-    def __init__(self, content=None, basepath=None, base_uri=None):
+    def __init__(self, content=None, base_path=None, base_uri=None):
         if content is not None:
             self.data = parser.parse(content)
         else:
             self.data = {}
         self._base_uri = base_uri
         self._initialize_attributes()
-        self.basepath = basepath
+        self.base_path = base_path
 
     def _initialize_attributes(self):
         self.key = Key(base_uri=self.base_uri, **self.data['key']) if 'key' in self.data else None
@@ -125,21 +125,21 @@ class M3U8(object):
         self.segments.base_uri = new_base_uri
 
     @property
-    def basepath(self):
-        return self._basepath
+    def base_path(self):
+        return self._base_path
 
-    @basepath.setter
-    def basepath(self, newbasepath):
-        self._basepath = newbasepath
-        self._update_basepath()
+    @base_path.setter
+    def base_path(self, newbase_path):
+        self._base_path = newbase_path
+        self._update_base_path()
 
-    def _update_basepath(self):
-        if self._basepath is None:
+    def _update_base_path(self):
+        if self._base_path is None:
             return
         if self.key:
-            self.key.basepath = self.basepath
-        self.segments.basepath = self.basepath
-        self.playlists.basepath = self.basepath
+            self.key.base_path = self.base_path
+        self.segments.base_path = self.base_path
+        self.playlists.base_path = self.base_path
 
     def add_playlist(self, playlist):
         self.is_variant = True
@@ -188,7 +188,7 @@ class M3U8(object):
             if error.errno != errno.EEXIST:
                 raise
 
-class BasePathMixin(object):
+class base_pathMixin(object):
 
     @property
     def absolute_uri(self):
@@ -200,16 +200,16 @@ class BasePathMixin(object):
             return _urijoin(self.base_uri, self.uri)
 
     @property
-    def basepath(self):
+    def base_path(self):
         return os.path.dirname(self.uri)
 
-    @basepath.setter
-    def basepath(self, newbasepath):
-        if not self.basepath:
-            self.uri = "%s/%s" % (newbasepath, self.uri)
-        self.uri = self.uri.replace(self.basepath, newbasepath)
+    @base_path.setter
+    def base_path(self, newbase_path):
+        if not self.base_path:
+            self.uri = "%s/%s" % (newbase_path, self.uri)
+        self.uri = self.uri.replace(self.base_path, newbase_path)
 
-class GroupedBasePathMixin(object):
+class Groupedbase_pathMixin(object):
 
     def _set_base_uri(self, new_base_uri):
         for item in self:
@@ -217,13 +217,13 @@ class GroupedBasePathMixin(object):
 
     base_uri = property(None, _set_base_uri)
 
-    def _set_basepath(self, newbasepath):
+    def _set_base_path(self, newbase_path):
         for item in self:
-            item.basepath = newbasepath
+            item.base_path = newbase_path
 
-    basepath = property(None, _set_basepath)
+    base_path = property(None, _set_base_path)
 
-class Segment(BasePathMixin):
+class Segment(base_pathMixin):
     '''
     A video segment from a M3U8 playlist
 
@@ -257,7 +257,7 @@ class Segment(BasePathMixin):
         return ''.join(output)
 
 
-class SegmentList(list, GroupedBasePathMixin):
+class SegmentList(list, Groupedbase_pathMixin):
 
     def __str__(self):
         output = [str(segment) for segment in self]
@@ -267,7 +267,7 @@ class SegmentList(list, GroupedBasePathMixin):
     def uri(self):
         return [seg.uri for seg in self]
 
-class Key(BasePathMixin):
+class Key(base_pathMixin):
     '''
     Key used to encrypt the segments in a m3u8 playlist (EXT-X-KEY)
 
@@ -301,7 +301,7 @@ class Key(BasePathMixin):
         return '#EXT-X-KEY:' + ','.join(output)
 
 
-class Playlist(BasePathMixin):
+class Playlist(base_pathMixin):
     '''
     Playlist object representing a link to a variant M3U8 with a specific bitrate.
     Each `stream_info` attribute has: `program_id`, `bandwidth`, `resolution` and `codecs`
@@ -340,7 +340,7 @@ class Playlist(BasePathMixin):
 
 StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'resolution', 'codecs'])
 
-class PlaylistList(list, GroupedBasePathMixin):
+class PlaylistList(list, Groupedbase_pathMixin):
 
     def __str__(self):
         output = [str(playlist) for playlist in self]

@@ -230,63 +230,63 @@ def test_should_dump_without_endlist_tag():
 
     assert expected == obj.dumps().strip().splitlines()
 
-def test_should_normalize_segments_and_key_urls_if_basepath_passed_to_constructor():
-    basepath = 'http://videoserver.com/hls/live'
+def test_should_normalize_segments_and_key_urls_if_base_path_passed_to_constructor():
+    base_path = 'http://videoserver.com/hls/live'
 
-    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV, basepath)
+    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV, base_path)
 
     expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV \
         .replace(', IV', ',IV') \
-        .replace('../../../../hls', basepath) \
-        .replace('/hls-key', basepath) \
+        .replace('../../../../hls', base_path) \
+        .replace('/hls-key', base_path) \
         .strip()
 
     assert obj.dumps().strip() == expected
 
-def test_should_normalize_variant_streams_urls_if_basepath_passed_to_constructor():
-    basepath = 'http://videoserver.com/hls/live'
-    obj = m3u8.M3U8(VARIANT_PLAYLIST, basepath)
+def test_should_normalize_variant_streams_urls_if_base_path_passed_to_constructor():
+    base_path = 'http://videoserver.com/hls/live'
+    obj = m3u8.M3U8(VARIANT_PLAYLIST, base_path)
 
     expected = VARIANT_PLAYLIST \
         .replace(', BANDWIDTH', ',BANDWIDTH') \
-        .replace('http://example.com', basepath) \
+        .replace('http://example.com', base_path) \
         .strip()
 
     assert obj.dumps().strip() == expected
 
-def test_should_normalize_segments_and_key_urls_if_basepath_attribute_updated():
-    basepath = 'http://videoserver.com/hls/live'
+def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated():
+    base_path = 'http://videoserver.com/hls/live'
 
     obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
-    obj.basepath = basepath     # update later
+    obj.base_path = base_path     # update later
 
     expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV \
         .replace(', IV', ',IV') \
-        .replace('../../../../hls', basepath) \
-        .replace('/hls-key', basepath) \
+        .replace('../../../../hls', base_path) \
+        .replace('/hls-key', base_path) \
         .strip()
 
     assert obj.dumps() == expected
 
-def test_should_normalize_segments_and_key_urls_if_basepath_attribute_updated():
-    basepath = 'http://videoserver.com/hls/live'
+def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated():
+    base_path = 'http://videoserver.com/hls/live'
 
     obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
-    obj.basepath = basepath
+    obj.base_path = base_path
 
     expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV \
         .replace(', IV', ',IV') \
-        .replace('../../../../hls', basepath) \
-        .replace('/hls-key', basepath) \
+        .replace('../../../../hls', base_path) \
+        .replace('/hls-key', base_path) \
         .strip()
 
     assert obj.dumps().strip() == expected
 
-def test_should_correctly_update_basepath_if_its_blank():
+def test_should_correctly_update_base_path_if_its_blank():
     segment = Segment('entire.ts', 'http://1.2/')
-    assert not segment.basepath
-    segment.basepath = "basepath"
-    assert "http://1.2/basepath/entire.ts" == segment.absolute_uri
+    assert not segment.base_path
+    segment.base_path = "base_path"
+    assert "http://1.2/base_path/entire.ts" == segment.absolute_uri
 
 def test_m3u8_should_propagate_base_uri_to_segments():
     with open(RELATIVE_PLAYLIST_FILENAME) as f:
