@@ -8,7 +8,7 @@ if os.path.exists("README.rst"):
 setup(
     name="m3u8",
     author='Globo.com',
-    version="0.1.4",
+    version="0.1.5",
     zip_safe=False,
     packages=["m3u8"],
     url="https://github.com/globocom/m3u8",
