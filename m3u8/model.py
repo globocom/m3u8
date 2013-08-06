@@ -18,16 +18,16 @@ class M3U8(object):
      `content`
        the m3u8 content as string
 
-     `basepath`
-       all urls (key and segments url) will be updated with this basepath,
+     `base_path`
+       all urls (key and segments url) will be updated with this base_path,
        ex.:
-           basepath = "http://videoserver.com/hls"
+           base_path = "http://videoserver.com/hls"
 
             /foo/bar/key.bin           -->  http://videoserver.com/hls/key.bin
             http://vid.com/segment1.ts -->  http://videoserver.com/hls/segment1.ts
 
        can be passed as parameter or setted as an attribute to ``M3U8`` object.
-     `baseuri`
+     `base_uri`
       uri the playlist comes from. it is propagated to SegmentList and Key
       ex.: http://example.com/path/to
 
@@ -71,7 +71,7 @@ class M3U8(object):
         Returns an iterable with all files from playlist, in order. This includes
         segments and key uri, if present.
 
-      `baseuri`
+      `base_uri`
         It is a property (getter and setter) used by
         SegmentList and Key to have absolute URIs.
 
@@ -87,18 +87,18 @@ class M3U8(object):
         ('allow_cache',      'allow_cache'),
         )
 
-    def __init__(self, content=None, basepath=None, baseuri=None):
+    def __init__(self, content=None, base_path=None, base_uri=None):
         if content is not None:
             self.data = parser.parse(content)
         else:
             self.data = {}
-        self._baseuri = baseuri
+        self._base_uri = base_uri
         self._initialize_attributes()
-        self.basepath = basepath
+        self.base_path = base_path
 
     def _initialize_attributes(self):
-        self.key = Key(baseuri=self.baseuri, **self.data['key']) if 'key' in self.data else None
-        self.segments = SegmentList([ Segment(baseuri=self.baseuri, **params)
+        self.key = Key(base_uri=self.base_uri, **self.data['key']) if 'key' in self.data else None
+        self.segments = SegmentList([ Segment(base_uri=self.base_uri, **params)
                                       for params in self.data.get('segments', []) ])
 
         for attr, param in self.simple_attributes:
@@ -109,37 +109,37 @@ class M3U8(object):
             self.files.append(self.key.uri)
         self.files.extend(self.segments.uri)
 
-        self.playlists = PlaylistList([ Playlist(baseuri=self.baseuri, **playlist)
+        self.playlists = PlaylistList([ Playlist(base_uri=self.base_uri, **playlist)
                                         for playlist in self.data.get('playlists', []) ])
 
     def __unicode__(self):
         return self.dumps()
 
     @property
-    def baseuri(self):
-        return self._baseuri
-    
-    @baseuri.setter
-    def baseuri(self, new_baseuri):
-        self._baseuri = new_baseuri
-        self.segments.baseuri = new_baseuri
+    def base_uri(self):
+        return self._base_uri
+
+    @base_uri.setter
+    def base_uri(self, new_base_uri):
+        self._base_uri = new_base_uri
+        self.segments.base_uri = new_base_uri
 
     @property
-    def basepath(self):
-        return self._basepath
+    def base_path(self):
+        return self._base_path
 
-    @basepath.setter
-    def basepath(self, newbasepath):
-        self._basepath = newbasepath
-        self._update_basepath()
+    @base_path.setter
+    def base_path(self, newbase_path):
+        self._base_path = newbase_path
+        self._update_base_path()
 
-    def _update_basepath(self):
-        if self._basepath is None:
+    def _update_base_path(self):
+        if self._base_path is None:
             return
         if self.key:
-            self.key.basepath = self.basepath
-        self.segments.basepath = self.basepath
-        self.playlists.basepath = self.basepath
+            self.key.base_path = self.base_path
+        self.segments.base_path = self.base_path
+        self.playlists.base_path = self.base_path
 
     def add_playlist(self, playlist):
         self.is_variant = True
@@ -188,40 +188,42 @@ class M3U8(object):
             if error.errno != errno.EEXIST:
                 raise
 
-class BasePathMixin(object):
+class base_pathMixin(object):
 
     @property
     def absolute_uri(self):
         if parser.is_url(self.uri):
             return self.uri
         else:
-            if self.baseuri is None:
-                raise ValueError('There can not be `absolute_uri` with no `baseuri` set')
-            return _urijoin(self.baseuri, self.uri)
+            if self.base_uri is None:
+                raise ValueError('There can not be `absolute_uri` with no `base_uri` set')
+            return _urijoin(self.base_uri, self.uri)
 
     @property
-    def basepath(self):
+    def base_path(self):
         return os.path.dirname(self.uri)
 
-    @basepath.setter
-    def basepath(self, newbasepath):
-        self.uri = self.uri.replace(self.basepath, newbasepath)
+    @base_path.setter
+    def base_path(self, newbase_path):
+        if not self.base_path:
+            self.uri = "%s/%s" % (newbase_path, self.uri)
+        self.uri = self.uri.replace(self.base_path, newbase_path)
 
-class GroupedBasePathMixin(object):
+class Groupedbase_pathMixin(object):
 
-    def _set_baseuri(self, new_baseuri):
+    def _set_base_uri(self, new_base_uri):
         for item in self:
-            item.baseuri = new_baseuri
+            item.base_uri = new_base_uri
 
-    baseuri = property(None, _set_baseuri)
+    base_uri = property(None, _set_base_uri)
 
-    def _set_basepath(self, newbasepath):
+    def _set_base_path(self, newbase_path):
         for item in self:
-            item.basepath = newbasepath
+            item.base_path = newbase_path
 
-    basepath = property(None, _set_basepath)
+    base_path = property(None, _set_base_path)
 
-class Segment(BasePathMixin):
+class Segment(base_pathMixin):
     '''
     A video segment from a M3U8 playlist
 
@@ -234,15 +236,15 @@ class Segment(BasePathMixin):
     `duration`
       duration attribute from EXTINF paramter
 
-    `baseuri`
+    `base_uri`
       uri the key comes from in URI hierarchy. ex.: http://example.com/path/to
     '''
 
-    def __init__(self, uri, baseuri, duration=None, title=None):
+    def __init__(self, uri, base_uri, duration=None, title=None):
         self.uri = uri
         self.duration = duration
         self.title = title
-        self.baseuri = baseuri
+        self.base_uri = base_uri
 
     def __str__(self):
         output = ['#EXTINF:%s,' % int_or_float_to_string(self.duration)]
@@ -255,7 +257,7 @@ class Segment(BasePathMixin):
         return ''.join(output)
 
 
-class SegmentList(list, GroupedBasePathMixin):
+class SegmentList(list, Groupedbase_pathMixin):
 
     def __str__(self):
         output = [str(segment) for segment in self]
@@ -265,7 +267,7 @@ class SegmentList(list, GroupedBasePathMixin):
     def uri(self):
         return [seg.uri for seg in self]
 
-class Key(BasePathMixin):
+class Key(base_pathMixin):
     '''
     Key used to encrypt the segments in a m3u8 playlist (EXT-X-KEY)
 
@@ -275,18 +277,18 @@ class Key(BasePathMixin):
     `uri`
       is a string. ex:: "https://priv.example.com/key.php?r=52"
 
-    `baseuri`
+    `base_uri`
       uri the key comes from in URI hierarchy. ex.: http://example.com/path/to
 
     `iv`
       initialization vector. a string representing a hexadecimal number. ex.: 0X12A
 
     '''
-    def __init__(self, method, uri, baseuri, iv=None):
+    def __init__(self, method, uri, base_uri, iv=None):
         self.method = method
         self.uri = uri
         self.iv = iv
-        self.baseuri = baseuri
+        self.base_uri = base_uri
 
     def __str__(self):
         output = [
@@ -299,7 +301,7 @@ class Key(BasePathMixin):
         return '#EXT-X-KEY:' + ','.join(output)
 
 
-class Playlist(BasePathMixin):
+class Playlist(base_pathMixin):
     '''
     Playlist object representing a link to a variant M3U8 with a specific bitrate.
     Each `stream_info` attribute has: `program_id`, `bandwidth`, `resolution` and `codecs`
@@ -307,9 +309,9 @@ class Playlist(BasePathMixin):
 
     More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.10
     '''
-    def __init__(self, uri, stream_info, baseuri):
+    def __init__(self, uri, stream_info, base_uri):
         self.uri = uri
-        self.baseuri = baseuri
+        self.base_uri = base_uri
 
         resolution = stream_info.get('resolution')
         if resolution != None:
@@ -338,7 +340,7 @@ class Playlist(BasePathMixin):
 
 StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'resolution', 'codecs'])
 
-class PlaylistList(list, GroupedBasePathMixin):
+class PlaylistList(list, Groupedbase_pathMixin):
 
     def __str__(self):
         output = [str(playlist) for playlist in self]
@@ -351,14 +353,14 @@ def denormalize_attribute(attribute):
 def quoted(string):
     return '"%s"' % string
 
-def _urijoin(baseuri, path):
-    if parser.is_url(baseuri):
-        parsed_url = urlparse.urlparse(baseuri)
+def _urijoin(base_uri, path):
+    if parser.is_url(base_uri):
+        parsed_url = urlparse.urlparse(base_uri)
         prefix = parsed_url.scheme + '://' + parsed_url.netloc
         new_path = os.path.normpath(parsed_url.path + '/' + path)
         return urlparse.urljoin(prefix, new_path.strip('/'))
     else:
-        return os.path.normpath(os.path.join(baseuri, path.strip('/')))
+        return os.path.normpath(os.path.join(base_uri, path.strip('/')))
 
 def int_or_float_to_string(number):
     return str(int(number)) if number == math.floor(number) else str(number)
