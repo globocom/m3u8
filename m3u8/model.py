@@ -188,7 +188,7 @@ class M3U8(object):
             if error.errno != errno.EEXIST:
                 raise
 
-class base_pathMixin(object):
+class BasePathMixin(object):
 
     @property
     def absolute_uri(self):
@@ -209,7 +209,7 @@ class base_pathMixin(object):
             self.uri = "%s/%s" % (newbase_path, self.uri)
         self.uri = self.uri.replace(self.base_path, newbase_path)
 
-class Groupedbase_pathMixin(object):
+class GroupedBasePathMixin(object):
 
     def _set_base_uri(self, new_base_uri):
         for item in self:
@@ -223,7 +223,7 @@ class Groupedbase_pathMixin(object):
 
     base_path = property(None, _set_base_path)
 
-class Segment(base_pathMixin):
+class Segment(BasePathMixin):
     '''
     A video segment from a M3U8 playlist
 
@@ -257,7 +257,7 @@ class Segment(base_pathMixin):
         return ''.join(output)
 
 
-class SegmentList(list, Groupedbase_pathMixin):
+class SegmentList(list, GroupedBasePathMixin):
 
     def __str__(self):
         output = [str(segment) for segment in self]
@@ -267,7 +267,7 @@ class SegmentList(list, Groupedbase_pathMixin):
     def uri(self):
         return [seg.uri for seg in self]
 
-class Key(base_pathMixin):
+class Key(BasePathMixin):
     '''
     Key used to encrypt the segments in a m3u8 playlist (EXT-X-KEY)
 
@@ -301,7 +301,7 @@ class Key(base_pathMixin):
         return '#EXT-X-KEY:' + ','.join(output)
 
 
-class Playlist(base_pathMixin):
+class Playlist(BasePathMixin):
     '''
     Playlist object representing a link to a variant M3U8 with a specific bitrate.
     Each `stream_info` attribute has: `program_id`, `bandwidth`, `resolution` and `codecs`
@@ -340,7 +340,7 @@ class Playlist(base_pathMixin):
 
 StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'resolution', 'codecs'])
 
-class PlaylistList(list, Groupedbase_pathMixin):
+class PlaylistList(list, GroupedBasePathMixin):
 
     def __str__(self):
         output = [str(playlist) for playlist in self]
