@@ -205,6 +205,8 @@ class BasePathMixin(object):
 
     @basepath.setter
     def basepath(self, newbasepath):
+        if not self.basepath:
+            self.uri = "%s/%s" % (newbasepath, self.uri)
         self.uri = self.uri.replace(self.basepath, newbasepath)
 
 class GroupedBasePathMixin(object):

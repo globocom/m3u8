@@ -6,6 +6,7 @@ data returned from parser.parse()
 
 import m3u8
 from playlists import *
+from m3u8.model import Segment
 
 def test_target_duration_attribute():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
@@ -280,6 +281,12 @@ def test_should_normalize_segments_and_key_urls_if_basepath_attribute_updated():
         .strip()
 
     assert obj.dumps().strip() == expected
+
+def test_should_correctly_update_basepath_if_its_blank():
+    segment = Segment('entire.ts', 'http://1.2/')
+    assert not segment.basepath
+    segment.basepath = "basepath"
+    assert "http://1.2/basepath/entire.ts" == segment.absolute_uri
 
 def test_m3u8_should_propagate_base_uri_to_segments():
     with open(RELATIVE_PLAYLIST_FILENAME) as f:
