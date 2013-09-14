@@ -105,12 +105,19 @@ def test_playlists_attribute():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
     data = {'playlists': [{'uri': '/url/1.m3u8',
                            'stream_info': {'program_id': '1',
-                                           'bandwidth': '320000'}},
+                                           'bandwidth': '320000',
+                                           'video': 'high'}},
                           {'uri': '/url/2.m3u8',
                            'stream_info': {'program_id': '1',
                                            'bandwidth': '120000',
-                                           'codecs': 'mp4a.40.5'}},
-                          ]}
+                                           'codecs': 'mp4a.40.5',
+                                           'video': 'low'}},
+                          ],
+            'media': [{'type': 'VIDEO', 'name': 'High', 'group_id': 'high'},
+                      {'type': 'VIDEO', 'name': 'Low', 'group_id': 'low',
+                       'default': 'YES', 'autoselect': 'YES'}
+                     ]
+           }
     mock_parser_data(obj, data)
 
     assert 2 == len(obj.playlists)
@@ -120,10 +127,30 @@ def test_playlists_attribute():
     assert '320000' == obj.playlists[0].stream_info.bandwidth
     assert None == obj.playlists[0].stream_info.codecs
 
+    assert None == obj.playlists[0].media[0].uri
+    assert 'high' == obj.playlists[0].media[0].group_id
+    assert 'VIDEO' == obj.playlists[0].media[0].type
+    assert None == obj.playlists[0].media[0].language
+    assert 'High' == obj.playlists[0].media[0].name
+    assert None == obj.playlists[0].media[0].default
+    assert None == obj.playlists[0].media[0].autoselect
+    assert None == obj.playlists[0].media[0].forced
+    assert None == obj.playlists[0].media[0].characteristics
+
     assert '/url/2.m3u8' == obj.playlists[1].uri
     assert '1' == obj.playlists[1].stream_info.program_id
     assert '120000' == obj.playlists[1].stream_info.bandwidth
     assert 'mp4a.40.5' == obj.playlists[1].stream_info.codecs
+
+    assert None == obj.playlists[1].media[0].uri
+    assert 'low' == obj.playlists[1].media[0].group_id
+    assert 'VIDEO' == obj.playlists[1].media[0].type
+    assert None == obj.playlists[1].media[0].language
+    assert 'Low' == obj.playlists[1].media[0].name
+    assert 'YES' == obj.playlists[1].media[0].default
+    assert 'YES' == obj.playlists[1].media[0].autoselect
+    assert None == obj.playlists[1].media[0].forced
+    assert None == obj.playlists[1].media[0].characteristics
 
 def test_playlists_attribute_without_program_id():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
