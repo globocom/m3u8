@@ -7,6 +7,7 @@ from collections import namedtuple
 
 ext_x_targetduration = '#EXT-X-TARGETDURATION'
 ext_x_media_sequence = '#EXT-X-MEDIA-SEQUENCE'
+ext_x_media = '#EXT-X-MEDIA'
 ext_x_key = '#EXT-X-KEY'
 ext_x_stream_inf = '#EXT-X-STREAM-INF'
 ext_x_version = '#EXT-X-VERSION'
@@ -29,6 +30,7 @@ def parse(content):
         'is_endlist': False,
         'playlists': [],
         'segments': [],
+        'media': [],
         }
 
     state = {
@@ -67,6 +69,9 @@ def parse(content):
             state['expect_playlist'] = True
             _parse_stream_inf(line, data, state)
 
+        elif line.startswith(ext_x_media):
+            _parse_media(line, data, state)
+
         elif line.startswith(ext_x_endlist):
             data['is_endlist'] = True
 
@@ -88,19 +93,30 @@ def _parse_ts_chunk(line, data, state):
     segment['uri'] = line
     data['segments'].append(segment)
 
-def _parse_stream_inf(line, data, state):
-    params = ATTRIBUTELISTPATTERN.split(line.replace(ext_x_stream_inf + ':', ''))[1::2]
+def _parse_attribute_list(prefix, line, quoted):
+    params = ATTRIBUTELISTPATTERN.split(line.replace(prefix + ':', ''))[1::2]
 
-    stream_info = {}
+    attributes = {}
     for param in params:
         name, value = param.split('=', 1)
-        stream_info[normalize_attribute(name)] = value
+        name = normalize_attribute(name)
 
-    if 'codecs' in stream_info:
-        stream_info['codecs'] = remove_quotes(stream_info['codecs'])
+        if name in quoted:
+            value = remove_quotes(value)
 
+        attributes[name] = value
+
+    return attributes
+
+def _parse_stream_inf(line, data, state):
     data['is_variant'] = True
-    state['stream_info'] = stream_info
+    quoted = ('codecs', 'audio', 'video', 'subtitles')
+    state['stream_info'] = _parse_attribute_list(ext_x_stream_inf, line, quoted)
+
+def _parse_media(line, data, state):
+    quoted = ('uri', 'group_id', 'language', 'name', 'characteristics')
+    media = _parse_attribute_list(ext_x_media, line, quoted)
+    data['media'].append(media)
 
 def _parse_variant_playlist(line, data, state):
     playlist = {'uri': line,
