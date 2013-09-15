@@ -1,5 +1,6 @@
 from collections import namedtuple
 import os
+import posixpath
 import errno
 import math
 import urlparse
@@ -357,7 +358,7 @@ def _urijoin(base_uri, path):
     if parser.is_url(base_uri):
         parsed_url = urlparse.urlparse(base_uri)
         prefix = parsed_url.scheme + '://' + parsed_url.netloc
-        new_path = os.path.normpath(parsed_url.path + '/' + path)
+        new_path = posixpath.normpath(parsed_url.path + '/' + path)
         return urlparse.urljoin(prefix, new_path.strip('/'))
     else:
         return os.path.normpath(os.path.join(base_uri, path.strip('/')))
