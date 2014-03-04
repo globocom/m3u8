@@ -185,7 +185,7 @@ class M3U8(object):
             output.append(str(self.key))
         if self.target_duration:
             output.append('#EXT-X-TARGETDURATION:' + int_or_float_to_string(self.target_duration))
-        if self.playlist_type is not None and self.playlist_type != '':
+        if not (self.playlist_type is None or self.playlist_type == ''):
             output.append(
                 '#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
         if self.is_variant:

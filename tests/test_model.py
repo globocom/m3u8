@@ -198,6 +198,18 @@ def test_files_attribute_should_list_all_files_including_segments_and_key():
         ]
     assert files == obj.files
 
+def test_vod_playlist_type_should_be_imported_as_a_simple_attribute():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST_WITH_VOD_PLAYLIST_TYPE)
+    assert obj.playlist_type == 'vod'
+
+def test_event_playlist_type_should_be_imported_as_a_simple_attribute():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST_WITH_EVENT_PLAYLIST_TYPE)
+    assert obj.playlist_type == 'event'
+
+def test_no_playlist_type_leaves_attribute_empty():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    assert obj.playlist_type is None
+
 
 # dump m3u8
 
@@ -308,6 +320,41 @@ def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated()
         .strip()
 
     assert obj.dumps().strip() == expected
+
+def test_playlist_type_dumped_to_appropriate_m3u8_field():
+    obj = m3u8.M3U8()
+    obj.playlist_type = 'vod'
+    result = obj.dumps()
+    expected = '#EXTM3U\n#EXT-X-PLAYLIST-TYPE:VOD\n'
+    assert result == expected
+
+def test_empty_playlist_type_is_gracefully_ignored():
+    obj = m3u8.M3U8()
+    obj.playlist_type = ''
+    result = obj.dumps()
+    expected = '#EXTM3U\n'
+    assert result == expected
+
+def test_none_playlist_type_is_gracefully_ignored():
+    obj = m3u8.M3U8()
+    obj.playlist_type = None
+    result = obj.dumps()
+    expected = '#EXTM3U\n'
+    assert result == expected
+
+def test_0_media_sequence_added_to_file():
+    obj = m3u8.M3U8()
+    obj.media_sequence = 0
+    result = obj.dumps()
+    expected = '#EXTM3U\n#EXT-X-MEDIA-SEQUENCE:0\n'
+    assert result == expected
+
+def test_none_media_sequence_gracefully_ignored():
+    obj = m3u8.M3U8()
+    obj.media_sequence = None
+    result = obj.dumps()
+    expected = '#EXTM3U\n'
+    assert result == expected
 
 def test_should_correctly_update_base_path_if_its_blank():
     segment = Segment('entire.ts', 'http://1.2/')

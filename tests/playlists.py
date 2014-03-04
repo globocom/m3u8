@@ -98,6 +98,22 @@ index_0_av.m3u8?e=b471643725c47acd
 index_0_a.m3u8?e=b471643725c47acd
 '''
 
+SIMPLE_PLAYLIST_WITH_VOD_PLAYLIST_TYPE = '''
+#EXTM3U
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXTINF:180.00000,
+some_video.ts
+#EXT-X-ENDLIST
+'''
+
+SIMPLE_PLAYLIST_WITH_EVENT_PLAYLIST_TYPE = '''
+#EXTM3U
+#EXT-X-PLAYLIST-TYPE:EVENT
+#EXTINF:180.00000,
+some_video.ts
+#EXT-X-ENDLIST
+'''
+
 RELATIVE_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/relative-playlist.m3u8'))
 
 RELATIVE_PLAYLIST_URI = TEST_HOST + '/path/to/relative-playlist.m3u8'
