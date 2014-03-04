@@ -59,7 +59,7 @@ the playlist object used in the for loop above has a few attributes:
    all the attributes available to `#EXT-X-STREAM-INF`_
 -  ``media``: a list of related ``Media`` objects with all the attributes
    available to `#EXT-X-MEDIA`_
-- ``playlist_type``: the type of the playlist, which can be one of `VOD`_
+-  ``playlist_type``: the type of the playlist, which can be one of `VOD`_
    (video on demand) or `EVENT`_
 
 
