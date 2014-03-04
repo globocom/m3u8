@@ -53,6 +53,10 @@ class M3U8(object):
         If this is a variant playlist (`is_variant` is True), returns a list of
         Playlist objects
 
+      `playlist_type`
+        A lower-case string representing the type of the playlist, which can be
+        one of VOD (video on demand) or EVENT.
+
       `media`
         If this is a variant playlist (`is_variant` is True), returns a list of
         Media objects
