@@ -405,7 +405,7 @@ class Playlist(BasePathMixin):
 
         for media in self.media:
             media_type = media.type.upper()
-            stream_inf.append(media_type + '=' + media.group_id)
+            stream_inf.append('%s="%s"' % (media_type, media.group_id))
 
         return '#EXT-X-STREAM-INF:' + ','.join(stream_inf) + '\n' + self.uri
 
