@@ -8,6 +8,7 @@ from collections import namedtuple
 ext_x_targetduration = '#EXT-X-TARGETDURATION'
 ext_x_media_sequence = '#EXT-X-MEDIA-SEQUENCE'
 ext_x_media = '#EXT-X-MEDIA'
+ext_x_playlist_type = '#EXT-X-PLAYLIST-TYPE'
 ext_x_key = '#EXT-X-KEY'
 ext_x_stream_inf = '#EXT-X-STREAM-INF'
 ext_x_version = '#EXT-X-VERSION'
@@ -28,6 +29,7 @@ def parse(content):
     data = {
         'is_variant': False,
         'is_endlist': False,
+        'playlist_type': None,
         'playlists': [],
         'segments': [],
         'media': [],
@@ -71,6 +73,9 @@ def parse(content):
 
         elif line.startswith(ext_x_media):
             _parse_media(line, data, state)
+
+        elif line.startswith(ext_x_playlist_type):
+            _parse_simple_parameter(line, data)
 
         elif line.startswith(ext_x_endlist):
             data['is_endlist'] = True

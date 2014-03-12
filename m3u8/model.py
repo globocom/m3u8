@@ -53,6 +53,10 @@ class M3U8(object):
         If this is a variant playlist (`is_variant` is True), returns a list of
         Playlist objects
 
+      `playlist_type`
+        A lower-case string representing the type of the playlist, which can be
+        one of VOD (video on demand) or EVENT.
+
       `media`
         If this is a variant playlist (`is_variant` is True), returns a list of
         Media objects
@@ -89,6 +93,7 @@ class M3U8(object):
         ('media_sequence',   'media_sequence'),
         ('version',          'version'),
         ('allow_cache',      'allow_cache'),
+        ('playlist_type',    'playlist_type')
         )
 
     def __init__(self, content=None, base_path=None, base_uri=None):
@@ -174,7 +179,7 @@ class M3U8(object):
         You could also use unicode(<this obj>) or str(<this obj>)
         '''
         output = ['#EXTM3U']
-        if self.media_sequence:
+        if self.media_sequence is not None:
             output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
         if self.allow_cache:
             output.append('#EXT-X-ALLOW-CACHE:' + self.allow_cache.upper())
@@ -184,6 +189,9 @@ class M3U8(object):
             output.append(str(self.key))
         if self.target_duration:
             output.append('#EXT-X-TARGETDURATION:' + int_or_float_to_string(self.target_duration))
+        if not (self.playlist_type is None or self.playlist_type == ''):
+            output.append(
+                '#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
         if self.is_variant:
             for media in self.media:
                 media_out = []
@@ -397,7 +405,7 @@ class Playlist(BasePathMixin):
 
         for media in self.media:
             media_type = media.type.upper()
-            stream_inf.append(media_type + '=' + media.group_id)
+            stream_inf.append('%s="%s"' % (media_type, media.group_id))
 
         return '#EXT-X-STREAM-INF:' + ','.join(stream_inf) + '\n' + self.uri
 

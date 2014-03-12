@@ -59,6 +59,8 @@ the playlist object used in the for loop above has a few attributes:
    all the attributes available to `#EXT-X-STREAM-INF`_
 -  ``media``: a list of related ``Media`` objects with all the attributes
    available to `#EXT-X-MEDIA`_
+-  ``playlist_type``: the type of the playlist, which can be one of `VOD`_
+   (video on demand) or `EVENT`_
 
 
 **NOTE: the following attributes are not implemented yet**, follow
@@ -102,3 +104,5 @@ the same thing.
 .. _#EXT-X-I-FRAME-STREAM-INF: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.13
 .. _Alternative audio: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.7
 .. _#EXT-X-MEDIA: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.9
+.. _VOD: https://developer.apple.com/library/mac/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-TNTAG2
+.. _EVENT: https://developer.apple.com/library/mac/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-EVENT_PLAYLIST
