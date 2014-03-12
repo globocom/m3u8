@@ -53,6 +53,10 @@ class M3U8(object):
         If this is a variant playlist (`is_variant` is True), returns a list of
         Playlist objects
 
+      `media`
+        If this is a variant playlist (`is_variant` is True), returns a list of
+        Media objects
+
       `target_duration`
         Returns the EXT-X-TARGETDURATION as an integer
         http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.2
@@ -109,8 +113,24 @@ class M3U8(object):
             self.files.append(self.key.uri)
         self.files.extend(self.segments.uri)
 
-        self.playlists = PlaylistList([ Playlist(base_uri=self.base_uri, **playlist)
+        self.media = []
+        for media in self.data.get('media', []):
+            self.media.append(Media(uri=media.get('uri'),
+                                    type=media.get('type'),
+                                    group_id=media.get('group_id'),
+                                    language=media.get('language'),
+                                    name=media.get('name'),
+                                    default=media.get('default'),
+                                    autoselect=media.get('autoselect'),
+                                    forced=media.get('forced'),
+                                    characteristics=media.get('characteristics')))
+
+        self.playlists = PlaylistList([ Playlist(base_uri=self.base_uri,
+                                                 media=self.media,
+                                                 **playlist)
                                         for playlist in self.data.get('playlists', []) ])
+
+
 
     def __unicode__(self):
         return self.dumps()
@@ -145,6 +165,9 @@ class M3U8(object):
         self.is_variant = True
         self.playlists.append(playlist)
 
+    def add_media(self, media):
+        self.media.append(media)
+
     def dumps(self):
         '''
         Returns the current m3u8 as a string.
@@ -162,6 +185,29 @@ class M3U8(object):
         if self.target_duration:
             output.append('#EXT-X-TARGETDURATION:' + int_or_float_to_string(self.target_duration))
         if self.is_variant:
+            for media in self.media:
+                media_out = []
+
+                if media.uri:
+                    media_out.append('URI=' + quoted(media.uri))
+                if media.type:
+                    media_out.append('TYPE=' + media.type)
+                if media.group_id:
+                    media_out.append('GROUP-ID=' + quoted(media.group_id))
+                if media.language:
+                    media_out.append('LANGUAGE=' + quoted(media.language))
+                if media.name:
+                    media_out.append('NAME=' + quoted(media.name))
+                if media.default:
+                    media_out.append('DEFAULT=' + media.default)
+                if media.autoselect:
+                    media_out.append('AUTOSELECT=' + media.autoselect)
+                if media.forced:
+                    media_out.append('FORCED=' + media.forced)
+                if media.characteristics:
+                    media_out.append('CHARACTERISTICS=' + quoted(media.characteristics))
+
+                output.append('#EXT-X-MEDIA:' + ','.join(media_out))
             output.append(str(self.playlists))
 
         output.append(str(self.segments))
@@ -304,12 +350,17 @@ class Key(BasePathMixin):
 class Playlist(BasePathMixin):
     '''
     Playlist object representing a link to a variant M3U8 with a specific bitrate.
-    Each `stream_info` attribute has: `program_id`, `bandwidth`, `resolution` and `codecs`
-    `resolution` is a tuple (h, v) of integers
+
+    Attributes:
+
+    `stream_info` is a named tuple containing the attributes: `program_id`,
+    `bandwidth`,`resolution`, `codecs` and `resolution` which is a a tuple (w, h) of integers
+
+    `media` is a list of related Media entries.
 
     More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.10
     '''
-    def __init__(self, uri, stream_info, base_uri):
+    def __init__(self, uri, stream_info, media, base_uri):
         self.uri = uri
         self.base_uri = base_uri
 
@@ -324,6 +375,13 @@ class Playlist(BasePathMixin):
                                       program_id=stream_info.get('program_id'),
                                       resolution=resolution_pair,
                                       codecs=stream_info.get('codecs'))
+        self.media = []
+        for media_type in ('audio', 'video', 'subtitles'):
+            group_id = stream_info.get(media_type)
+            if not group_id:
+                continue
+
+            self.media += filter(lambda m: m.group_id == group_id, media)
 
     def __str__(self):
         stream_inf = []
@@ -336,9 +394,16 @@ class Playlist(BasePathMixin):
             stream_inf.append('RESOLUTION=' + res)
         if self.stream_info.codecs:
             stream_inf.append('CODECS=' + quoted(self.stream_info.codecs))
+
+        for media in self.media:
+            media_type = media.type.upper()
+            stream_inf.append(media_type + '=' + media.group_id)
+
         return '#EXT-X-STREAM-INF:' + ','.join(stream_inf) + '\n' + self.uri
 
 StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'resolution', 'codecs'])
+Media = namedtuple('Media', ['uri', 'type', 'group_id', 'language', 'name',
+                             'default', 'autoselect', 'forced', 'characteristics'])
 
 class PlaylistList(list, GroupedBasePathMixin):
 

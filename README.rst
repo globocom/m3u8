@@ -57,6 +57,9 @@ the playlist object used in the for loop above has a few attributes:
 -  ``uri``: the url to the stream
 -  ``stream_info``: a ``StreamInfo`` object (actually a namedtuple) with
    all the attributes available to `#EXT-X-STREAM-INF`_
+-  ``media``: a list of related ``Media`` objects with all the attributes
+   available to `#EXT-X-MEDIA`_
+
 
 **NOTE: the following attributes are not implemented yet**, follow
 `issue 4`_ for updates
@@ -66,7 +69,7 @@ the playlist object used in the for loop above has a few attributes:
    with all the attribute available to `#EXT-X-I-FRAME-STREAM-INF`_
 -  ``alternative_audios``: its an empty list, unless it's a playlist
    with `Alternative audio`_, in this case it's a list with ``Media``
-   objects with all the attributes available to `#X-EXT-MEDIA`_
+   objects with all the attributes available to `#EXT-X-MEDIA`_
 -  ``alternative_videos``: same as ``alternative_audios``
 
 Running Tests
@@ -98,4 +101,4 @@ the same thing.
 .. _I-Frames: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.13
 .. _#EXT-X-I-FRAME-STREAM-INF: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.13
 .. _Alternative audio: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.7
-.. _#X-EXT-MEDIA: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.9
+.. _#EXT-X-MEDIA: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.9
