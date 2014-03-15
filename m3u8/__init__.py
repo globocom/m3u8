@@ -1,4 +1,5 @@
 import os
+import posixpath
 import re
 import urlparse
 from urllib2 import urlopen
@@ -29,7 +30,7 @@ def _load_from_uri(uri):
     content = urlopen(uri).read().strip()
     parsed_url = urlparse.urlparse(uri)
     prefix = parsed_url.scheme + '://' + parsed_url.netloc
-    base_path = os.path.normpath(parsed_url.path + '/..')
+    base_path = posixpath.normpath(parsed_url.path + '/..')
     base_uri = urlparse.urljoin(prefix, base_path)
     return M3U8(content, base_uri=base_uri)
 
