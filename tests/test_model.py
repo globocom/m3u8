@@ -84,6 +84,20 @@ def test_segments_attribute_without_duration():
     assert 'Segment title' == obj.segments[0].title
     assert None == obj.segments[0].duration
 
+def test_segments_attribute_with_byterange():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    mock_parser_data(obj, {'segments': [{'uri': '/foo/bar-1.ts',
+                                         'title': 'Segment title',
+                                         'duration': 1500,
+                                         'byterange': '76242@0'}]})
+
+    assert 1 == len(obj.segments)
+
+    assert '/foo/bar-1.ts' == obj.segments[0].uri
+    assert 'Segment title' == obj.segments[0].title
+    assert 1500 == obj.segments[0].duration
+    assert '76242@0' == obj.segments[0].byterange
+
 def test_is_variant_attribute():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'is_variant': False})
@@ -100,6 +114,14 @@ def test_is_endlist_attribute():
     obj = m3u8.M3U8(SLIDING_WINDOW_PLAYLIST)
     mock_parser_data(obj, {'is_endlist': True})
     assert obj.is_endlist
+
+def test_is_i_frames_only_attribute():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    mock_parser_data(obj, {'is_i_frames_only': False})
+    assert not obj.is_i_frames_only
+
+    mock_parser_data(obj, {'is_i_frames_only': True})
+    assert obj.is_i_frames_only
 
 def test_playlists_attribute():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
@@ -152,6 +174,8 @@ def test_playlists_attribute():
     assert None == obj.playlists[1].media[0].forced
     assert None == obj.playlists[1].media[0].characteristics
 
+    assert [] == obj.iframe_playlists
+
 def test_playlists_attribute_without_program_id():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'playlists': [{'uri': '/url/1.m3u8',
@@ -171,6 +195,34 @@ def test_playlists_attribute_with_resolution():
     assert 2 == len(obj.playlists)
     assert (512, 288) == obj.playlists[0].stream_info.resolution
     assert None == obj.playlists[1].stream_info.resolution
+
+def test_iframe_playlists_attribute():
+    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    data = {
+        'iframe_playlists': [{'uri': '/url/1.m3u8',
+                              'iframe_stream_info': {'program_id': '1',
+                                                     'bandwidth': '320000',
+                                                     'resolution': '320x180',
+                                                     'codecs': 'avc1.4d001f'}},
+                             {'uri': '/url/2.m3u8',
+                              'iframe_stream_info': {'bandwidth': '120000',
+                                                     'codecs': 'avc1.4d400d'}}]
+    }
+    mock_parser_data(obj, data)
+
+    assert 2 == len(obj.iframe_playlists)
+
+    assert '/url/1.m3u8' == obj.iframe_playlists[0].uri
+    assert '1' == obj.iframe_playlists[0].iframe_stream_info.program_id
+    assert '320000' == obj.iframe_playlists[0].iframe_stream_info.bandwidth
+    assert (320, 180) == obj.iframe_playlists[0].iframe_stream_info.resolution
+    assert 'avc1.4d001f' == obj.iframe_playlists[0].iframe_stream_info.codecs
+
+    assert '/url/2.m3u8' == obj.iframe_playlists[1].uri
+    assert None == obj.iframe_playlists[1].iframe_stream_info.program_id
+    assert '120000' == obj.iframe_playlists[1].iframe_stream_info.bandwidth
+    assert None == obj.iframe_playlists[1].iframe_stream_info.resolution
+    assert 'avc1.4d400d' == obj.iframe_playlists[1].iframe_stream_info.codecs
 
 def test_version_attribute():
     obj = m3u8.M3U8(SIMPLE_PLAYLIST)
@@ -251,6 +303,27 @@ def test_dump_should_work_for_variant_streams():
     obj = m3u8.M3U8(VARIANT_PLAYLIST)
 
     expected = VARIANT_PLAYLIST.replace(', BANDWIDTH', ',BANDWIDTH').strip()
+
+    assert expected == obj.dumps().strip()
+
+def test_dump_should_work_for_variant_playlists_with_iframe_playlists():
+    obj = m3u8.M3U8(VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS)
+
+    expected = VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS.strip()
+
+    assert expected == obj.dumps().strip()
+
+def test_dump_should_work_for_iframe_playlists():
+    obj = m3u8.M3U8(IFRAME_PLAYLIST)
+
+    expected = IFRAME_PLAYLIST.strip()
+
+    assert expected == obj.dumps().strip()
+
+def test_dump_should_work_for_playlists_using_byteranges():
+    obj = m3u8.M3U8(PLAYLIST_USING_BYTERANGES)
+
+    expected = PLAYLIST_USING_BYTERANGES.strip()
 
     assert expected == obj.dumps().strip()
 
