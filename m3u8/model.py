@@ -44,7 +44,8 @@ class M3U8(object):
         Returns true if this M3U8 is a variant playlist, with links to
         other M3U8s with different bitrates.
 
-        If true, `playlists` if a list of the playlists available.
+        If true, `playlists` is a list of the playlists available,
+        and `iframe_playlists` is a list of the i-frame playlists available.
 
      `is_endlist`
         Returns true if EXT-X-ENDLIST tag present in M3U8.
@@ -53,6 +54,10 @@ class M3U8(object):
       `playlists`
         If this is a variant playlist (`is_variant` is True), returns a list of
         Playlist objects
+
+      `iframe_playlists`
+        If this is a variant playlist (`is_variant` is True), returns a list of
+        IFramePlaylist objects
 
       `playlist_type`
         A lower-case string representing the type of the playlist, which can be
@@ -84,12 +89,17 @@ class M3U8(object):
         It is a property (getter and setter) used by
         SegmentList and Key to have absolute URIs.
 
+      `is_i_frames_only`
+        Returns true if EXT-X-I-FRAMES-ONLY tag present in M3U8.
+        http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.12
+
     '''
 
     simple_attributes = (
         # obj attribute      # parser attribute
         ('is_variant',       'is_variant'),
         ('is_endlist',       'is_endlist'),
+        ('is_i_frames_only', 'is_i_frames_only'),
         ('target_duration',  'targetduration'),
         ('media_sequence',   'media_sequence'),
         ('version',          'version'),
@@ -136,7 +146,13 @@ class M3U8(object):
                                                  **playlist)
                                         for playlist in self.data.get('playlists', []) ])
 
-
+        self.iframe_playlists = PlaylistList()
+        for ifr_pl in self.data.get('iframe_playlists', []):
+            self.iframe_playlists.append(
+                IFramePlaylist(base_uri=self.base_uri,
+                               uri=ifr_pl['uri'],
+                               iframe_stream_info=ifr_pl['iframe_stream_info'])
+            )
 
     def __unicode__(self):
         return self.dumps()
@@ -171,8 +187,16 @@ class M3U8(object):
         self.is_variant = True
         self.playlists.append(playlist)
 
+    def add_iframe_playlist(self, iframe_playlist):
+        if iframe_playlist is not None:
+            self.is_variant = True
+            self.iframe_playlists.append(iframe_playlist)
+
     def add_media(self, media):
         self.media.append(media)
+
+    def add_segment(self, segment):
+        self.segments.append(segment)
 
     def dumps(self):
         '''
@@ -193,6 +217,8 @@ class M3U8(object):
         if not (self.playlist_type is None or self.playlist_type == ''):
             output.append(
                 '#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
+        if self.is_i_frames_only:
+            output.append('#EXT-X-I-FRAMES-ONLY')
         if self.is_variant:
             for media in self.media:
                 media_out = []
@@ -218,6 +244,8 @@ class M3U8(object):
 
                 output.append('#EXT-X-MEDIA:' + ','.join(media_out))
             output.append(str(self.playlists))
+            if self.iframe_playlists:
+                output.append(str(self.iframe_playlists))
 
         output.append(str(self.segments))
 
@@ -293,13 +321,18 @@ class Segment(BasePathMixin):
 
     `base_uri`
       uri the key comes from in URI hierarchy. ex.: http://example.com/path/to
+
+    `byterange`
+      byterange attribute from EXT-X-BYTERANGE parameter
     '''
 
-    def __init__(self, uri, base_uri, duration=None, title=None):
+    def __init__(self, uri, base_uri, duration=None,
+                 title=None, byterange=None):
         self.uri = uri
         self.duration = duration
         self.title = title
         self.base_uri = base_uri
+        self.byterange = byterange
 
     def __str__(self):
         output = ['#EXTINF:%s,' % int_or_float_to_string(self.duration)]
@@ -307,6 +340,10 @@ class Segment(BasePathMixin):
             output.append(quoted(self.title))
 
         output.append('\n')
+
+        if self.byterange:
+            output.append('#EXT-X-BYTERANGE:%s\n' % self.byterange)
+
         output.append(self.uri)
 
         return ''.join(output)
@@ -409,6 +446,57 @@ class Playlist(BasePathMixin):
             stream_inf.append('%s="%s"' % (media_type, media.group_id))
 
         return '#EXT-X-STREAM-INF:' + ','.join(stream_inf) + '\n' + self.uri
+
+class IFramePlaylist(BasePathMixin):
+    '''
+    IFramePlaylist object representing a link to a
+    variant M3U8 i-frame playlist with a specific bitrate.
+
+    Attributes:
+
+    `iframe_stream_info` is a named tuple containing the attributes:
+     `program_id`, `bandwidth`, `codecs` and `resolution` which
+     is a tuple (w, h) of integers
+
+    More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.13
+    '''
+    def __init__(self, base_uri, uri, iframe_stream_info):
+        self.uri = uri
+        self.base_uri = base_uri
+
+        resolution = iframe_stream_info.get('resolution')
+        if resolution is not None:
+            values = resolution.split('x')
+            resolution_pair = (int(values[0]), int(values[1]))
+        else:
+            resolution_pair = None
+
+        self.iframe_stream_info = StreamInfo(
+            bandwidth=iframe_stream_info.get('bandwidth'),
+            program_id=iframe_stream_info.get('program_id'),
+            resolution=resolution_pair,
+            codecs=iframe_stream_info.get('codecs')
+        )
+
+    def __str__(self):
+        iframe_stream_inf = []
+        if self.iframe_stream_info.program_id:
+            iframe_stream_inf.append('PROGRAM-ID=' +
+                                     self.iframe_stream_info.program_id)
+        if self.iframe_stream_info.bandwidth:
+            iframe_stream_inf.append('BANDWIDTH=' +
+                                     self.iframe_stream_info.bandwidth)
+        if self.iframe_stream_info.resolution:
+            res = (str(self.iframe_stream_info.resolution[0]) + 'x' +
+                   str(self.iframe_stream_info.resolution[1]))
+            iframe_stream_inf.append('RESOLUTION=' + res)
+        if self.iframe_stream_info.codecs:
+            iframe_stream_inf.append('CODECS=' +
+                                     quoted(self.iframe_stream_info.codecs))
+        if self.uri:
+            iframe_stream_inf.append('URI=' + quoted(self.uri))
+
+        return '#EXT-X-I-FRAME-STREAM-INF:' + ','.join(iframe_stream_inf)
 
 StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'resolution', 'codecs'])
 Media = namedtuple('Media', ['uri', 'type', 'group_id', 'language', 'name',

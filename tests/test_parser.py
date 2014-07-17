@@ -67,6 +67,62 @@ def test_should_parse_variant_playlist():
     assert '65000' == playlists[-1]['stream_info']['bandwidth']
     assert 'mp4a.40.5,avc1.42801e' == playlists[-1]['stream_info']['codecs']
 
+def test_should_parse_variant_playlist_with_iframe_playlists():
+    data = m3u8.parse(VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS)
+    iframe_playlists = list(data['iframe_playlists'])
+
+    assert True == data['is_variant']
+
+    assert 4 == len(iframe_playlists)
+
+    assert '1' == iframe_playlists[0]['iframe_stream_info']['program_id']
+    assert '151288' == iframe_playlists[0]['iframe_stream_info']['bandwidth']
+    assert '624x352' == iframe_playlists[0]['iframe_stream_info']['resolution']
+    assert 'avc1.4d001f' == iframe_playlists[0]['iframe_stream_info']['codecs']
+    assert 'video-800k-iframes.m3u8' == iframe_playlists[0]['uri']
+
+    assert '38775' == iframe_playlists[-1]['iframe_stream_info']['bandwidth']
+    assert 'avc1.4d001f' == (
+        iframe_playlists[-1]['iframe_stream_info']['codecs']
+    )
+    assert 'video-150k-iframes.m3u8' == iframe_playlists[-1]['uri']
+
+def test_should_parse_variant_playlist_with_alt_iframe_playlists_layout():
+    data = m3u8.parse(VARIANT_PLAYLIST_WITH_ALT_IFRAME_PLAYLISTS_LAYOUT)
+    iframe_playlists = list(data['iframe_playlists'])
+
+    assert True == data['is_variant']
+
+    assert 4 == len(iframe_playlists)
+
+    assert '1' == iframe_playlists[0]['iframe_stream_info']['program_id']
+    assert '151288' == iframe_playlists[0]['iframe_stream_info']['bandwidth']
+    assert '624x352' == iframe_playlists[0]['iframe_stream_info']['resolution']
+    assert 'avc1.4d001f' == iframe_playlists[0]['iframe_stream_info']['codecs']
+    assert 'video-800k-iframes.m3u8' == iframe_playlists[0]['uri']
+
+    assert '38775' == iframe_playlists[-1]['iframe_stream_info']['bandwidth']
+    assert 'avc1.4d001f' == (
+        iframe_playlists[-1]['iframe_stream_info']['codecs']
+    )
+    assert 'video-150k-iframes.m3u8' == iframe_playlists[-1]['uri']
+
+def test_should_parse_iframe_playlist():
+    data = m3u8.parse(IFRAME_PLAYLIST)
+
+    assert True == data['is_i_frames_only']
+    assert 4.12 == data['segments'][0]['duration']
+    assert '9400@376' == data['segments'][0]['byterange']
+    assert 'segment1.ts' == data['segments'][0]['uri']
+
+def test_should_parse_playlist_using_byteranges():
+    data = m3u8.parse(PLAYLIST_USING_BYTERANGES)
+
+    assert False == data['is_i_frames_only']
+    assert 10 == data['segments'][0]['duration']
+    assert '76242@0' == data['segments'][0]['byterange']
+    assert 'segment.ts' == data['segments'][0]['uri']
+
 def test_should_parse_endlist_playlist():
     data = m3u8.parse(SIMPLE_PLAYLIST)
     assert True == data['is_endlist']

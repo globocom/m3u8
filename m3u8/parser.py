@@ -15,6 +15,9 @@ ext_x_version = '#EXT-X-VERSION'
 ext_x_allow_cache = '#EXT-X-ALLOW-CACHE'
 ext_x_endlist = '#EXT-X-ENDLIST'
 extinf = '#EXTINF'
+ext_i_frames_only = '#EXT-X-I-FRAMES-ONLY'
+ext_x_byterange = '#EXT-X-BYTERANGE'
+ext_x_i_frame_stream_inf = '#EXT-X-I-FRAME-STREAM-INF'
 
 '''
 http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.2
@@ -29,8 +32,10 @@ def parse(content):
     data = {
         'is_variant': False,
         'is_endlist': False,
+        'is_i_frames_only': False,
         'playlist_type': None,
         'playlists': [],
+        'iframe_playlists': [],
         'segments': [],
         'media': [],
         }
@@ -43,7 +48,11 @@ def parse(content):
     for line in string_to_lines(content):
         line = line.strip()
 
-        if state['expect_segment']:
+        if line.startswith(ext_x_byterange):
+            _parse_byterange(line, state)
+            state['expect_segment'] = True
+
+        elif state['expect_segment']:
             _parse_ts_chunk(line, data, state)
             state['expect_segment'] = False
 
@@ -71,11 +80,17 @@ def parse(content):
             state['expect_playlist'] = True
             _parse_stream_inf(line, data, state)
 
+        elif line.startswith(ext_x_i_frame_stream_inf):
+            _parse_i_frame_stream_inf(line, data)
+
         elif line.startswith(ext_x_media):
             _parse_media(line, data, state)
 
         elif line.startswith(ext_x_playlist_type):
             _parse_simple_parameter(line, data)
+
+        elif line.startswith(ext_i_frames_only):
+            data['is_i_frames_only'] = True
 
         elif line.startswith(ext_x_endlist):
             data['is_endlist'] = True
@@ -118,6 +133,14 @@ def _parse_stream_inf(line, data, state):
     quoted = ('codecs', 'audio', 'video', 'subtitles')
     state['stream_info'] = _parse_attribute_list(ext_x_stream_inf, line, quoted)
 
+def _parse_i_frame_stream_inf(line, data):
+    quoted = ('codecs', 'uri')
+    iframe_stream_info = _parse_attribute_list(ext_x_i_frame_stream_inf, line, quoted)
+    iframe_playlist = {'uri': iframe_stream_info.pop('uri'),
+                       'iframe_stream_info': iframe_stream_info}
+
+    data['iframe_playlists'].append(iframe_playlist)
+
 def _parse_media(line, data, state):
     quoted = ('uri', 'group_id', 'language', 'name', 'characteristics')
     media = _parse_attribute_list(ext_x_media, line, quoted)
@@ -128,6 +151,9 @@ def _parse_variant_playlist(line, data, state):
                 'stream_info': state.pop('stream_info')}
 
     data['playlists'].append(playlist)
+
+def _parse_byterange(line, state):
+    state['segment']['byterange'] = line.replace(ext_x_byterange + ':', '')
 
 def _parse_simple_parameter(line, data, cast_to=str):
     param, value = line.split(':', 1)
