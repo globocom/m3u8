@@ -28,8 +28,9 @@ def load(uri):
         return _load_from_file(uri)
 
 def _load_from_uri(uri):
-    content = urlopen(uri).read().strip()
-    parsed_url = urlparse.urlparse(uri)
+    opened_url = urlopen(uri)
+    content = opened_url.read().strip()
+    parsed_url = urlparse.urlparse(opened_url.geturl())
     prefix = parsed_url.scheme + '://' + parsed_url.netloc
     base_path = posixpath.normpath(parsed_url.path + '/..')
     base_uri = urlparse.urljoin(prefix, base_path)
