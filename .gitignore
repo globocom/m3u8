@@ -3,3 +3,4 @@
 tests/server.stdout
 dist/
 build/
+.coverage

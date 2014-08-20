@@ -1,8 +1,10 @@
-'''
-Tests M3U8 class to make sure all attributes and methods use the correct
-data returned from parser.parse()
+# coding: utf-8
+# Copyright 2014 Globo.com Player authors. All rights reserved.
+# Use of this source code is governed by a MIT License
+# license that can be found in the LICENSE file.
 
-'''
+#Tests M3U8 class to make sure all attributes and methods use the correct
+#data returned from parser.parse()
 
 import m3u8
 from playlists import *

@@ -1,6 +1,10 @@
-'''
-Test server to deliver stubed M3U8s
-'''
+# coding: utf-8
+# Copyright 2014 Globo.com Player authors. All rights reserved.
+# Use of this source code is governed by a MIT License
+# license that can be found in the LICENSE file.
+
+#Test server to deliver stubed M3U8s
+
 from os.path import dirname, abspath, join
 
 from bottle import route, run, response, redirect
