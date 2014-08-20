@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/globocom/m3u8.svg)](https://travis-ci.org/globocom/m3u8)
 m3u8
 ====
 
