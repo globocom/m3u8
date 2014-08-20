@@ -25,7 +25,7 @@ def test_load_should_create_object_from_uri():
 def test_load_should_remember_redirect():
     obj = m3u8.load(REDIRECT_PLAYLIST_URI)
     urlparsed = urlparse.urlparse(SIMPLE_PLAYLIST_URI)
-    assert urlparsed.scheme + '://' + urlparsed.netloc + "/" == obj.baseuri
+    assert urlparsed.scheme + '://' + urlparsed.netloc + "/" == obj.base_uri
 
 def test_load_should_create_object_from_file_with_relative_segments():
     base_uri = os.path.dirname(RELATIVE_PLAYLIST_FILENAME)
