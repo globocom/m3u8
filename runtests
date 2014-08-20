@@ -3,7 +3,7 @@
 test_server_stdout=tests/server.stdout
 
 function install_deps {
-    pip install pytest bottle pytest-cov
+    pip install pytest bottle pytest-cov python-coveralls
 }
 
 function start_server {
