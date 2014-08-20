@@ -3,10 +3,14 @@ Test server to deliver stubed M3U8s
 '''
 from os.path import dirname, abspath, join
 
-from bottle import route, run, response
+from bottle import route, run, response, redirect
 import bottle
 
 playlists = abspath(join(dirname(__file__), 'playlists'))
+
+@route('/path/to/redirect_me')
+def simple():
+    redirect('/simple.m3u8')
 
 @route('/simple.m3u8')
 def simple():

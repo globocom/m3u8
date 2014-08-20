@@ -22,6 +22,11 @@ def test_load_should_create_object_from_uri():
     assert 5220 == obj.target_duration
     assert 'http://media.example.com/entire.ts' == obj.segments[0].uri
 
+def test_load_should_remember_redirect():
+    obj = m3u8.load(REDIRECT_PLAYLIST_URI)
+    urlparsed = urlparse.urlparse(SIMPLE_PLAYLIST_URI)
+    assert urlparsed.scheme + '://' + urlparsed.netloc + "/" == obj.base_uri
+
 def test_load_should_create_object_from_file_with_relative_segments():
     base_uri = os.path.dirname(RELATIVE_PLAYLIST_FILENAME)
     obj = m3u8.load(RELATIVE_PLAYLIST_FILENAME)
@@ -87,3 +92,4 @@ def test_there_should_not_be_absolute_uris_with_loads():
 def test_absolute_uri_should_handle_empty_base_uri_path():
     key = m3u8.model.Key(method='AES', uri='/key.bin', base_uri='http://example.com')
     assert 'http://example.com/key.bin' == key.absolute_uri
+
