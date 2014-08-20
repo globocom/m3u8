@@ -8,7 +8,11 @@ import os
 import posixpath
 import errno
 import math
-import urlparse
+
+try:
+    import urlparse as url_parser
+except ImportError:
+    import urllib.parse as url_parser
 
 from m3u8 import parser
 
@@ -521,10 +525,10 @@ def quoted(string):
 
 def _urijoin(base_uri, path):
     if parser.is_url(base_uri):
-        parsed_url = urlparse.urlparse(base_uri)
+        parsed_url = url_parser.urlparse(base_uri)
         prefix = parsed_url.scheme + '://' + parsed_url.netloc
         new_path = posixpath.normpath(parsed_url.path + '/' + path)
-        return urlparse.urljoin(prefix, new_path.strip('/'))
+        return url_parser.urljoin(prefix, new_path.strip('/'))
     else:
         return os.path.normpath(os.path.join(base_uri, path.strip('/')))
 

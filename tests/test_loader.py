@@ -4,7 +4,10 @@
 # license that can be found in the LICENSE file.
 
 import os
-import urlparse
+try:
+    import urlparse as url_parser
+except ImportError:
+    import urllib.parse as url_parser
 import m3u8
 import pytest
 import playlists
@@ -29,7 +32,7 @@ def test_load_should_create_object_from_uri():
 
 def test_load_should_remember_redirect():
     obj = m3u8.load(playlists.REDIRECT_PLAYLIST_URI)
-    urlparsed = urlparse.urlparse(playlists.SIMPLE_PLAYLIST_URI)
+    urlparsed = url_parser.urlparse(playlists.SIMPLE_PLAYLIST_URI)
     assert urlparsed.scheme + '://' + urlparsed.netloc + "/" == obj.base_uri
 
 def test_load_should_create_object_from_file_with_relative_segments():
@@ -60,7 +63,7 @@ def test_load_should_create_object_from_file_with_relative_segments():
 
 def test_load_should_create_object_from_uri_with_relative_segments():
     obj = m3u8.load(playlists.RELATIVE_PLAYLIST_URI)
-    urlparsed = urlparse.urlparse(playlists.RELATIVE_PLAYLIST_URI)
+    urlparsed = url_parser.urlparse(playlists.RELATIVE_PLAYLIST_URI)
     base_uri = os.path.normpath(urlparsed.path + '/..')
     prefix = urlparsed.scheme + '://' + urlparsed.netloc
     expected_key_abspath = '%s%s/key.bin' % (prefix, os.path.normpath(base_uri + '/..'))
