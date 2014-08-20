@@ -68,7 +68,7 @@ def _read_python3x(resource):
     return  resource.read().decode(resource.headers.get_content_charset(failobj="utf-8"))
 
 def _load_from_file(uri):
-    with open(uri, 'r') as fileobj:
+    with open(uri) as fileobj:
         raw_content = fileobj.read().strip()
     base_uri = os.path.dirname(uri)
     return M3U8(raw_content, base_uri=base_uri)
