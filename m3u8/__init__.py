@@ -5,7 +5,6 @@
 
 import os
 import posixpath
-import re
 import urlparse
 from urllib2 import urlopen
 

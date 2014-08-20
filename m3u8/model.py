@@ -9,7 +9,6 @@ import posixpath
 import errno
 import math
 import urlparse
-import re
 
 from m3u8 import parser
 

@@ -7,34 +7,34 @@ import os
 import urlparse
 import m3u8
 import pytest
-from playlists import *
+import playlists
 
 def test_loads_should_create_object_from_string():
-    obj = m3u8.loads(SIMPLE_PLAYLIST)
+    obj = m3u8.loads(playlists.SIMPLE_PLAYLIST)
     assert isinstance(obj, m3u8.M3U8)
     assert 5220 == obj.target_duration
     assert 'http://media.example.com/entire.ts' == obj.segments[0].uri
 
 def test_load_should_create_object_from_file():
-    obj = m3u8.load(SIMPLE_PLAYLIST_FILENAME)
+    obj = m3u8.load(playlists.SIMPLE_PLAYLIST_FILENAME)
     assert isinstance(obj, m3u8.M3U8)
     assert 5220 == obj.target_duration
     assert 'http://media.example.com/entire.ts' == obj.segments[0].uri
 
 def test_load_should_create_object_from_uri():
-    obj = m3u8.load(SIMPLE_PLAYLIST_URI)
+    obj = m3u8.load(playlists.SIMPLE_PLAYLIST_URI)
     assert isinstance(obj, m3u8.M3U8)
     assert 5220 == obj.target_duration
     assert 'http://media.example.com/entire.ts' == obj.segments[0].uri
 
 def test_load_should_remember_redirect():
-    obj = m3u8.load(REDIRECT_PLAYLIST_URI)
-    urlparsed = urlparse.urlparse(SIMPLE_PLAYLIST_URI)
+    obj = m3u8.load(playlists.REDIRECT_PLAYLIST_URI)
+    urlparsed = urlparse.urlparse(playlists.SIMPLE_PLAYLIST_URI)
     assert urlparsed.scheme + '://' + urlparsed.netloc + "/" == obj.base_uri
 
 def test_load_should_create_object_from_file_with_relative_segments():
-    base_uri = os.path.dirname(RELATIVE_PLAYLIST_FILENAME)
-    obj = m3u8.load(RELATIVE_PLAYLIST_FILENAME)
+    base_uri = os.path.dirname(playlists.RELATIVE_PLAYLIST_FILENAME)
+    obj = m3u8.load(playlists.RELATIVE_PLAYLIST_FILENAME)
     expected_key_abspath = '%s/key.bin' % os.path.dirname(base_uri)
     expected_key_path = '../key.bin'
     expected_ts1_abspath = '%s/entire1.ts' % base_uri
@@ -59,8 +59,8 @@ def test_load_should_create_object_from_file_with_relative_segments():
     assert expected_ts4_abspath  == obj.segments[3].absolute_uri
 
 def test_load_should_create_object_from_uri_with_relative_segments():
-    obj = m3u8.load(RELATIVE_PLAYLIST_URI)
-    urlparsed = urlparse.urlparse(RELATIVE_PLAYLIST_URI)
+    obj = m3u8.load(playlists.RELATIVE_PLAYLIST_URI)
+    urlparsed = urlparse.urlparse(playlists.RELATIVE_PLAYLIST_URI)
     base_uri = os.path.normpath(urlparsed.path + '/..')
     prefix = urlparsed.scheme + '://' + urlparsed.netloc
     expected_key_abspath = '%s%s/key.bin' % (prefix, os.path.normpath(base_uri + '/..'))
@@ -87,7 +87,7 @@ def test_load_should_create_object_from_uri_with_relative_segments():
     assert expected_ts4_abspath  == obj.segments[3].absolute_uri
 
 def test_there_should_not_be_absolute_uris_with_loads():
-    with open(RELATIVE_PLAYLIST_FILENAME) as f:
+    with open(playlists.RELATIVE_PLAYLIST_FILENAME) as f:
         content = f.read()
     obj = m3u8.loads(content)
     with pytest.raises(ValueError) as e:

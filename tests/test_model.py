@@ -7,23 +7,23 @@
 #data returned from parser.parse()
 
 import m3u8
-from playlists import *
+import playlists
 from m3u8.model import Segment
 
 def test_target_duration_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'targetduration': '1234567'})
 
     assert '1234567' == obj.target_duration
 
 def test_media_sequence_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'media_sequence': '1234567'})
 
     assert '1234567' == obj.media_sequence
 
 def test_key_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     data = {'key': {'method': 'AES-128',
                     'uri': '/key',
                     'iv': 'foobar'}}
@@ -35,13 +35,13 @@ def test_key_attribute():
     assert 'foobar' == obj.key.iv
 
 def test_key_attribute_on_none():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {})
 
     assert None == obj.key
 
 def test_key_attribute_without_initialization_vector():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'key': {'method': 'AES-128',
                                    'uri': '/key'}})
 
@@ -50,7 +50,7 @@ def test_key_attribute_without_initialization_vector():
     assert None == obj.key.iv
 
 def test_segments_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'segments': [{'uri': '/foo/bar-1.ts',
                                          'title': 'First Segment',
                                          'duration': 1500},
@@ -65,7 +65,7 @@ def test_segments_attribute():
     assert 1500 == obj.segments[0].duration
 
 def test_segments_attribute_without_title():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'segments': [{'uri': '/foo/bar-1.ts',
                                          'duration': 1500}]})
 
@@ -76,7 +76,7 @@ def test_segments_attribute_without_title():
     assert None == obj.segments[0].title
 
 def test_segments_attribute_without_duration():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'segments': [{'uri': '/foo/bar-1.ts',
                                          'title': 'Segment title'}]})
 
@@ -87,7 +87,7 @@ def test_segments_attribute_without_duration():
     assert None == obj.segments[0].duration
 
 def test_segments_attribute_with_byterange():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'segments': [{'uri': '/foo/bar-1.ts',
                                          'title': 'Segment title',
                                          'duration': 1500,
@@ -101,7 +101,7 @@ def test_segments_attribute_with_byterange():
     assert '76242@0' == obj.segments[0].byterange
 
 def test_is_variant_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'is_variant': False})
     assert not obj.is_variant
 
@@ -109,16 +109,16 @@ def test_is_variant_attribute():
     assert obj.is_variant
 
 def test_is_endlist_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'is_endlist': False})
     assert not obj.is_endlist
 
-    obj = m3u8.M3U8(SLIDING_WINDOW_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SLIDING_WINDOW_PLAYLIST)
     mock_parser_data(obj, {'is_endlist': True})
     assert obj.is_endlist
 
 def test_is_i_frames_only_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'is_i_frames_only': False})
     assert not obj.is_i_frames_only
 
@@ -126,7 +126,7 @@ def test_is_i_frames_only_attribute():
     assert obj.is_i_frames_only
 
 def test_playlists_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     data = {'playlists': [{'uri': '/url/1.m3u8',
                            'stream_info': {'program_id': '1',
                                            'bandwidth': '320000',
@@ -179,7 +179,7 @@ def test_playlists_attribute():
     assert [] == obj.iframe_playlists
 
 def test_playlists_attribute_without_program_id():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'playlists': [{'uri': '/url/1.m3u8',
                                           'stream_info': {'bandwidth': '320000'}}
                                          ]})
@@ -192,14 +192,14 @@ def test_playlists_attribute_without_program_id():
     assert None == obj.playlists[0].stream_info.program_id
 
 def test_playlists_attribute_with_resolution():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST_WITH_RESOLUTION)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_RESOLUTION)
 
     assert 2 == len(obj.playlists)
     assert (512, 288) == obj.playlists[0].stream_info.resolution
     assert None == obj.playlists[1].stream_info.resolution
 
 def test_iframe_playlists_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     data = {
         'iframe_playlists': [{'uri': '/url/1.m3u8',
                               'iframe_stream_info': {'program_id': '1',
@@ -227,7 +227,7 @@ def test_iframe_playlists_attribute():
     assert 'avc1.4d400d' == obj.iframe_playlists[1].iframe_stream_info.codecs
 
 def test_version_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'version': '2'})
     assert '2' == obj.version
 
@@ -235,7 +235,7 @@ def test_version_attribute():
     assert None == obj.version
 
 def test_allow_cache_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'allow_cache': 'no'})
     assert 'no' == obj.allow_cache
 
@@ -243,7 +243,7 @@ def test_allow_cache_attribute():
     assert None == obj.allow_cache
 
 def test_files_attribute_should_list_all_files_including_segments_and_key():
-    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS)
     files = [
         'https://priv.example.com/key.php?r=52',
         'http://media.example.com/fileSequence52-1.ts',
@@ -253,38 +253,38 @@ def test_files_attribute_should_list_all_files_including_segments_and_key():
     assert files == obj.files
 
 def test_vod_playlist_type_should_be_imported_as_a_simple_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST_WITH_VOD_PLAYLIST_TYPE)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_VOD_PLAYLIST_TYPE)
     assert obj.playlist_type == 'vod'
 
 def test_event_playlist_type_should_be_imported_as_a_simple_attribute():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST_WITH_EVENT_PLAYLIST_TYPE)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_EVENT_PLAYLIST_TYPE)
     assert obj.playlist_type == 'event'
 
 def test_no_playlist_type_leaves_attribute_empty():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     assert obj.playlist_type is None
 
 
 # dump m3u8
 
 def test_dumps_should_build_same_string():
-    playlists = [PLAYLIST_WITH_NON_INTEGER_DURATION, PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV]
-    for playlist in playlists:
+    playlists_model = [playlists.PLAYLIST_WITH_NON_INTEGER_DURATION, playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV]
+    for playlist in playlists_model:
         obj = m3u8.M3U8(playlist)
         expected = playlist.replace(', IV', ',IV').strip()
         assert expected == obj.dumps().strip()
 
 def test_dump_playlists_with_resolution():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST_WITH_RESOLUTION)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_RESOLUTION)
 
-    expected = SIMPLE_PLAYLIST_WITH_RESOLUTION.strip().splitlines()
+    expected = playlists.SIMPLE_PLAYLIST_WITH_RESOLUTION.strip().splitlines()
 
     assert expected == obj.dumps().strip().splitlines()
 
 def test_dump_should_build_file_with_same_content(tmpdir):
-    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
 
-    expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV.replace(', IV', ',IV').strip()
+    expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV.replace(', IV', ',IV').strip()
     filename = str(tmpdir.join('playlist.m3u8'))
 
     obj.dump(filename)
@@ -292,9 +292,9 @@ def test_dump_should_build_file_with_same_content(tmpdir):
     assert_file_content(filename, expected)
 
 def test_dump_should_create_sub_directories(tmpdir):
-    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
 
-    expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV.replace(', IV', ',IV').strip()
+    expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV.replace(', IV', ',IV').strip()
     filename = str(tmpdir.join('subdir1', 'subdir2', 'playlist.m3u8'))
 
     obj.dump(filename)
@@ -302,44 +302,44 @@ def test_dump_should_create_sub_directories(tmpdir):
     assert_file_content(filename, expected)
 
 def test_dump_should_work_for_variant_streams():
-    obj = m3u8.M3U8(VARIANT_PLAYLIST)
+    obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST)
 
-    expected = VARIANT_PLAYLIST.replace(', BANDWIDTH', ',BANDWIDTH').strip()
+    expected = playlists.VARIANT_PLAYLIST.replace(', BANDWIDTH', ',BANDWIDTH').strip()
 
     assert expected == obj.dumps().strip()
 
 def test_dump_should_work_for_variant_playlists_with_iframe_playlists():
-    obj = m3u8.M3U8(VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS)
+    obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS)
 
-    expected = VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS.strip()
+    expected = playlists.VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS.strip()
 
     assert expected == obj.dumps().strip()
 
 def test_dump_should_work_for_iframe_playlists():
-    obj = m3u8.M3U8(IFRAME_PLAYLIST)
+    obj = m3u8.M3U8(playlists.IFRAME_PLAYLIST)
 
-    expected = IFRAME_PLAYLIST.strip()
+    expected = playlists.IFRAME_PLAYLIST.strip()
 
     assert expected == obj.dumps().strip()
 
 def test_dump_should_work_for_playlists_using_byteranges():
-    obj = m3u8.M3U8(PLAYLIST_USING_BYTERANGES)
+    obj = m3u8.M3U8(playlists.PLAYLIST_USING_BYTERANGES)
 
-    expected = PLAYLIST_USING_BYTERANGES.strip()
+    expected = playlists.PLAYLIST_USING_BYTERANGES.strip()
 
     assert expected == obj.dumps().strip()
 
 def test_should_dump_with_endlist_tag():
-    obj = m3u8.M3U8(SLIDING_WINDOW_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SLIDING_WINDOW_PLAYLIST)
     obj.is_endlist= True
 
     assert '#EXT-X-ENDLIST' in obj.dumps().splitlines()
 
 def test_should_dump_without_endlist_tag():
-    obj = m3u8.M3U8(SIMPLE_PLAYLIST)
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     obj.is_endlist = False
 
-    expected  = SIMPLE_PLAYLIST.strip().splitlines()
+    expected  = playlists.SIMPLE_PLAYLIST.strip().splitlines()
     expected.remove('#EXT-X-ENDLIST')
 
     assert expected == obj.dumps().strip().splitlines()
@@ -347,9 +347,9 @@ def test_should_dump_without_endlist_tag():
 def test_should_normalize_segments_and_key_urls_if_base_path_passed_to_constructor():
     base_path = 'http://videoserver.com/hls/live'
 
-    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV, base_path)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV, base_path)
 
-    expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV \
+    expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV \
         .replace(', IV', ',IV') \
         .replace('../../../../hls', base_path) \
         .replace('/hls-key', base_path) \
@@ -359,9 +359,9 @@ def test_should_normalize_segments_and_key_urls_if_base_path_passed_to_construct
 
 def test_should_normalize_variant_streams_urls_if_base_path_passed_to_constructor():
     base_path = 'http://videoserver.com/hls/live'
-    obj = m3u8.M3U8(VARIANT_PLAYLIST, base_path)
+    obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST, base_path)
 
-    expected = VARIANT_PLAYLIST \
+    expected = playlists.VARIANT_PLAYLIST \
         .replace(', BANDWIDTH', ',BANDWIDTH') \
         .replace('http://example.com', base_path) \
         .strip()
@@ -371,10 +371,10 @@ def test_should_normalize_variant_streams_urls_if_base_path_passed_to_constructo
 def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated():
     base_path = 'http://videoserver.com/hls/live'
 
-    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
     obj.base_path = base_path     # update later
 
-    expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV \
+    expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV \
         .replace(', IV', ',IV') \
         .replace('../../../../hls', base_path) \
         .replace('/hls-key', base_path) \
@@ -385,10 +385,10 @@ def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated()
 def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated():
     base_path = 'http://videoserver.com/hls/live'
 
-    obj = m3u8.M3U8(PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
     obj.base_path = base_path
 
-    expected = PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV \
+    expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV \
         .replace(', IV', ',IV') \
         .replace('../../../../hls', base_path) \
         .replace('/hls-key', base_path) \
@@ -438,7 +438,7 @@ def test_should_correctly_update_base_path_if_its_blank():
     assert "http://1.2/base_path/entire.ts" == segment.absolute_uri
 
 def test_m3u8_should_propagate_base_uri_to_segments():
-    with open(RELATIVE_PLAYLIST_FILENAME) as f:
+    with open(playlists.RELATIVE_PLAYLIST_FILENAME) as f:
         content = f.read()
     obj = m3u8.M3U8(content, base_uri='/any/path')
     assert '/entire1.ts' == obj.segments[0].uri
@@ -448,7 +448,7 @@ def test_m3u8_should_propagate_base_uri_to_segments():
     assert '/any/where/entire1.ts' == obj.segments[0].absolute_uri
 
 def test_m3u8_should_propagate_base_uri_to_key():
-    with open(RELATIVE_PLAYLIST_FILENAME) as f:
+    with open(playlists.RELATIVE_PLAYLIST_FILENAME) as f:
         content = f.read()
     obj = m3u8.M3U8(content, base_uri='/any/path')
     assert '../key.bin' == obj.key.uri
