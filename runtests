@@ -24,7 +24,9 @@ function main {
     install_deps
     start_server
     run
+    retval=$?
     stop_server
+    return "$retval"
 }
 
 if [ -z "$1" ]; then
