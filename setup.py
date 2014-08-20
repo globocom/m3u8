@@ -9,7 +9,7 @@ setup(
     name="m3u8",
     author='Globo.com',
     author_email='videos3@corp.globo.com',
-    version="0.1.8",
+    version="0.1.9",
     zip_safe=False,
     packages=["m3u8"],
     url="https://github.com/globocom/m3u8",
