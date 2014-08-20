@@ -4,7 +4,7 @@
 # license that can be found in the LICENSE file.
 
 import sys
-PYTHON_MAJOR_VERSION = sys.version_info.major
+PYTHON_MAJOR_VERSION = sys.version_info
 
 import os
 import posixpath
@@ -46,7 +46,7 @@ def load(uri):
 def _load_from_uri(uri):
     resource = urlopen(uri)
     base_uri = _parsed_url(_url_for(uri))
-    if PYTHON_MAJOR_VERSION < 3:
+    if PYTHON_MAJOR_VERSION < (3,):
         content = _read_python2x(resource)
     else:
         content = _read_python3x(resource)
