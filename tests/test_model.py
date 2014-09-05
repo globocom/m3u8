@@ -22,6 +22,11 @@ def test_media_sequence_attribute():
 
     assert '1234567' == obj.media_sequence
 
+def test_program_date_time_attribute():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
+
+    assert '2014-08-13T13:36:33+00:00' == obj.program_date_time
+
 def test_key_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     data = {'key': {'method': 'AES-128',
@@ -321,6 +326,11 @@ def test_dump_should_work_for_iframe_playlists():
     expected = playlists.IFRAME_PLAYLIST.strip()
 
     assert expected == obj.dumps().strip()
+
+def test_dump_should_include_program_date_time():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
+
+    assert "EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:33+00:00" in obj.dumps().strip()
 
 def test_dump_should_work_for_playlists_using_byteranges():
     obj = m3u8.M3U8(playlists.PLAYLIST_USING_BYTERANGES)

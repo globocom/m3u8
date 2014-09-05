@@ -83,6 +83,10 @@ class M3U8(object):
         Returns the EXT-X-MEDIA-SEQUENCE as an integer
         http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.3
 
+      `program_date_time`
+        Returns the EXT-X-PROGRAM-DATE-TIME as a string
+        http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.5
+
       `version`
         Return the EXT-X-VERSION as is
 
@@ -110,6 +114,7 @@ class M3U8(object):
         ('is_i_frames_only', 'is_i_frames_only'),
         ('target_duration',  'targetduration'),
         ('media_sequence',   'media_sequence'),
+        ('program_date_time',   'program_date_time'),
         ('version',          'version'),
         ('allow_cache',      'allow_cache'),
         ('playlist_type',    'playlist_type')
@@ -214,6 +219,8 @@ class M3U8(object):
         output = ['#EXTM3U']
         if self.media_sequence is not None:
             output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
+        if self.program_date_time is not None:
+            output.append('#EXT-X-PROGRAM-DATE-TIME:' + self.program_date_time)
         if self.allow_cache:
             output.append('#EXT-X-ALLOW-CACHE:' + self.allow_cache.upper())
         if self.version:

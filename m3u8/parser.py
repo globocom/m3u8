@@ -51,6 +51,8 @@ def parse(content):
             _parse_simple_parameter(line, data, float)
         elif line.startswith(protocol.ext_x_media_sequence):
             _parse_simple_parameter(line, data, int)
+        elif line.startswith(protocol.ext_x_program_date_time):
+            _parse_simple_parameter_raw_value(line, data)
         elif line.startswith(protocol.ext_x_version):
             _parse_simple_parameter(line, data)
         elif line.startswith(protocol.ext_x_allow_cache):
@@ -142,11 +144,15 @@ def _parse_variant_playlist(line, data, state):
 def _parse_byterange(line, state):
     state['segment']['byterange'] = line.replace(protocol.ext_x_byterange + ':', '')
 
-def _parse_simple_parameter(line, data, cast_to=str):
+def _parse_simple_parameter_raw_value(line, data, cast_to=str, normalize=False):
     param, value = line.split(':', 1)
     param = normalize_attribute(param.replace('#EXT-X-', ''))
-    value = normalize_attribute(value)
+    if normalize:
+        value = normalize_attribute(value)
     data[param] = cast_to(value)
+
+def _parse_simple_parameter(line, data, cast_to=str):
+    _parse_simple_parameter_raw_value(line, data, cast_to, True)
 
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')

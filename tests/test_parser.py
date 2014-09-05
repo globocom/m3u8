@@ -142,3 +142,7 @@ def test_should_parse_ALLOW_CACHE():
 def test_should_parse_VERSION():
     data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
     assert '2' == data['version']
+
+def test_should_parse_program_date_time_from_playlist():
+    data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
+    assert '2014-08-13T13:36:33+00:00' == data['program_date_time']
