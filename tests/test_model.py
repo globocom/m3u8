@@ -135,6 +135,16 @@ def test_segments_attribute_with_byterange():
     assert 1500 == obj.segments[0].duration
     assert '76242@0' == obj.segments[0].byterange
 
+def test_segment_attribute_with_multiple_keys():
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
+
+    segments = obj.segments
+    assert segments[0].key.uri == '/hls-key/key.bin'
+    assert segments[1].key.uri == '/hls-key/key.bin'
+    assert segments[4].key.uri == '/hls-key/key2.bin'
+    assert segments[5].key.uri == '/hls-key/key2.bin'
+
+
 def test_is_variant_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'is_variant': False})

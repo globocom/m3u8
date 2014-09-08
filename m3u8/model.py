@@ -348,10 +348,13 @@ class Segment(BasePathMixin):
 
     `byterange`
       byterange attribute from EXT-X-BYTERANGE parameter
+
+    `key`
+      Key used to encrypt the segment (EXT-X-KEY)
     '''
 
     def __init__(self, uri, base_uri, program_date_time=None, duration=None,
-                 title=None, byterange=None, discontinuity=False):
+                 title=None, byterange=None, discontinuity=False, key=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -359,6 +362,8 @@ class Segment(BasePathMixin):
         self.byterange = byterange
         self.program_date_time = program_date_time
         self.discontinuity = discontinuity
+        if key:
+          self.key = Key(base_uri=base_uri,**key)
 
     def __str__(self):
         output = ['#EXTINF:%s,' % int_or_float_to_string(self.duration)]

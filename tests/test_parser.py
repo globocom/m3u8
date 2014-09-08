@@ -50,6 +50,17 @@ def test_should_load_playlist_with_iv_from_string():
     assert "AES-128" == data['key']['method']
     assert "0X10ef8f758ca555115584bb5b3c687f52" == data['key']['iv']
 
+def test_should_add_key_attribute_to_segment_from_playlist():
+    data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
+    first_segment_key = data['segments'][0]['key']
+    assert "/hls-key/key.bin" == first_segment_key['uri']
+    assert "AES-128" == first_segment_key['method']
+    assert "0X10ef8f758ca555115584bb5b3c687f52" == first_segment_key['iv']
+    last_segment_key = data['segments'][-1]['key']
+    assert "/hls-key/key2.bin" == last_segment_key['uri']
+    assert "AES-128" == last_segment_key['method']
+    assert "0Xcafe8f758ca555115584bb5b3c687f52" == last_segment_key['iv']
+
 def test_should_parse_title_from_playlist():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_TITLE)
     assert 1 == len(data['segments'])
