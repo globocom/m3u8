@@ -453,9 +453,9 @@ class Playlist(BasePathMixin):
     def __str__(self):
         stream_inf = []
         if self.stream_info.program_id:
-            stream_inf.append('PROGRAM-ID=' + self.stream_info.program_id)
+            stream_inf.append('PROGRAM-ID=%d' % self.stream_info.program_id)
         if self.stream_info.bandwidth:
-            stream_inf.append('BANDWIDTH=' + self.stream_info.bandwidth)
+            stream_inf.append('BANDWIDTH=%d' % self.stream_info.bandwidth)
         if self.stream_info.resolution:
             res = str(self.stream_info.resolution[0]) + 'x' + str(self.stream_info.resolution[1])
             stream_inf.append('RESOLUTION=' + res)
@@ -502,10 +502,10 @@ class IFramePlaylist(BasePathMixin):
     def __str__(self):
         iframe_stream_inf = []
         if self.iframe_stream_info.program_id:
-            iframe_stream_inf.append('PROGRAM-ID=' +
+            iframe_stream_inf.append('PROGRAM-ID=%d' %
                                      self.iframe_stream_info.program_id)
         if self.iframe_stream_info.bandwidth:
-            iframe_stream_inf.append('BANDWIDTH=' +
+            iframe_stream_inf.append('BANDWIDTH=%d' %
                                      self.iframe_stream_info.bandwidth)
         if self.iframe_stream_info.resolution:
             res = (str(self.iframe_stream_info.resolution[0]) + 'x' +

@@ -154,12 +154,12 @@ def test_is_i_frames_only_attribute():
 def test_playlists_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     data = {'playlists': [{'uri': '/url/1.m3u8',
-                           'stream_info': {'program_id': '1',
-                                           'bandwidth': '320000',
+                           'stream_info': {'program_id': 1,
+                                           'bandwidth': 320000,
                                            'video': 'high'}},
                           {'uri': '/url/2.m3u8',
-                           'stream_info': {'program_id': '1',
-                                           'bandwidth': '120000',
+                           'stream_info': {'program_id': 1,
+                                           'bandwidth': 120000,
                                            'codecs': 'mp4a.40.5',
                                            'video': 'low'}},
                           ],
@@ -173,8 +173,8 @@ def test_playlists_attribute():
     assert 2 == len(obj.playlists)
 
     assert '/url/1.m3u8' == obj.playlists[0].uri
-    assert '1' == obj.playlists[0].stream_info.program_id
-    assert '320000' == obj.playlists[0].stream_info.bandwidth
+    assert 1 == obj.playlists[0].stream_info.program_id
+    assert 320000 == obj.playlists[0].stream_info.bandwidth
     assert None == obj.playlists[0].stream_info.codecs
 
     assert None == obj.playlists[0].media[0].uri
@@ -188,8 +188,8 @@ def test_playlists_attribute():
     assert None == obj.playlists[0].media[0].characteristics
 
     assert '/url/2.m3u8' == obj.playlists[1].uri
-    assert '1' == obj.playlists[1].stream_info.program_id
-    assert '120000' == obj.playlists[1].stream_info.bandwidth
+    assert 1 == obj.playlists[1].stream_info.program_id
+    assert 120000 == obj.playlists[1].stream_info.bandwidth
     assert 'mp4a.40.5' == obj.playlists[1].stream_info.codecs
 
     assert None == obj.playlists[1].media[0].uri
@@ -207,13 +207,13 @@ def test_playlists_attribute():
 def test_playlists_attribute_without_program_id():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'playlists': [{'uri': '/url/1.m3u8',
-                                          'stream_info': {'bandwidth': '320000'}}
+                                          'stream_info': {'bandwidth': 320000}}
                                          ]})
 
     assert 1 == len(obj.playlists)
 
     assert '/url/1.m3u8' == obj.playlists[0].uri
-    assert '320000' == obj.playlists[0].stream_info.bandwidth
+    assert 320000 == obj.playlists[0].stream_info.bandwidth
     assert None == obj.playlists[0].stream_info.codecs
     assert None == obj.playlists[0].stream_info.program_id
 
@@ -228,8 +228,8 @@ def test_iframe_playlists_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     data = {
         'iframe_playlists': [{'uri': '/url/1.m3u8',
-                              'iframe_stream_info': {'program_id': '1',
-                                                     'bandwidth': '320000',
+                              'iframe_stream_info': {'program_id': 1,
+                                                     'bandwidth': 320000,
                                                      'resolution': '320x180',
                                                      'codecs': 'avc1.4d001f'}},
                              {'uri': '/url/2.m3u8',
@@ -241,8 +241,8 @@ def test_iframe_playlists_attribute():
     assert 2 == len(obj.iframe_playlists)
 
     assert '/url/1.m3u8' == obj.iframe_playlists[0].uri
-    assert '1' == obj.iframe_playlists[0].iframe_stream_info.program_id
-    assert '320000' == obj.iframe_playlists[0].iframe_stream_info.bandwidth
+    assert 1 == obj.iframe_playlists[0].iframe_stream_info.program_id
+    assert 320000 == obj.iframe_playlists[0].iframe_stream_info.bandwidth
     assert (320, 180) == obj.iframe_playlists[0].iframe_stream_info.resolution
     assert 'avc1.4d001f' == obj.iframe_playlists[0].iframe_stream_info.codecs
 

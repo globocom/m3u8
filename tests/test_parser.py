@@ -65,12 +65,12 @@ def test_should_parse_variant_playlist():
     assert 4 == len(playlists_list)
 
     assert 'http://example.com/low.m3u8' == playlists_list[0]['uri']
-    assert '1' == playlists_list[0]['stream_info']['program_id']
-    assert '1280000' == playlists_list[0]['stream_info']['bandwidth']
+    assert 1 == playlists_list[0]['stream_info']['program_id']
+    assert 1280000 == playlists_list[0]['stream_info']['bandwidth']
 
     assert 'http://example.com/audio-only.m3u8' == playlists_list[-1]['uri']
-    assert '1' == playlists_list[-1]['stream_info']['program_id']
-    assert '65000' == playlists_list[-1]['stream_info']['bandwidth']
+    assert 1 == playlists_list[-1]['stream_info']['program_id']
+    assert 65000 == playlists_list[-1]['stream_info']['bandwidth']
     assert 'mp4a.40.5,avc1.42801e' == playlists_list[-1]['stream_info']['codecs']
 
 def test_should_parse_variant_playlist_with_iframe_playlists():
@@ -81,13 +81,13 @@ def test_should_parse_variant_playlist_with_iframe_playlists():
 
     assert 4 == len(iframe_playlists)
 
-    assert '1' == iframe_playlists[0]['iframe_stream_info']['program_id']
-    assert '151288' == iframe_playlists[0]['iframe_stream_info']['bandwidth']
+    assert 1 == iframe_playlists[0]['iframe_stream_info']['program_id']
+    assert 151288 == iframe_playlists[0]['iframe_stream_info']['bandwidth']
     assert '624x352' == iframe_playlists[0]['iframe_stream_info']['resolution']
     assert 'avc1.4d001f' == iframe_playlists[0]['iframe_stream_info']['codecs']
     assert 'video-800k-iframes.m3u8' == iframe_playlists[0]['uri']
 
-    assert '38775' == iframe_playlists[-1]['iframe_stream_info']['bandwidth']
+    assert 38775 == iframe_playlists[-1]['iframe_stream_info']['bandwidth']
     assert 'avc1.4d001f' == (
         iframe_playlists[-1]['iframe_stream_info']['codecs']
     )
@@ -101,13 +101,13 @@ def test_should_parse_variant_playlist_with_alt_iframe_playlists_layout():
 
     assert 4 == len(iframe_playlists)
 
-    assert '1' == iframe_playlists[0]['iframe_stream_info']['program_id']
-    assert '151288' == iframe_playlists[0]['iframe_stream_info']['bandwidth']
+    assert 1 == iframe_playlists[0]['iframe_stream_info']['program_id']
+    assert 151288 == iframe_playlists[0]['iframe_stream_info']['bandwidth']
     assert '624x352' == iframe_playlists[0]['iframe_stream_info']['resolution']
     assert 'avc1.4d001f' == iframe_playlists[0]['iframe_stream_info']['codecs']
     assert 'video-800k-iframes.m3u8' == iframe_playlists[0]['uri']
 
-    assert '38775' == iframe_playlists[-1]['iframe_stream_info']['bandwidth']
+    assert 38775 == iframe_playlists[-1]['iframe_stream_info']['bandwidth']
     assert 'avc1.4d001f' == (
         iframe_playlists[-1]['iframe_stream_info']['codecs']
     )

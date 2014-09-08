@@ -5,6 +5,7 @@
 
 import arrow
 import datetime
+import itertools
 import re
 from m3u8 import protocol
 
@@ -110,7 +111,7 @@ def _parse_ts_chunk(line, data, state):
     segment['uri'] = line
     data['segments'].append(segment)
 
-def _parse_attribute_list(prefix, line, quoted):
+def _parse_attribute_list(prefix, line, atribute_parser):
     params = ATTRIBUTELISTPATTERN.split(line.replace(prefix + ':', ''))[1::2]
 
     attributes = {}
@@ -118,8 +119,8 @@ def _parse_attribute_list(prefix, line, quoted):
         name, value = param.split('=', 1)
         name = normalize_attribute(name)
 
-        if name in quoted:
-            value = remove_quotes(value)
+        if name in atribute_parser:
+            value = atribute_parser[name](value)
 
         attributes[name] = value
 
@@ -127,19 +128,23 @@ def _parse_attribute_list(prefix, line, quoted):
 
 def _parse_stream_inf(line, data, state):
     data['is_variant'] = True
-    quoted = ('codecs', 'audio', 'video', 'subtitles')
-    state['stream_info'] = _parse_attribute_list(protocol.ext_x_stream_inf, line, quoted)
+    atribute_parser = remove_quotes_parser('codecs', 'audio', 'video', 'subtitles')
+    atribute_parser["program_id"] = int
+    atribute_parser["bandwidth"] = int
+    state['stream_info'] = _parse_attribute_list(protocol.ext_x_stream_inf, line, atribute_parser)
 
 def _parse_i_frame_stream_inf(line, data):
-    quoted = ('codecs', 'uri')
-    iframe_stream_info = _parse_attribute_list(protocol.ext_x_i_frame_stream_inf, line, quoted)
+    atribute_parser = remove_quotes_parser('codecs', 'uri')
+    atribute_parser["program_id"] = int
+    atribute_parser["bandwidth"] = int
+    iframe_stream_info = _parse_attribute_list(protocol.ext_x_i_frame_stream_inf, line, atribute_parser)
     iframe_playlist = {'uri': iframe_stream_info.pop('uri'),
                        'iframe_stream_info': iframe_stream_info}
 
     data['iframe_playlists'].append(iframe_playlist)
 
 def _parse_media(line, data, state):
-    quoted = ('uri', 'group_id', 'language', 'name', 'characteristics')
+    quoted = remove_quotes_parser('uri', 'group_id', 'language', 'name', 'characteristics')
     media = _parse_attribute_list(protocol.ext_x_media, line, quoted)
     data['media'].append(media)
 
@@ -165,6 +170,9 @@ def _parse_simple_parameter(line, data, cast_to=str):
 
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')
+
+def remove_quotes_parser(*attrs):
+    return dict(zip(attrs, itertools.repeat(remove_quotes)))
 
 def remove_quotes(string):
     '''

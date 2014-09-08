@@ -12,8 +12,8 @@ def test_create_a_variant_m3u8_with_two_playlists():
                            'English', 'YES', 'YES', 'NO', None)
     variant_m3u8.add_media(subtitles)
 
-    low_playlist = m3u8.Playlist('http://example.com/low.m3u8', stream_info={'bandwidth': '1280000', 'program_id': '1', 'subtitles': 'subs'}, media=[subtitles], base_uri=None)
-    high_playlist = m3u8.Playlist('http://example.com/high.m3u8', stream_info={'bandwidth': '3000000', 'program_id': '1', 'subtitles': 'subs'}, media=[subtitles], base_uri=None)
+    low_playlist = m3u8.Playlist('http://example.com/low.m3u8', stream_info={'bandwidth': 1280000, 'program_id': 1, 'subtitles': 'subs'}, media=[subtitles], base_uri=None)
+    high_playlist = m3u8.Playlist('http://example.com/high.m3u8', stream_info={'bandwidth': 3000000, 'program_id': 1, 'subtitles': 'subs'}, media=[subtitles], base_uri=None)
 
     variant_m3u8.add_playlist(low_playlist)
     variant_m3u8.add_playlist(high_playlist)
@@ -37,8 +37,8 @@ def test_create_a_variant_m3u8_with_two_playlists_and_two_iframe_playlists():
 
     low_playlist = m3u8.Playlist(
         uri='video-800k.m3u8',
-        stream_info={'bandwidth': '800000',
-                     'program_id': '1',
+        stream_info={'bandwidth': 800000,
+                     'program_id': 1,
                      'resolution': '624x352',
                      'codecs': 'avc1.4d001f, mp4a.40.5',
                      'subtitles': 'subs'},
@@ -47,8 +47,8 @@ def test_create_a_variant_m3u8_with_two_playlists_and_two_iframe_playlists():
     )
     high_playlist = m3u8.Playlist(
         uri='video-1200k.m3u8',
-        stream_info={'bandwidth': '1200000',
-                     'program_id': '1',
+        stream_info={'bandwidth': 1200000,
+                     'program_id': 1,
                      'codecs': 'avc1.4d001f, mp4a.40.5',
                      'subtitles': 'subs'},
         media=[subtitles],
@@ -56,15 +56,15 @@ def test_create_a_variant_m3u8_with_two_playlists_and_two_iframe_playlists():
     )
     low_iframe_playlist = m3u8.IFramePlaylist(
         uri='video-800k-iframes.m3u8',
-        iframe_stream_info={'bandwidth': '151288',
-                            'program_id': '1',
+        iframe_stream_info={'bandwidth': 151288,
+                            'program_id': 1,
                             'resolution': '624x352',
                             'codecs': 'avc1.4d001f'},
         base_uri='http://example.com/'
     )
     high_iframe_playlist = m3u8.IFramePlaylist(
         uri='video-1200k-iframes.m3u8',
-        iframe_stream_info={'bandwidth': '193350',
+        iframe_stream_info={'bandwidth': 193350,
                             'codecs': 'avc1.4d001f'},
         base_uri='http://example.com/'
     )
