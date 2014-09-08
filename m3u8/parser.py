@@ -67,7 +67,8 @@ def parse(content):
             _parse_simple_parameter(line, data)
 
         elif line.startswith(protocol.ext_x_key):
-            data['key'] = _parse_key(line)
+            state['current_key'] = _parse_key(line)
+            data['key'] = data.get('key', state['current_key'])
 
         elif line.startswith(protocol.extinf):
             _parse_extinf(line, data, state)
@@ -113,8 +114,8 @@ def _parse_ts_chunk(line, data, state):
         state['current_program_date_time'] += datetime.timedelta(seconds=segment['duration'])
     segment['uri'] = line
     segment['discontinuity'] = state.pop('discontinuity', False)
-    if data.get('key'):
-      segment['key'] = data['key']
+    if state.get('current_key'):
+      segment['key'] = state['current_key']
     data['segments'].append(segment)
 
 def _parse_attribute_list(prefix, line, atribute_parser):

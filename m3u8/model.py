@@ -362,11 +362,16 @@ class Segment(BasePathMixin):
         self.byterange = byterange
         self.program_date_time = program_date_time
         self.discontinuity = discontinuity
-        if key:
-          self.key = Key(base_uri=base_uri,**key)
+        self.key = Key(base_uri=base_uri,**key) if key else None
 
-    def __str__(self):
-        output = ['#EXTINF:%s,' % int_or_float_to_string(self.duration)]
+
+    def dumps(self, last_segment):
+        output = []
+        if last_segment and self.key != last_segment.key:
+          output.append(str(self.key))
+          output.append('\n')
+
+        output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
         if self.title:
             output.append(quoted(self.title))
 
@@ -379,11 +384,18 @@ class Segment(BasePathMixin):
 
         return ''.join(output)
 
+    def __str__(self):
+        return self.dumps()
+
 
 class SegmentList(list, GroupedBasePathMixin):
 
     def __str__(self):
-        output = [str(segment) for segment in self]
+        output = []
+        last_segment = None
+        for segment in self:
+          output.append(segment.dumps(last_segment))
+          last_segment = segment
         return '\n'.join(output)
 
     @property
@@ -422,6 +434,15 @@ class Key(BasePathMixin):
             output.append('IV=%s' % self.iv)
 
         return '#EXT-X-KEY:' + ','.join(output)
+
+    def __eq__(self, other):
+        return self.method == other.method and \
+               self.uri == other.uri and \
+               self.iv == other.iv and \
+               self.base_uri == other.base_uri
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class Playlist(BasePathMixin):

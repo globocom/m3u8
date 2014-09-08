@@ -394,6 +394,14 @@ def test_should_dump_without_endlist_tag():
 
     assert expected == obj.dumps().strip().splitlines()
 
+
+def test_should_dump_multiple_keys():
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
+    expected  = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS.strip().splitlines()
+
+    assert expected == obj.dumps().strip().splitlines()
+
+
 def test_should_normalize_segments_and_key_urls_if_base_path_passed_to_constructor():
     base_path = 'http://videoserver.com/hls/live'
 
