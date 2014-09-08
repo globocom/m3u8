@@ -4,6 +4,7 @@
 # license that can be found in the LICENSE file.
 
 import arrow
+import datetime
 import re
 from m3u8 import protocol
 
@@ -56,7 +57,7 @@ def parse(content):
         elif line.startswith(protocol.ext_x_media_sequence):
             _parse_simple_parameter(line, data, int)
         elif line.startswith(protocol.ext_x_program_date_time):
-            _parse_simple_parameter_raw_value(line, data, cast_date_time)
+            state['current_program_date_time'] = _parse_simple_parameter_raw_value(line, data, cast_date_time)
         elif line.startswith(protocol.ext_x_version):
             _parse_simple_parameter(line, data)
         elif line.startswith(protocol.ext_x_allow_cache):
@@ -103,6 +104,9 @@ def _parse_extinf(line, data, state):
 
 def _parse_ts_chunk(line, data, state):
     segment = state.pop('segment')
+    if state.get('current_program_date_time'):
+        segment['program_date_time'] = state['current_program_date_time']
+        state['current_program_date_time'] += datetime.timedelta(seconds=segment['duration'])
     segment['uri'] = line
     data['segments'].append(segment)
 
@@ -154,9 +158,10 @@ def _parse_simple_parameter_raw_value(line, data, cast_to=str, normalize=False):
     if normalize:
         value = normalize_attribute(value)
     data[param] = cast_to(value)
+    return data[param]
 
 def _parse_simple_parameter(line, data, cast_to=str):
-    _parse_simple_parameter_raw_value(line, data, cast_to, True)
+    return _parse_simple_parameter_raw_value(line, data, cast_to, True)
 
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')

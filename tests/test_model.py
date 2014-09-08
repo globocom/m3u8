@@ -7,6 +7,7 @@
 #data returned from parser.parse()
 
 import arrow
+import datetime
 import m3u8
 import playlists
 from m3u8.model import Segment
@@ -27,6 +28,25 @@ def test_program_date_time_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
     assert arrow.get('2014-08-13T13:36:33+00:00').datetime == obj.program_date_time
+
+def test_program_date_time_attribute_for_each_segment():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
+
+    first_program_date_time = arrow.get('2014-08-13T13:36:33+00:00').datetime
+    for idx, segment in enumerate(obj.segments):
+        assert segment.program_date_time == first_program_date_time + datetime.timedelta(seconds=idx * 3)
+
+def test_program_date_time_attribute_with_discontinuity():
+    obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_PROGRAM_DATE_TIME)
+
+    first_program_date_time = arrow.get('2014-08-13T13:36:33+00:00').datetime
+    discontinuity_program_date_time = arrow.get('2014-08-13T13:36:55+00:00').datetime
+
+    segments = obj.segments
+
+    assert segments[0].program_date_time == first_program_date_time
+    assert segments[5].program_date_time == discontinuity_program_date_time
+    assert segments[6].program_date_time == discontinuity_program_date_time + datetime.timedelta(seconds=3)
 
 def test_key_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)

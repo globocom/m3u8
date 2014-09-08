@@ -332,6 +332,10 @@ class Segment(BasePathMixin):
     `title`
       title attribute from EXTINF parameter
 
+    `program_date_time`
+      Returns the EXT-X-PROGRAM-DATE-TIME as a string
+      http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.5
+
     `duration`
       duration attribute from EXTINF paramter
 
@@ -342,13 +346,14 @@ class Segment(BasePathMixin):
       byterange attribute from EXT-X-BYTERANGE parameter
     '''
 
-    def __init__(self, uri, base_uri, duration=None,
+    def __init__(self, uri, base_uri, program_date_time=None, duration=None,
                  title=None, byterange=None):
         self.uri = uri
         self.duration = duration
         self.title = title
         self.base_uri = base_uri
         self.byterange = byterange
+        self.program_date_time = program_date_time
 
     def __str__(self):
         output = ['#EXTINF:%s,' % int_or_float_to_string(self.duration)]
