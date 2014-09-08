@@ -333,7 +333,7 @@ class Segment(BasePathMixin):
       title attribute from EXTINF parameter
 
     `program_date_time`
-      Returns the EXT-X-PROGRAM-DATE-TIME as a string
+      Returns the EXT-X-PROGRAM-DATE-TIME as a datetime
       http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.5
 
     `duration`
