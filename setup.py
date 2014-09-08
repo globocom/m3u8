@@ -11,7 +11,7 @@ setup(
     name="m3u8",
     author='Globo.com',
     author_email='videos3@corp.globo.com',
-    version="0.2.0",
+    version="0.2.1",
     zip_safe=False,
     include_package_data=True,
     install_requires=install_reqs,
