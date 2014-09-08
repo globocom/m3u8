@@ -17,4 +17,4 @@ extinf = '#EXTINF'
 ext_i_frames_only = '#EXT-X-I-FRAMES-ONLY'
 ext_x_byterange = '#EXT-X-BYTERANGE'
 ext_x_i_frame_stream_inf = '#EXT-X-I-FRAME-STREAM-INF'
-
+ext_x_discontinuity = '#EXT-X-DISCONTINUITY'

@@ -48,6 +48,15 @@ def test_program_date_time_attribute_with_discontinuity():
     assert segments[5].program_date_time == discontinuity_program_date_time
     assert segments[6].program_date_time == discontinuity_program_date_time + datetime.timedelta(seconds=3)
 
+
+def test_segment_discontinuity_attribute():
+    obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_PROGRAM_DATE_TIME)
+    segments = obj.segments
+
+    assert segments[0].discontinuity == False
+    assert segments[5].discontinuity == True
+    assert segments[6].discontinuity == False
+
 def test_key_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     data = {'key': {'method': 'AES-128',

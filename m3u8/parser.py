@@ -59,6 +59,8 @@ def parse(content):
             _parse_simple_parameter(line, data, int)
         elif line.startswith(protocol.ext_x_program_date_time):
             state['current_program_date_time'] = _parse_simple_parameter_raw_value(line, data, cast_date_time)
+        elif line.startswith(protocol.ext_x_discontinuity):
+            state['discontinuity'] = True
         elif line.startswith(protocol.ext_x_version):
             _parse_simple_parameter(line, data)
         elif line.startswith(protocol.ext_x_allow_cache):
@@ -109,6 +111,7 @@ def _parse_ts_chunk(line, data, state):
         segment['program_date_time'] = state['current_program_date_time']
         state['current_program_date_time'] += datetime.timedelta(seconds=segment['duration'])
     segment['uri'] = line
+    segment['discontinuity'] = state.pop('discontinuity', False)
     data['segments'].append(segment)
 
 def _parse_attribute_list(prefix, line, atribute_parser):

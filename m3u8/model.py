@@ -336,8 +336,12 @@ class Segment(BasePathMixin):
       Returns the EXT-X-PROGRAM-DATE-TIME as a datetime
       http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.5
 
+    `discontinuity`
+      Returns a boolean indicating if a EXT-X-DISCONTINUITY tag exists
+      http://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.4.11
+
     `duration`
-      duration attribute from EXTINF paramter
+      duration attribute from EXTINF parameter
 
     `base_uri`
       uri the key comes from in URI hierarchy. ex.: http://example.com/path/to
@@ -347,13 +351,14 @@ class Segment(BasePathMixin):
     '''
 
     def __init__(self, uri, base_uri, program_date_time=None, duration=None,
-                 title=None, byterange=None):
+                 title=None, byterange=None, discontinuity=False):
         self.uri = uri
         self.duration = duration
         self.title = title
         self.base_uri = base_uri
         self.byterange = byterange
         self.program_date_time = program_date_time
+        self.discontinuity = discontinuity
 
     def __str__(self):
         output = ['#EXTINF:%s,' % int_or_float_to_string(self.duration)]
