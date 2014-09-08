@@ -220,8 +220,6 @@ class M3U8(object):
         output = ['#EXTM3U']
         if self.media_sequence is not None:
             output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
-        if self.program_date_time is not None:
-            output.append('#EXT-X-PROGRAM-DATE-TIME:' + arrow.get(self.program_date_time).isoformat())
         if self.allow_cache:
             output.append('#EXT-X-ALLOW-CACHE:' + self.allow_cache.upper())
         if self.version:
@@ -230,6 +228,8 @@ class M3U8(object):
             output.append(str(self.key))
         if self.target_duration:
             output.append('#EXT-X-TARGETDURATION:' + int_or_float_to_string(self.target_duration))
+        if self.program_date_time is not None:
+            output.append('#EXT-X-PROGRAM-DATE-TIME:' + arrow.get(self.program_date_time).isoformat())
         if not (self.playlist_type is None or self.playlist_type == ''):
             output.append(
                 '#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
@@ -370,6 +370,10 @@ class Segment(BasePathMixin):
         if last_segment and self.key != last_segment.key:
           output.append(str(self.key))
           output.append('\n')
+
+        if self.discontinuity:
+            output.append('#EXT-X-DISCONTINUITY\n')
+            output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' % arrow.get(self.program_date_time).isoformat())
 
         output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
         if self.title:

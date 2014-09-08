@@ -58,7 +58,10 @@ def parse(content):
         elif line.startswith(protocol.ext_x_media_sequence):
             _parse_simple_parameter(line, data, int)
         elif line.startswith(protocol.ext_x_program_date_time):
-            state['current_program_date_time'] = _parse_simple_parameter_raw_value(line, data, cast_date_time)
+            _, program_date_time = _parse_simple_parameter_raw_value(line, cast_date_time)
+            if not data.get('program_date_time'):
+                data['program_date_time'] = program_date_time
+            state['current_program_date_time'] = program_date_time
         elif line.startswith(protocol.ext_x_discontinuity):
             state['discontinuity'] = True
         elif line.startswith(protocol.ext_x_version):
@@ -164,16 +167,20 @@ def _parse_variant_playlist(line, data, state):
 def _parse_byterange(line, state):
     state['segment']['byterange'] = line.replace(protocol.ext_x_byterange + ':', '')
 
-def _parse_simple_parameter_raw_value(line, data, cast_to=str, normalize=False):
+def _parse_simple_parameter_raw_value(line, cast_to=str, normalize=False):
     param, value = line.split(':', 1)
     param = normalize_attribute(param.replace('#EXT-X-', ''))
     if normalize:
         value = normalize_attribute(value)
-    data[param] = cast_to(value)
+    return param, cast_to(value)
+
+def _parse_and_set_simple_parameter_raw_value(line, data, cast_to=str, normalize=False):
+    param, value = _parse_simple_parameter_raw_value(line, cast_to, normalize)
+    data[param] = value
     return data[param]
 
 def _parse_simple_parameter(line, data, cast_to=str):
-    return _parse_simple_parameter_raw_value(line, data, cast_to, True)
+    return _parse_and_set_simple_parameter_raw_value(line, data, cast_to, True)
 
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')
