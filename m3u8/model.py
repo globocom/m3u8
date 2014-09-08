@@ -4,6 +4,7 @@
 # license that can be found in the LICENSE file.
 
 from collections import namedtuple
+import arrow
 import os
 import posixpath
 import errno
@@ -220,7 +221,7 @@ class M3U8(object):
         if self.media_sequence is not None:
             output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
         if self.program_date_time is not None:
-            output.append('#EXT-X-PROGRAM-DATE-TIME:' + self.program_date_time)
+            output.append('#EXT-X-PROGRAM-DATE-TIME:' + arrow.get(self.program_date_time).isoformat())
         if self.allow_cache:
             output.append('#EXT-X-ALLOW-CACHE:' + self.allow_cache.upper())
         if self.version:

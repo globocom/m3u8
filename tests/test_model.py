@@ -6,6 +6,7 @@
 #Tests M3U8 class to make sure all attributes and methods use the correct
 #data returned from parser.parse()
 
+import arrow
 import m3u8
 import playlists
 from m3u8.model import Segment
@@ -25,7 +26,7 @@ def test_media_sequence_attribute():
 def test_program_date_time_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
-    assert '2014-08-13T13:36:33+00:00' == obj.program_date_time
+    assert arrow.get('2014-08-13T13:36:33+00:00').datetime == obj.program_date_time
 
 def test_key_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)

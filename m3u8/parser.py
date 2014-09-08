@@ -3,6 +3,7 @@
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
+import arrow
 import re
 from m3u8 import protocol
 
@@ -11,6 +12,9 @@ http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.2
 http://stackoverflow.com/questions/2785755/how-to-split-but-ignore-separators-in-quoted-strings-in-python
 '''
 ATTRIBUTELISTPATTERN = re.compile(r'''((?:[^,"']|"[^"]*"|'[^']*')+)''')
+
+def cast_date_time(value):
+    return arrow.get(value).datetime
 
 def parse(content):
     '''
@@ -52,7 +56,7 @@ def parse(content):
         elif line.startswith(protocol.ext_x_media_sequence):
             _parse_simple_parameter(line, data, int)
         elif line.startswith(protocol.ext_x_program_date_time):
-            _parse_simple_parameter_raw_value(line, data)
+            _parse_simple_parameter_raw_value(line, data, cast_date_time)
         elif line.startswith(protocol.ext_x_version):
             _parse_simple_parameter(line, data)
         elif line.startswith(protocol.ext_x_allow_cache):
