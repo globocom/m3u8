@@ -10,6 +10,7 @@ import playlists
 def test_should_parse_simple_playlist_from_string():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST)
     assert 5220 == data['targetduration']
+    assert 0 == data['media_sequence']
     assert ['http://media.example.com/entire.ts'] == [c['uri'] for c in data['segments']]
     assert [5220] == [c['duration'] for c in data['segments']]
 
@@ -73,6 +74,7 @@ def test_should_parse_variant_playlist():
     playlists_list = list(data['playlists'])
 
     assert True == data['is_variant']
+    assert None == data['media_sequence']
     assert 4 == len(playlists_list)
 
     assert 'http://example.com/low.m3u8' == playlists_list[0]['uri']

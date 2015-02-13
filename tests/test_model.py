@@ -24,6 +24,11 @@ def test_media_sequence_attribute():
 
     assert '1234567' == obj.media_sequence
 
+def test_implicit_media_sequence_value():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
+
+    assert 0 == obj.media_sequence
+
 def test_program_date_time_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
@@ -483,7 +488,7 @@ def test_0_media_sequence_added_to_file():
     obj = m3u8.M3U8()
     obj.media_sequence = 0
     result = obj.dumps()
-    expected = '#EXTM3U\n#EXT-X-MEDIA-SEQUENCE:0\n'
+    expected = '#EXTM3U\n'
     assert result == expected
 
 def test_none_media_sequence_gracefully_ignored():
