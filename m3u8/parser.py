@@ -23,6 +23,7 @@ def parse(content):
     Given a M3U8 playlist content returns a dictionary with all data found
     '''
     data = {
+        'media_sequence': 0,
         'is_variant': False,
         'is_endlist': False,
         'is_i_frames_only': False,
@@ -138,6 +139,7 @@ def _parse_attribute_list(prefix, line, atribute_parser):
 
 def _parse_stream_inf(line, data, state):
     data['is_variant'] = True
+    data['media_sequence'] = None
     atribute_parser = remove_quotes_parser('codecs', 'audio', 'video', 'subtitles')
     atribute_parser["program_id"] = int
     atribute_parser["bandwidth"] = int
