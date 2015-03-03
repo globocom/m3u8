@@ -4,7 +4,6 @@
 # license that can be found in the LICENSE file.
 
 from collections import namedtuple
-import arrow
 import os
 import posixpath
 import errno
@@ -229,7 +228,7 @@ class M3U8(object):
         if self.target_duration:
             output.append('#EXT-X-TARGETDURATION:' + int_or_float_to_string(self.target_duration))
         if self.program_date_time is not None:
-            output.append('#EXT-X-PROGRAM-DATE-TIME:' + arrow.get(self.program_date_time).isoformat())
+            output.append('#EXT-X-PROGRAM-DATE-TIME:' + parser.format_date_time(self.program_date_time))
         if not (self.playlist_type is None or self.playlist_type == ''):
             output.append(
                 '#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
@@ -373,7 +372,7 @@ class Segment(BasePathMixin):
 
         if self.discontinuity:
             output.append('#EXT-X-DISCONTINUITY\n')
-            output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' % arrow.get(self.program_date_time).isoformat())
+            output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' % parser.format_date_time(self.program_date_time))
 
         output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
         if self.title:
