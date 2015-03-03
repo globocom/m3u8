@@ -3,7 +3,7 @@
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
-import arrow
+import iso8601
 import datetime
 import itertools
 import re
@@ -16,7 +16,10 @@ http://stackoverflow.com/questions/2785755/how-to-split-but-ignore-separators-in
 ATTRIBUTELISTPATTERN = re.compile(r'''((?:[^,"']|"[^"]*"|'[^']*')+)''')
 
 def cast_date_time(value):
-    return arrow.get(value).datetime
+    return iso8601.parse_date(value)
+
+def format_date_time(value):
+    return value.isoformat()
 
 def parse(content):
     '''

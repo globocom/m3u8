@@ -3,9 +3,9 @@
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
-import arrow
 import m3u8
 import playlists
+from m3u8.parser import cast_date_time
 
 def test_should_parse_simple_playlist_from_string():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST)
@@ -159,4 +159,4 @@ def test_should_parse_VERSION():
 
 def test_should_parse_program_date_time_from_playlist():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
-    assert arrow.get('2014-08-13T13:36:33+00:00').datetime == data['program_date_time']
+    assert cast_date_time('2014-08-13T13:36:33+00:00') == data['program_date_time']
