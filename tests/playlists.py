@@ -43,10 +43,8 @@ https://priv.example.com/fileSequence2682.ts
 PLAYLIST_WITH_ENCRIPTED_SEGMENTS = '''
 #EXTM3U
 #EXT-X-MEDIA-SEQUENCE:7794
+#EXT-X-KEY:METHOD=AES-128,URI="https://priv.example.com/key.php?r=52",KEYFORMAT="identity",KEYFORMATVERSIONS="1/2/5"
 #EXT-X-TARGETDURATION:15
-
-#EXT-X-KEY:METHOD=AES-128,URI="https://priv.example.com/key.php?r=52"
-
 #EXTINF:15,
 http://media.example.com/fileSequence52-1.ts
 #EXTINF:15,

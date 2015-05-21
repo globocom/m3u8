@@ -318,7 +318,11 @@ def test_no_playlist_type_leaves_attribute_empty():
 # dump m3u8
 
 def test_dumps_should_build_same_string():
-    playlists_model = [playlists.PLAYLIST_WITH_NON_INTEGER_DURATION, playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV]
+    playlists_model = [
+        playlists.PLAYLIST_WITH_NON_INTEGER_DURATION,
+        playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS,
+        playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV,
+    ]
     for playlist in playlists_model:
         obj = m3u8.M3U8(playlist)
         expected = playlist.replace(', IV', ',IV').strip()

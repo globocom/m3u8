@@ -290,6 +290,8 @@ class BasePathMixin(object):
 
     @property
     def absolute_uri(self):
+        if self.uri is None:
+            return None
         if parser.is_url(self.uri):
             return self.uri
         else:
@@ -422,19 +424,26 @@ class Key(BasePathMixin):
       initialization vector. a string representing a hexadecimal number. ex.: 0X12A
 
     '''
-    def __init__(self, method, uri, base_uri, iv=None):
+    def __init__(self, method, uri, base_uri, iv=None, keyformat=None, keyformatversions=None):
         self.method = method
         self.uri = uri
         self.iv = iv
+        self.keyformat = keyformat
+        self.keyformatversions = keyformatversions
         self.base_uri = base_uri
 
     def __str__(self):
         output = [
             'METHOD=%s' % self.method,
-            'URI="%s"' % self.uri,
             ]
+        if self.uri:
+            output.append('URI="%s"' % self.uri)
         if self.iv:
             output.append('IV=%s' % self.iv)
+        if self.keyformat:
+            output.append('KEYFORMAT="%s"' % self.keyformat)
+        if self.keyformatversions:
+            output.append('KEYFORMATVERSIONS="%s"' % self.keyformatversions)
 
         return '#EXT-X-KEY:' + ','.join(output)
 
@@ -442,7 +451,9 @@ class Key(BasePathMixin):
         return self.method == other.method and \
                self.uri == other.uri and \
                self.iv == other.iv and \
-               self.base_uri == other.base_uri
+               self.base_uri == other.base_uri and \
+               self.keyformat == other.keyformat and \
+               self.keyformatversions == other.keyformatversions
 
     def __ne__(self, other):
         return not self.__eq__(other)
