@@ -120,9 +120,9 @@ class M3U8(object):
         ('playlist_type',    'playlist_type')
         )
 
-    def __init__(self, content=None, base_path=None, base_uri=None):
+    def __init__(self, content=None, base_path=None, base_uri=None, strict=False):
         if content is not None:
-            self.data = parser.parse(content)
+            self.data = parser.parse(content, strict)
         else:
             self.data = {}
         self._base_uri = base_uri

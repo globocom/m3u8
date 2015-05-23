@@ -8,6 +8,7 @@ import datetime
 import itertools
 import re
 from m3u8 import protocol
+import exceptions
 
 '''
 http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.2
@@ -21,7 +22,15 @@ def cast_date_time(value):
 def format_date_time(value):
     return value.isoformat()
 
-def parse(content):
+class ParseError(exceptions.Exception):
+    def __init__(self, lineno, line):
+        self.lineno = lineno
+        self.line = line
+
+    def __str__(self):
+        return 'Syntax error in manifest on line %d: %s' % (self.lineno, self.line)
+
+def parse(content, strict=False):
     '''
     Given a M3U8 playlist content returns a dictionary with all data found
     '''
@@ -42,7 +51,9 @@ def parse(content):
         'expect_playlist': False,
         }
 
+    lineno = 0
     for line in string_to_lines(content):
+        lineno += 1
         line = line.strip()
 
         if line.startswith(protocol.ext_x_byterange):
@@ -99,6 +110,13 @@ def parse(content):
 
         elif line.startswith(protocol.ext_x_endlist):
             data['is_endlist'] = True
+
+        elif line.startswith('#'):
+            # comment
+            pass
+
+        elif strict:
+            raise ParseError(lineno, line)
 
     return data
 
