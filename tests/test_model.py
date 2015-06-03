@@ -318,7 +318,11 @@ def test_no_playlist_type_leaves_attribute_empty():
 # dump m3u8
 
 def test_dumps_should_build_same_string():
-    playlists_model = [playlists.PLAYLIST_WITH_NON_INTEGER_DURATION, playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV]
+    playlists_model = [
+        playlists.PLAYLIST_WITH_NON_INTEGER_DURATION,
+        playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS,
+        playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV,
+    ]
     for playlist in playlists_model:
         obj = m3u8.M3U8(playlist)
         expected = playlist.replace(', IV', ',IV').strip()
@@ -362,6 +366,13 @@ def test_dump_should_work_for_variant_playlists_with_iframe_playlists():
     obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS)
 
     expected = playlists.VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS.strip()
+
+    assert expected == obj.dumps().strip()
+
+def test_dump_should_work_for_variant_playlists_with_media():
+    obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_MEDIA)
+
+    expected = playlists.VARIANT_PLAYLIST_WITH_MEDIA.strip()
 
     assert expected == obj.dumps().strip()
 
@@ -523,6 +534,27 @@ def test_m3u8_should_propagate_base_uri_to_key():
     obj.base_uri = '/any/where/'
     assert '../key.bin' == obj.key.uri
     assert '/any/key.bin' == obj.key.absolute_uri
+
+def test_m3u8_should_propagate_base_uri_to_media():
+    content = playlists.VARIANT_PLAYLIST_WITH_MEDIA
+    obj = m3u8.M3U8(content, base_uri='/any/path/')
+    assert 'captions.m3u8' == obj.media[0].uri
+    assert '/any/path/captions.m3u8' == obj.media[0].absolute_uri
+    obj.base_uri = '/any/where/'
+    assert 'captions.m3u8' == obj.media[0].uri
+    assert '/any/where/captions.m3u8' == obj.media[0].absolute_uri
+
+def test_m3u8_should_not_fail_on_closed_captions():
+    content = playlists.VARIANT_PLAYLIST_WITH_CLOSED_CAPTIONS
+    obj = m3u8.M3U8(content, base_uri='/any/path/')
+    assert 'video-800k.m3u8' == obj.playlists[0].uri
+    assert '/any/path/video-800k.m3u8' == obj.playlists[0].absolute_uri
+    obj.base_uri = '/any/where/'
+    assert 'video-800k.m3u8' == obj.playlists[0].uri
+    assert '/any/where/video-800k.m3u8' == obj.playlists[0].absolute_uri
+    assert obj.media[0].uri is None
+    assert obj.media[0].absolute_uri is None
+    assert obj.media[0].type == 'CLOSED-CAPTIONS'
 
 
 # custom asserts
