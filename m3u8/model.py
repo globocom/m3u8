@@ -337,7 +337,7 @@ class Segment(BasePathMixin):
         self.byterange = byterange
         self.program_date_time = program_date_time
         self.discontinuity = discontinuity
-        self.key = Key(base_uri=base_uri,**key) if key else None
+        self.key = Key(base_uri=base_uri,**key) if key and 'uri' in key else None
 
 
     def dumps(self, last_segment):
