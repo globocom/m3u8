@@ -316,7 +316,7 @@ class Segment(BasePathMixin):
       http://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.4.11
 
     `cue_out`
-      Returns a boolean indicating if a EXT-X-CUE-OUT tag exists
+      Returns a boolean indicating if a EXT-X-CUE-OUT-CONT tag exists
 
     `duration`
       duration attribute from EXTINF parameter
@@ -354,7 +354,7 @@ class Segment(BasePathMixin):
             output.append('#EXT-X-DISCONTINUITY\n')
             output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' % parser.format_date_time(self.program_date_time))
         if self.cue_out:
-            output.append('#EXT-X-CUE-OUT\n')
+            output.append('#EXT-X-CUE-OUT-CONT\n')
         output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
         if self.title:
             output.append(quoted(self.title))

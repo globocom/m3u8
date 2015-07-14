@@ -59,7 +59,6 @@ def test_segment_discontinuity_attribute():
 
 def test_segment_cue_out_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_PLAYLIST)
-    print obj
     segments = obj.segments
 
     assert segments[0].cue_out == True
