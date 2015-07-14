@@ -122,8 +122,8 @@ def _parse_ts_chunk(line, data, state):
         segment['program_date_time'] = state['current_program_date_time']
         state['current_program_date_time'] += datetime.timedelta(seconds=segment['duration'])
     segment['uri'] = line
-    segment['discontinuity'] = state.pop('discontinuity', False)
     segment['cue_out'] = state.pop('cue_out', False)
+    segment['discontinuity'] = state.pop('discontinuity', False)
     if state.get('current_key'):
       segment['key'] = state['current_key']
     data['segments'].append(segment)
