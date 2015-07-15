@@ -315,6 +315,9 @@ class Segment(BasePathMixin):
       Returns a boolean indicating if a EXT-X-DISCONTINUITY tag exists
       http://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.4.11
 
+    `cue_out`
+      Returns a boolean indicating if a EXT-X-CUE-OUT-CONT tag exists
+
     `duration`
       duration attribute from EXTINF parameter
 
@@ -329,7 +332,7 @@ class Segment(BasePathMixin):
     '''
 
     def __init__(self, uri, base_uri, program_date_time=None, duration=None,
-                 title=None, byterange=None, discontinuity=False, key=None):
+                 title=None, byterange=None, cue_out=False, discontinuity=False, key=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -337,6 +340,7 @@ class Segment(BasePathMixin):
         self.byterange = byterange
         self.program_date_time = program_date_time
         self.discontinuity = discontinuity
+        self.cue_out = cue_out
         self.key = Key(base_uri=base_uri,**key) if key else None
 
 
@@ -349,7 +353,8 @@ class Segment(BasePathMixin):
         if self.discontinuity:
             output.append('#EXT-X-DISCONTINUITY\n')
             output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' % parser.format_date_time(self.program_date_time))
-
+        if self.cue_out:
+            output.append('#EXT-X-CUE-OUT-CONT\n')
         output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
         if self.title:
             output.append(quoted(self.title))
