@@ -112,6 +112,10 @@ def parse(content, strict=False):
             # comment
             pass
 
+        elif line.strip() == '':
+            # blank lines are legal
+            pass
+
         elif state['expect_segment']:
             _parse_ts_chunk(line, data, state)
             state['expect_segment'] = False
