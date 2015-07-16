@@ -383,6 +383,14 @@ def test_dump_should_work_for_iframe_playlists():
 
     assert expected == obj.dumps().strip()
 
+    obj = m3u8.M3U8(playlists.IFRAME_PLAYLIST2)
+
+    expected = playlists.IFRAME_PLAYLIST.strip()
+
+    # expected that dump will reverse EXTINF and EXT-X-BYTERANGE,
+    # hence IFRAME_PLAYLIST dump from IFRAME_PLAYLIST2 parse.
+    assert expected == obj.dumps().strip()
+
 def test_dump_should_include_program_date_time():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
