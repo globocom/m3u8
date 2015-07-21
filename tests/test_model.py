@@ -313,6 +313,14 @@ def test_event_playlist_type_should_be_imported_as_a_simple_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_EVENT_PLAYLIST_TYPE)
     assert obj.playlist_type == 'event'
 
+def test_independent_segments_should_be_true():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_INDEPENDENT_SEGMENTS)
+    assert obj.is_independent_segments
+
+def test_independent_segments_should_be_false():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_EVENT_PLAYLIST_TYPE)
+    assert not obj.is_independent_segments
+
 def test_no_playlist_type_leaves_attribute_empty():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     assert obj.playlist_type is None
