@@ -30,6 +30,7 @@ def parse(content):
         'is_variant': False,
         'is_endlist': False,
         'is_i_frames_only': False,
+        'is_independent_segments': False,
         'playlist_type': None,
         'playlists': [],
         'iframe_playlists': [],
@@ -98,6 +99,9 @@ def parse(content):
 
         elif line.startswith(protocol.ext_i_frames_only):
             data['is_i_frames_only'] = True
+
+        elif line.startswith(protocol.ext_is_independent_segments):
+            data['is_independent_segments'] = True
 
         elif line.startswith(protocol.ext_x_endlist):
             data['is_endlist'] = True
