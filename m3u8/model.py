@@ -105,6 +105,10 @@ class M3U8(object):
         Returns true if EXT-X-I-FRAMES-ONLY tag present in M3U8.
         http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.12
 
+      `is_independent_segments`
+        Returns true if EXT-X-INDEPENDENT-SEGMENTS tag present in M3U8.
+        https://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.4.16
+
     '''
 
     simple_attributes = (
@@ -115,6 +119,7 @@ class M3U8(object):
         ('target_duration',  'targetduration'),
         ('media_sequence',   'media_sequence'),
         ('program_date_time',   'program_date_time'),
+        ('is_independent_segments', 'is_independent_segments'),
         ('version',          'version'),
         ('allow_cache',      'allow_cache'),
         ('playlist_type',    'playlist_type')
@@ -212,6 +217,8 @@ class M3U8(object):
         You could also use unicode(<this obj>) or str(<this obj>)
         '''
         output = ['#EXTM3U']
+        if self.is_independent_segments:
+            output.append('#EXT-X-INDEPENDENT-SEGMENTS')
         if self.media_sequence > 0:
             output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
         if self.allow_cache:
