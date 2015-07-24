@@ -20,10 +20,10 @@ except ImportError:
 
 
 from m3u8.model import M3U8, Playlist, IFramePlaylist, Media, Segment
-from m3u8.parser import parse, is_url
+from m3u8.parser import parse, is_url, ParseError
 
 __all__ = ('M3U8', 'Playlist', 'IFramePlaylist', 'Media',
-           'Segment', 'loads', 'load', 'parse')
+           'Segment', 'loads', 'load', 'parse', 'ParseError')
 
 def loads(content):
     '''

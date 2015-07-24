@@ -8,6 +8,7 @@ import datetime
 import itertools
 import re
 from m3u8 import protocol
+import exceptions
 
 '''
 http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.2
@@ -21,7 +22,15 @@ def cast_date_time(value):
 def format_date_time(value):
     return value.isoformat()
 
-def parse(content):
+class ParseError(exceptions.Exception):
+    def __init__(self, lineno, line):
+        self.lineno = lineno
+        self.line = line
+
+    def __str__(self):
+        return 'Syntax error in manifest on line %d: %s' % (self.lineno, self.line)
+
+def parse(content, strict=False):
     '''
     Given a M3U8 playlist content returns a dictionary with all data found
     '''
@@ -42,36 +51,36 @@ def parse(content):
         'expect_playlist': False,
         }
 
+    lineno = 0
     for line in string_to_lines(content):
+        lineno += 1
         line = line.strip()
 
         if line.startswith(protocol.ext_x_byterange):
             _parse_byterange(line, state)
             state['expect_segment'] = True
 
-        elif state['expect_segment']:
-            _parse_ts_chunk(line, data, state)
-            state['expect_segment'] = False
-
-        elif state['expect_playlist']:
-            _parse_variant_playlist(line, data, state)
-            state['expect_playlist'] = False
-
         elif line.startswith(protocol.ext_x_targetduration):
             _parse_simple_parameter(line, data, float)
+
         elif line.startswith(protocol.ext_x_media_sequence):
             _parse_simple_parameter(line, data, int)
+
         elif line.startswith(protocol.ext_x_program_date_time):
             _, program_date_time = _parse_simple_parameter_raw_value(line, cast_date_time)
             if not data.get('program_date_time'):
                 data['program_date_time'] = program_date_time
             state['current_program_date_time'] = program_date_time
+
         elif line.startswith(protocol.ext_x_discontinuity):
             state['discontinuity'] = True
+
         elif line.startswith(protocol.ext_x_cue_out):
             state['cue_out'] = True
+
         elif line.startswith(protocol.ext_x_version):
             _parse_simple_parameter(line, data)
+
         elif line.startswith(protocol.ext_x_allow_cache):
             _parse_simple_parameter(line, data)
 
@@ -102,6 +111,25 @@ def parse(content):
         elif line.startswith(protocol.ext_x_endlist):
             data['is_endlist'] = True
 
+        elif line.startswith('#'):
+            # comment
+            pass
+
+        elif line.strip() == '':
+            # blank lines are legal
+            pass
+
+        elif state['expect_segment']:
+            _parse_ts_chunk(line, data, state)
+            state['expect_segment'] = False
+
+        elif state['expect_playlist']:
+            _parse_variant_playlist(line, data, state)
+            state['expect_playlist'] = False
+
+        elif strict:
+            raise ParseError(lineno, line)
+
     return data
 
 def _parse_key(line):
@@ -114,7 +142,10 @@ def _parse_key(line):
 
 def _parse_extinf(line, data, state):
     duration, title = line.replace(protocol.extinf + ':', '').split(',')
-    state['segment'] = {'duration': float(duration), 'title': remove_quotes(title)}
+    if 'segment' not in state:
+        state['segment'] = {}
+    state['segment']['duration'] = float(duration)
+    state['segment']['title'] = remove_quotes(title)
 
 def _parse_ts_chunk(line, data, state):
     segment = state.pop('segment')
@@ -173,6 +204,8 @@ def _parse_variant_playlist(line, data, state):
     data['playlists'].append(playlist)
 
 def _parse_byterange(line, state):
+    if 'segment' not in state:
+        state['segment'] = {}
     state['segment']['byterange'] = line.replace(protocol.ext_x_byterange + ':', '')
 
 def _parse_simple_parameter_raw_value(line, cast_to=str, normalize=False):
