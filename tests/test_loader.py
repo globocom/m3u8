@@ -68,7 +68,7 @@ def test_load_should_create_object_from_uri_with_relative_segments():
     prefix = urlparsed.scheme + '://' + urlparsed.netloc
     expected_key_abspath = '%s%s/key.bin' % (prefix, os.path.normpath(base_uri + '/..'))
     expected_key_path = '../key.bin'
-    expected_ts1_abspath = '%s%sentire1.ts' % (prefix, base_uri + '/')
+    expected_ts1_abspath = '%s/entire1.ts' % (prefix)
     expected_ts1_path = '/entire1.ts'
     expected_ts2_abspath = '%s%sentire2.ts' % (prefix, os.path.normpath(base_uri + '/..') + '/')
     expected_ts2_path = '../entire2.ts'
