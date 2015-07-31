@@ -391,6 +391,14 @@ def test_dump_should_work_for_iframe_playlists():
     # hence IFRAME_PLAYLIST dump from IFRAME_PLAYLIST2 parse.
     assert expected == obj.dumps().strip()
 
+    obj = m3u8.M3U8(playlists.IFRAME_PLAYLIST2)
+
+    expected = playlists.IFRAME_PLAYLIST.strip()
+
+    # expected that dump will reverse EXTINF and EXT-X-BYTERANGE,
+    # hence IFRAME_PLAYLIST dump from IFRAME_PLAYLIST2 parse.
+    assert expected == obj.dumps().strip()
+
 def test_dump_should_include_program_date_time():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
@@ -529,9 +537,13 @@ def test_m3u8_should_propagate_base_uri_to_segments():
     obj = m3u8.M3U8(content, base_uri='/any/path')
     assert '/entire1.ts' == obj.segments[0].uri
     assert '/any/path/entire1.ts' == obj.segments[0].absolute_uri
+    assert 'entire4.ts' == obj.segments[3].uri
+    assert '/any/path/entire4.ts' == obj.segments[3].absolute_uri
     obj.base_uri = '/any/where/'
     assert '/entire1.ts' == obj.segments[0].uri
     assert '/any/where/entire1.ts' == obj.segments[0].absolute_uri
+    assert 'entire4.ts' == obj.segments[3].uri
+    assert '/any/where/entire4.ts' == obj.segments[3].absolute_uri
 
 def test_m3u8_should_propagate_base_uri_to_key():
     with open(playlists.RELATIVE_PLAYLIST_FILENAME) as f:

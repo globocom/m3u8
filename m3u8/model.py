@@ -131,6 +131,10 @@ class M3U8(object):
         else:
             self.data = {}
         self._base_uri = base_uri
+        if self._base_uri:
+            if not self._base_uri.endswith('/'):
+                self._base_uri += '/'
+
         self._initialize_attributes()
         self.base_path = base_path
 
@@ -359,7 +363,8 @@ class Segment(BasePathMixin):
 
         if self.discontinuity:
             output.append('#EXT-X-DISCONTINUITY\n')
-            output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' % parser.format_date_time(self.program_date_time))
+            if self.program_date_time:
+                output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' % parser.format_date_time(self.program_date_time))
         if self.cue_out:
             output.append('#EXT-X-CUE-OUT-CONT\n')
         output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
@@ -579,7 +584,7 @@ class Media(BasePathMixin):
     def __init__(self, uri=None, type=None, group_id=None, language=None,
                  name=None, default=None, autoselect=None, forced=None,
                  characteristics=None, assoc_language=None,
-                 instream_id=None,base_uri=None):
+                 instream_id=None,base_uri=None, **extras):
         self.base_uri = base_uri
         self.uri = uri
         self.type = type
@@ -592,6 +597,7 @@ class Media(BasePathMixin):
         self.assoc_language = assoc_language
         self.instream_id = instream_id
         self.characteristics = characteristics
+        self.extras = extras
 
     def dumps(self):
         media_out = []
@@ -649,10 +655,7 @@ def quoted(string):
 
 def _urijoin(base_uri, path):
     if parser.is_url(base_uri):
-        parsed_url = url_parser.urlparse(base_uri)
-        prefix = parsed_url.scheme + '://' + parsed_url.netloc
-        new_path = posixpath.normpath(parsed_url.path + '/' + path)
-        return url_parser.urljoin(prefix, new_path.strip('/'))
+        return url_parser.urljoin(base_uri, path)
     else:
         return os.path.normpath(os.path.join(base_uri, path.strip('/')))
 
