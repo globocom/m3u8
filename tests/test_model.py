@@ -60,10 +60,11 @@ def test_segment_discontinuity_attribute():
 def test_segment_cue_out_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_PLAYLIST)
     segments = obj.segments
+    print segments[0].__dict__
 
-    assert segments[0].cue_out == True
     assert segments[1].cue_out == True
     assert segments[2].cue_out == True
+    assert segments[3].cue_out == True
 
 def test_key_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
@@ -515,7 +516,7 @@ def test_0_media_sequence_added_to_file():
     obj = m3u8.M3U8()
     obj.media_sequence = 0
     result = obj.dumps()
-    expected = '#EXTM3U\n#EXT-X-MEDIA-SEQUENCE:0\n'
+    expected = '#EXTM3U\n'
     assert result == expected
 
 def test_none_media_sequence_gracefully_ignored():

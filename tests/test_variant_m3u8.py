@@ -90,3 +90,38 @@ CODECS="avc1.4d001f",URI="video-800k-iframes.m3u8"
 CODECS="avc1.4d001f",URI="video-1200k-iframes.m3u8"
 """
     assert expected_content == variant_m3u8.dumps()
+
+
+def test_variant_playlist_with_average_bandwidth():
+    variant_m3u8 = m3u8.M3U8()
+
+    low_playlist = m3u8.Playlist(
+        'http://example.com/low.m3u8',
+        stream_info={'bandwidth': 1280000,
+                     'average_bandwidth': 1257891,
+                     'program_id': 1,
+                     'subtitles': 'subs'},
+        media=[],
+        base_uri=None
+    )
+    high_playlist = m3u8.Playlist(
+        'http://example.com/high.m3u8',
+        stream_info={'bandwidth': 3000000,
+                     'average_bandwidth': 2857123,
+                     'program_id': 1,
+                     'subtitles': 'subs'},
+       media=[],
+       base_uri=None
+    )
+
+    variant_m3u8.add_playlist(low_playlist)
+    variant_m3u8.add_playlist(high_playlist)
+
+    expected_content = """\
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1280000,AVERAGE-BANDWIDTH=1257891
+http://example.com/low.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=3000000,AVERAGE-BANDWIDTH=2857123
+http://example.com/high.m3u8
+"""
+    assert expected_content == variant_m3u8.dumps()
