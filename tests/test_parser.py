@@ -86,6 +86,18 @@ def test_should_parse_variant_playlist():
     assert 65000 == playlists_list[-1]['stream_info']['bandwidth']
     assert 'mp4a.40.5,avc1.42801e' == playlists_list[-1]['stream_info']['codecs']
 
+def test_should_parse_variant_playlist_with_average_bandwidth():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_AVERAGE_BANDWIDTH)
+    playlists_list = list(data['playlists'])
+    assert 1280000 == playlists_list[0]['stream_info']['bandwidth']
+    assert 1252345 == playlists_list[0]['stream_info']['average_bandwidth']
+    assert 2560000 == playlists_list[1]['stream_info']['bandwidth']
+    assert 2466570 == playlists_list[1]['stream_info']['average_bandwidth']
+    assert 7680000 == playlists_list[2]['stream_info']['bandwidth']
+    assert 7560423 == playlists_list[2]['stream_info']['average_bandwidth']
+    assert 65000 == playlists_list[3]['stream_info']['bandwidth']
+    assert 63005 == playlists_list[3]['stream_info']['average_bandwidth']
+
 def test_should_parse_variant_playlist_with_iframe_playlists():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS)
     iframe_playlists = list(data['iframe_playlists'])

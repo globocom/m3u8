@@ -184,6 +184,7 @@ def _parse_stream_inf(line, data, state):
     atribute_parser = remove_quotes_parser('codecs', 'audio', 'video', 'subtitles')
     atribute_parser["program_id"] = int
     atribute_parser["bandwidth"] = int
+    atribute_parser["average_bandwidth"] = int
     state['stream_info'] = _parse_attribute_list(protocol.ext_x_stream_inf, line, atribute_parser)
 
 def _parse_i_frame_stream_inf(line, data):

@@ -5,7 +5,6 @@
 
 from collections import namedtuple
 import os
-import posixpath
 import errno
 import math
 
@@ -457,7 +456,8 @@ class Playlist(BasePathMixin):
     Attributes:
 
     `stream_info` is a named tuple containing the attributes: `program_id`,
-    `bandwidth`,`resolution`, `codecs` and `resolution` which is a a tuple (w, h) of integers
+    `bandwidth`, `average_bandwidth`, `resolution`, `codecs` and `resolution`
+    which is a a tuple (w, h) of integers
 
     `media` is a list of related Media entries.
 
@@ -474,10 +474,13 @@ class Playlist(BasePathMixin):
         else:
             resolution_pair = None
 
-        self.stream_info = StreamInfo(bandwidth=stream_info['bandwidth'],
-                                      program_id=stream_info.get('program_id'),
-                                      resolution=resolution_pair,
-                                      codecs=stream_info.get('codecs'))
+        self.stream_info = StreamInfo(
+            bandwidth=stream_info['bandwidth'],
+            average_bandwidth=stream_info.get('average_bandwidth'),
+            program_id=stream_info.get('program_id'),
+            resolution=resolution_pair,
+            codecs=stream_info.get('codecs')
+        )
         self.media = []
         for media_type in ('audio', 'video', 'subtitles'):
             group_id = stream_info.get(media_type)
@@ -492,6 +495,9 @@ class Playlist(BasePathMixin):
             stream_inf.append('PROGRAM-ID=%d' % self.stream_info.program_id)
         if self.stream_info.bandwidth:
             stream_inf.append('BANDWIDTH=%d' % self.stream_info.bandwidth)
+        if self.stream_info.average_bandwidth:
+            stream_inf.append('AVERAGE-BANDWIDTH=%d' %
+                              self.stream_info.average_bandwidth)
         if self.stream_info.resolution:
             res = str(self.stream_info.resolution[0]) + 'x' + str(self.stream_info.resolution[1])
             stream_inf.append('RESOLUTION=' + res)
@@ -530,6 +536,7 @@ class IFramePlaylist(BasePathMixin):
 
         self.iframe_stream_info = StreamInfo(
             bandwidth=iframe_stream_info.get('bandwidth'),
+            average_bandwidth=None,
             program_id=iframe_stream_info.get('program_id'),
             resolution=resolution_pair,
             codecs=iframe_stream_info.get('codecs')
@@ -555,7 +562,10 @@ class IFramePlaylist(BasePathMixin):
 
         return '#EXT-X-I-FRAME-STREAM-INF:' + ','.join(iframe_stream_inf)
 
-StreamInfo = namedtuple('StreamInfo', ['bandwidth', 'program_id', 'resolution', 'codecs'])
+StreamInfo = namedtuple(
+    'StreamInfo',
+    ['bandwidth', 'average_bandwidth', 'program_id', 'resolution', 'codecs']
+)
 
 class Media(BasePathMixin):
     '''
