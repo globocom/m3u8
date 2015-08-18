@@ -1,3 +1,10 @@
+.. image:: https://travis-ci.org/globocom/m3u8.svg
+    :target: https://travis-ci.org/globocom/m3u8
+
+.. image:: https://coveralls.io/repos/globocom/m3u8/badge.png?branch=master
+    :target: https://coveralls.io/r/globocom/m3u8?branch=master
+
+
 m3u8
 ====
 
@@ -57,17 +64,37 @@ the playlist object used in the for loop above has a few attributes:
 -  ``uri``: the url to the stream
 -  ``stream_info``: a ``StreamInfo`` object (actually a namedtuple) with
    all the attributes available to `#EXT-X-STREAM-INF`_
+-  ``media``: a list of related ``Media`` objects with all the attributes
+   available to `#EXT-X-MEDIA`_
+-  ``playlist_type``: the type of the playlist, which can be one of `VOD`_
+   (video on demand) or `EVENT`_
 
 **NOTE: the following attributes are not implemented yet**, follow
 `issue 4`_ for updates
 
--  ``iframe_stream_info``: usually ``None``, unless it's a playlist with
-   `I-Frames`_, in this case it's also a namedtuple ``IFrameStreamInfo``
-   with all the attribute available to `#EXT-X-I-FRAME-STREAM-INF`_
 -  ``alternative_audios``: its an empty list, unless it's a playlist
    with `Alternative audio`_, in this case it's a list with ``Media``
-   objects with all the attributes available to `#X-EXT-MEDIA`_
+   objects with all the attributes available to `#EXT-X-MEDIA`_
 -  ``alternative_videos``: same as ``alternative_audios``
+
+A variant playlist can also have links to `I-frame playlists`_, which are used
+to specify where the I-frames are in a video. See `Apple's documentation`_ on
+this for more information. These I-frame playlists can be accessed in a similar
+way to regular playlists.
+
+::
+
+    variant_m3u8 = m3u8.loads('#EXTM3U ... contains a variant stream ...')
+
+    for iframe_playlist in variant_m3u8.iframe_playlists:
+        iframe_playlist.uri
+        iframe_playlist.iframe_stream_info.bandwidth
+
+The iframe_playlist object used in the for loop above has a few attributes:
+
+-  ``uri``: the url to the I-frame playlist
+-  ``base_uri``: the base uri of the variant playlist (if given)
+-  ``iframe_stream_info``: a ``StreamInfo`` object (same as a regular playlist)
 
 Running Tests
 =============
@@ -93,9 +120,11 @@ the same thing.
 .. _issue 1: https://github.com/globocom/m3u8/issues/1
 .. _variant streams: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-6.2.4
 .. _example here: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.5
-.. _#EXT-X-STREAM-INF: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.10
+.. _#EXT-X-STREAM-INF: https://tools.ietf.org/html/draft-pantos-http-live-streaming-16#section-4.3.4.2
 .. _issue 4: https://github.com/globocom/m3u8/issues/4
-.. _I-Frames: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.13
-.. _#EXT-X-I-FRAME-STREAM-INF: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.13
+.. _I-frame playlists: https://tools.ietf.org/html/draft-pantos-http-live-streaming-16#section-4.3.4.3
+.. _Apple's documentation: https://developer.apple.com/library/ios/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-I_FRAME_PLAYLIST
 .. _Alternative audio: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.7
-.. _#X-EXT-MEDIA: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.9
+.. _#EXT-X-MEDIA: https://tools.ietf.org/html/draft-pantos-http-live-streaming-16#section-4.3.4.1
+.. _VOD: https://developer.apple.com/library/mac/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-TNTAG2
+.. _EVENT: https://developer.apple.com/library/mac/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-EVENT_PLAYLIST

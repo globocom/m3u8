@@ -3,7 +3,7 @@
 test_server_stdout=tests/server.stdout
 
 function install_deps {
-    pip install pytest bottle
+    pip install -r requirements-dev.txt
 }
 
 function start_server {
@@ -17,14 +17,16 @@ function stop_server {
 }
 
 function run {
-    PYTHONPATH=. py.test -vs tests/
+    PYTHONPATH=. py.test -vv --cov-report term-missing --cov m3u8 tests/
 }
 
 function main {
     install_deps
     start_server
     run
+    retval=$?
     stop_server
+    return "$retval"
 }
 
 if [ -z "$1" ]; then
