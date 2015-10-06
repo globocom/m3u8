@@ -18,12 +18,19 @@ except ImportError:
     from urllib.request import urlopen as url_opener
     urlopen = url_opener
 
+<<<<<<< HEAD
+from m3u8.model import M3U8, Playlist, IFramePlaylist
+from m3u8.parser import parse, is_url
+
+__all__ = 'M3U8', 'Playlist', 'IFramePlaylist', 'loads', 'load', 'parse'
+=======
 
 from m3u8.model import M3U8, Playlist, IFramePlaylist, Media, Segment
 from m3u8.parser import parse, is_url, ParseError
 
 __all__ = ('M3U8', 'Playlist', 'IFramePlaylist', 'Media',
            'Segment', 'loads', 'load', 'parse', 'ParseError')
+>>>>>>> globocom/master
 
 def loads(content):
     '''
