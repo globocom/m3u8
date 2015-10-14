@@ -8,7 +8,12 @@ import datetime
 import itertools
 import re
 from m3u8 import protocol
-import exceptions
+
+try:
+    import exceptions
+    ExceptionBaseClass = exceptions.Exception
+except ImportError:
+    ExceptionBaseClass = object
 
 '''
 http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.2
@@ -22,7 +27,7 @@ def cast_date_time(value):
 def format_date_time(value):
     return value.isoformat()
 
-class ParseError(exceptions.Exception):
+class ParseError(ExceptionBaseClass):
     def __init__(self, lineno, line):
         self.lineno = lineno
         self.line = line
