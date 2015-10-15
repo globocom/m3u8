@@ -463,8 +463,6 @@ def test_should_normalize_variant_streams_urls_if_base_path_passed_to_constructo
 
     assert obj.dumps().strip() == expected
 
-<<<<<<< HEAD
-=======
 def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated():
     base_path = 'http://videoserver.com/hls/live'
 
@@ -478,7 +476,6 @@ def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated()
         .strip()
 
     assert obj.dumps() == expected
->>>>>>> globocom/master
 
 def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated():
     base_path = 'http://videoserver.com/hls/live'
@@ -559,14 +556,6 @@ def test_m3u8_should_propagate_base_uri_to_key():
     assert '../key.bin' == obj.key.uri
     assert '/any/key.bin' == obj.key.absolute_uri
 
-def test_dump_should_work_with_iframe_playlist():
-    content = SIMPLE_IFRAME_PLAYLIST
-    obj = m3u8.M3U8(content, baseuri = 'any/path')
-    assert 'main.ts' == obj.segments[0].uri
-    assert 'any/path/main.ts' == obj.segments[0].absolute_uri
-    obj.baseuri = 'http://videoserver.com/hls/live'
-    assert 'http://videoserver.com/hls/live/main.ts' == obj.segments[0].absolute_uri
-    assert obj.dumps().strip() == content.strip()
 
 # custom asserts
 
