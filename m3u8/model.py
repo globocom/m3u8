@@ -222,7 +222,7 @@ class M3U8(object):
         output = ['#EXTM3U']
         if self.is_independent_segments:
             output.append('#EXT-X-INDEPENDENT-SEGMENTS')
-        if self.media_sequence > 0:
+        if self.media_sequence:
             output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
         if self.allow_cache:
             output.append('#EXT-X-ALLOW-CACHE:' + self.allow_cache.upper())
