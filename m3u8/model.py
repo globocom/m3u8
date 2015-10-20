@@ -380,7 +380,7 @@ class Segment(BasePathMixin):
         return ''.join(output)
 
     def __str__(self):
-        return self.dumps()
+        return self.dumps(None)
 
 
 class SegmentList(list, GroupedBasePathMixin):
@@ -469,6 +469,7 @@ class Playlist(BasePathMixin):
 
         resolution = stream_info.get('resolution')
         if resolution != None:
+            resolution = resolution.strip('"')
             values = resolution.split('x')
             resolution_pair = (int(values[0]), int(values[1]))
         else:
