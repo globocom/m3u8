@@ -1,0 +1,6 @@
+-r requirements.txt
+arrow
+pytest
+bottle
+pytest-cov
+python-coveralls
