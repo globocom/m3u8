@@ -3,7 +3,7 @@
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
-import m3u8
+import m3u8, playlists
 
 def test_create_a_variant_m3u8_with_two_playlists():
     variant_m3u8 = m3u8.M3U8()
@@ -125,3 +125,7 @@ http://example.com/low.m3u8
 http://example.com/high.m3u8
 """
     assert expected_content == variant_m3u8.dumps()
+
+def test_variant_playlist_with_multiple_media():
+    variant_m3u8 = m3u8.loads(playlists.MULTI_MEDIA_PLAYLIST)
+    assert variant_m3u8.dumps() == playlists.MULTI_MEDIA_PLAYLIST
