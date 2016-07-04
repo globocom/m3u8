@@ -504,7 +504,7 @@ class Playlist(BasePathMixin):
             stream_inf.append('RESOLUTION=' + res)
         if self.stream_info.codecs:
             stream_inf.append('CODECS=' + quoted(self.stream_info.codecs))
- 
+
         media_types = []
         for media in self.media:
             if media.type in media_types:
@@ -513,7 +513,7 @@ class Playlist(BasePathMixin):
                 media_types += [media.type]
                 media_type = media.type.upper()
                 stream_inf.append('%s="%s"' % (media_type, media.group_id))
-                
+
         return '#EXT-X-STREAM-INF:' + ','.join(stream_inf) + '\n' + self.uri
 
 class IFramePlaylist(BasePathMixin):
