@@ -12,6 +12,7 @@ import m3u8
 import pytest
 import playlists
 import socket
+import urllib2
 
 def test_loads_should_create_object_from_string():
     obj = m3u8.loads(playlists.SIMPLE_PLAYLIST)
@@ -106,6 +107,8 @@ def test_raise_timeout_exception_if_timeout_happens_when_loading_from_uri():
     try:
         obj = m3u8.load(playlists.TIMEOUT_SIMPLE_PLAYLIST_URI, timeout=1)
     except socket.timeout:
+        assert True
+    except urllib2.URLError:
         assert True
     except Exception as e:
         assert False
