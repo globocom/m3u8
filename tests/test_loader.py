@@ -107,7 +107,7 @@ def test_raise_timeout_exception_if_timeout_happens_when_loading_from_uri():
         obj = m3u8.load(playlists.TIMEOUT_SIMPLE_PLAYLIST_URI, timeout=1)
     except socket.timeout:
         assert True
-    except Exception, e:
+    except Exception as e:
         assert False
     else:
         assert False
