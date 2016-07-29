@@ -11,8 +11,6 @@ except ImportError:
 import m3u8
 import pytest
 import playlists
-import socket
-import urllib2
 
 def test_loads_should_create_object_from_string():
     obj = m3u8.loads(playlists.SIMPLE_PLAYLIST)
