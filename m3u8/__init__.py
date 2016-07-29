@@ -7,7 +7,6 @@ import sys
 PYTHON_MAJOR_VERSION = sys.version_info
 
 import os
-import socket
 import posixpath
 
 try:
@@ -37,6 +36,7 @@ def load(uri, timeout = None):
     '''
     Retrieves the content from a given URI and returns a M3U8 object.
     Raises ValueError if invalid content or IOError if request fails.
+    Raises socket.timeout if timeout happens when loading from uri
     '''
     if is_url(uri):
         return _load_from_uri(uri, timeout)
@@ -45,9 +45,7 @@ def load(uri, timeout = None):
 
 # Support for python3 inspired by https://github.com/szemtiv/m3u8/
 def _load_from_uri(uri, timeout = None):
-    if timeout is not None:
-        socket.setdefaulttimeout(timeout)
-    resource = urlopen(uri)
+    resource = urlopen(uri, timeout=timeout)
     base_uri = _parsed_url(_url_for(uri))
     if PYTHON_MAJOR_VERSION < (3,):
         content = _read_python2x(resource)
