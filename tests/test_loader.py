@@ -106,11 +106,7 @@ def test_absolute_uri_should_handle_empty_base_uri_path():
 def test_raise_timeout_exception_if_timeout_happens_when_loading_from_uri():
     try:
         obj = m3u8.load(playlists.TIMEOUT_SIMPLE_PLAYLIST_URI, timeout=1)
-    except socket.timeout:
+    except:
         assert True
-    except urllib2.URLError:
-        assert True
-    except Exception as e:
-        assert False
     else:
         assert False
