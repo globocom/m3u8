@@ -9,6 +9,7 @@ from os.path import dirname, abspath, join
 
 from bottle import route, run, response, redirect
 import bottle
+import time
 
 playlists = abspath(join(dirname(__file__), 'playlists'))
 
@@ -18,6 +19,12 @@ def simple():
 
 @route('/simple.m3u8')
 def simple():
+    response.set_header('Content-Type', 'application/vnd.apple.mpegurl')
+    return m3u8_file('simple-playlist.m3u8')
+
+@route('/timeout_simple.m3u8')
+def simple():
+    time.sleep(5)
     response.set_header('Content-Type', 'application/vnd.apple.mpegurl')
     return m3u8_file('simple-playlist.m3u8')
 

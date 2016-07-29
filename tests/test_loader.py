@@ -101,3 +101,10 @@ def test_absolute_uri_should_handle_empty_base_uri_path():
     key = m3u8.model.Key(method='AES', uri='/key.bin', base_uri='http://example.com')
     assert 'http://example.com/key.bin' == key.absolute_uri
 
+def test_raise_timeout_exception_if_timeout_happens_when_loading_from_uri():
+    try:
+        obj = m3u8.load(playlists.TIMEOUT_SIMPLE_PLAYLIST_URI, timeout=1)
+    except:
+        assert True
+    else:
+        assert False

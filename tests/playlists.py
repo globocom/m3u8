@@ -18,7 +18,9 @@ http://media.example.com/entire.ts
 SIMPLE_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/simple-playlist.m3u8'))
 
 SIMPLE_PLAYLIST_URI = TEST_HOST + '/simple.m3u8'
+TIMEOUT_SIMPLE_PLAYLIST_URI = TEST_HOST + '/timeout_simple.m3u8'
 REDIRECT_PLAYLIST_URI = TEST_HOST + '/path/to/redirect_me'
+
 
 PLAYLIST_WITH_NON_INTEGER_DURATION = '''
 #EXTM3U
