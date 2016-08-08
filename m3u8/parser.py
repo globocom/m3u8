@@ -84,11 +84,14 @@ def parse(content, strict=False):
         elif line.startswith(protocol.ext_x_cue_out):
             _parse_cueout(line, state)
             state['cue_out'] = True
+            state['cue_start'] = True
 
         elif line.startswith(protocol.ext_x_cue_start):
             state['cue_start'] = True
+            state['cue_end'] = False
 
         elif line.startswith(protocol.ext_x_cue_end):
+            state['cue_start'] = False
             state['cue_end'] = True
 
         elif line.startswith(protocol.ext_x_version):

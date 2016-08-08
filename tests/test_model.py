@@ -65,10 +65,18 @@ def test_segment_cue_out_attribute():
     assert segments[2].cue_out == True
     assert segments[3].cue_out == False
 
+def test_segment_cue_period():
+    obj = m3u8.M3U8(playlists.CUE_OUT_PLAYLIST)
+    segments = obj.segments
+
+    assert segments[1].cue_start == True
+    assert segments[3].cue_end == True 
+
 def test_segment_scte35_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_WITH_SCTE35_PLAYLIST)
     segments = obj.segments
     assert segments[3].cue_start == True
+    assert segments[3].cue_end == False
     assert segments[9].cue_end == True
     assert segments[4].scte35 == '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg==' 
 
