@@ -328,6 +328,12 @@ class Segment(BasePathMixin):
     `cue_out`
       Returns a boolean indicating if a EXT-X-CUE-OUT-CONT tag exists
 
+    `scte35`
+      Base64 encoded SCTE35 metadata if available
+
+    `scte35_duration`
+      Planned SCTE35 duration
+
     `duration`
       duration attribute from EXTINF parameter
 
@@ -342,7 +348,8 @@ class Segment(BasePathMixin):
     '''
 
     def __init__(self, uri, base_uri, program_date_time=None, duration=None,
-                 title=None, byterange=None, cue_out=False, discontinuity=False, key=None):
+                 title=None, byterange=None, cue_out=False, discontinuity=False, key=None,
+                 scte35=None, scte35_duration=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -351,6 +358,8 @@ class Segment(BasePathMixin):
         self.program_date_time = program_date_time
         self.discontinuity = discontinuity
         self.cue_out = cue_out
+        self.scte35 = scte35
+        self.scte35_duration = scte35_duration
         self.key = Key(base_uri=base_uri,**key) if key else None
 
 
@@ -381,7 +390,6 @@ class Segment(BasePathMixin):
 
     def __str__(self):
         return self.dumps(None)
-
 
 class SegmentList(list, GroupedBasePathMixin):
 
