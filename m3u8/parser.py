@@ -86,14 +86,6 @@ def parse(content, strict=False):
             state['cue_out'] = True
             state['cue_start'] = True
 
-        elif line.startswith(protocol.ext_x_cue_start):
-            state['cue_start'] = True
-            state['cue_end'] = False
-
-        elif line.startswith(protocol.ext_x_cue_end):
-            state['cue_start'] = False
-            state['cue_end'] = True
-
         elif line.startswith(protocol.ext_x_version):
             _parse_simple_parameter(line, data)
 
@@ -173,8 +165,6 @@ def _parse_ts_chunk(line, data, state):
         state['current_program_date_time'] += datetime.timedelta(seconds=segment['duration'])
     segment['uri'] = line
     segment['cue_out'] = state.pop('cue_out', False)
-    segment['cue_start'] = state.pop('cue_start', False)
-    segment['cue_end'] = state.pop('cue_end', False)
     if state.get('current_cue_out_scte35'):
         segment['scte35'] = state['current_cue_out_scte35']
         segment['scte35_duration'] = state['current_cue_out_duration'] 

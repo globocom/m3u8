@@ -328,12 +328,6 @@ class Segment(BasePathMixin):
     `cue_out`
       Returns a boolean indicating if a EXT-X-CUE-OUT-CONT tag exists
 
-    `cue_start`
-      Returns a boolean indicating if a EXT-X-CUE-OUT tag exists
-
-    `cue_end`
-      Returns a boolean indicating if a EXT-X-CUE-IN tag exists
-
     `scte35`
       Base64 encoded SCTE35 metadata if available
 
@@ -355,7 +349,7 @@ class Segment(BasePathMixin):
 
     def __init__(self, uri, base_uri, program_date_time=None, duration=None,
                  title=None, byterange=None, cue_out=False, discontinuity=False, key=None,
-                 cue_start=False, cue_end=False, scte35=None, scte35_duration=None):
+                 scte35=None, scte35_duration=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -364,8 +358,6 @@ class Segment(BasePathMixin):
         self.program_date_time = program_date_time
         self.discontinuity = discontinuity
         self.cue_out = cue_out
-        self.cue_start = cue_start
-        self.cue_end = cue_end
         self.scte35 = scte35
         self.scte35_duration = scte35_duration
         self.key = Key(base_uri=base_uri,**key) if key else None
