@@ -81,19 +81,15 @@ def parse(content, strict=False):
         elif line.startswith(protocol.ext_x_discontinuity):
             state['discontinuity'] = True
 
-        elif line.startswith(protocol.ext_x_scte35):
-            state['expect_scte35'] = True
+        elif line.startswith(protocol.ext_x_cue_out):
+            _parse_cueout(line, state)
+            state['cue_out'] = True
 
         elif line.startswith(protocol.ext_x_cue_start):
             state['cue_start'] = True
 
         elif line.startswith(protocol.ext_x_cue_end):
             state['cue_end'] = True
-
-        elif line.startswith(protocol.ext_x_cue_out):
-            if state['expect_scte35']:
-                _parse_cueout(line, state)
-            state['cue_out'] = True
 
         elif line.startswith(protocol.ext_x_version):
             _parse_simple_parameter(line, data)
@@ -251,7 +247,7 @@ def _parse_simple_parameter(line, data, cast_to=str):
 
 def _parse_cueout(line, state):
     param, value = line.split(':', 1)
-    res = re.match('Duration=([\d\.]+),SCTE35=(.*)', value)
+    res = re.match('.*Duration=(.*),SCTE35=(.*)$', value)
     if res:
         state['current_cue_out_duration'] = res.group(1)
         state['current_cue_out_scte35'] = res.group(2)

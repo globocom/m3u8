@@ -175,5 +175,7 @@ def test_should_parse_program_date_time_from_playlist():
 
 def test_should_parse_scte35_from_playlist():
     data = m3u8.parse(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
+    print(data)
     assert '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg==' == data['segments'][4]['scte35'] 
+    assert '50' == data['segments'][4]['scte35_duration']
     
