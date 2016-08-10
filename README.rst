@@ -46,8 +46,7 @@ be an object with all the attributes from `#EXT-X-KEY`_:
 
 If no ``#EXT-X-KEY`` is found, the ``key`` attribute will be ``None``.
 
-Multiple keys are not supported yet (and has a low priority), follow
-`issue 1`_ for updates.
+Multiple keys are supported.
 
 Variant playlists (variable bitrates)
 -------------------------------------
