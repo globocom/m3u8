@@ -91,7 +91,7 @@ def parse(content, strict=False):
             data['key'] = data.get('key', state['current_key'])
 
         elif line.startswith(protocol.extinf):
-            _parse_extinf(line, data, state)
+            _parse_extinf(line, data, state, lineno, strict)
             state['expect_segment'] = True
 
         elif line.startswith(protocol.ext_x_stream_inf):
@@ -145,8 +145,16 @@ def _parse_key(line):
         key[normalize_attribute(name)] = remove_quotes(value)
     return key
 
-def _parse_extinf(line, data, state):
-    duration, title = line.replace(protocol.extinf + ':', '').split(',')
+def _parse_extinf(line, data, state, lineno, strict):
+    chunks = line.replace(protocol.extinf + ':', '').split(',')
+    if len(chunks) == 2:
+        duration, title = chunks
+    elif len(chunks) == 1:
+        if strict:
+            raise ParseError(lineno, line)
+        else:
+            duration = chunks[0]
+            title = ''
     if 'segment' not in state:
         state['segment'] = {}
     state['segment']['duration'] = float(duration)
