@@ -191,3 +191,15 @@ def test_parse_simple_playlist_messy_strict():
     with pytest.raises(ParseError) as catch:
         m3u8.parse(playlists.SIMPLE_PLAYLIST_MESSY, strict=True)
     assert str(catch.value) == 'Syntax error in manifest on line 5: JUNK'
+
+def test_commaless_extinf():
+    data = m3u8.parse(playlists.SIMPLE_PLAYLIST_COMMALESS_EXTINF)
+    assert 5220 == data['targetduration']
+    assert 0 == data['media_sequence']
+    assert ['http://media.example.com/entire.ts'] == [c['uri'] for c in data['segments']]
+    assert [5220] == [c['duration'] for c in data['segments']]
+
+def test_commaless_extinf_strict():
+    with pytest.raises(ParseError) as e:
+        m3u8.parse(playlists.SIMPLE_PLAYLIST_COMMALESS_EXTINF, strict=True)
+    assert str(e.value) == 'Syntax error in manifest on line 3: #EXTINF:5220'
