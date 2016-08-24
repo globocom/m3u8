@@ -5,7 +5,8 @@
 
 import m3u8
 import playlists
-from m3u8.parser import cast_date_time
+import pytest
+from m3u8.parser import cast_date_time, ParseError
 
 def test_should_parse_simple_playlist_from_string():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST)
@@ -178,4 +179,15 @@ def test_should_parse_scte35_from_playlist():
     print(data)
     assert '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg==' == data['segments'][4]['scte35'] 
     assert '50' == data['segments'][4]['scte35_duration']
-    
+
+def test_parse_simple_playlist_messy():
+    data = m3u8.parse(playlists.SIMPLE_PLAYLIST_MESSY)
+    assert 5220 == data['targetduration']
+    assert 0 == data['media_sequence']
+    assert ['http://media.example.com/entire.ts'] == [c['uri'] for c in data['segments']]
+    assert [5220] == [c['duration'] for c in data['segments']]
+
+def test_parse_simple_playlist_messy_strict():
+    with pytest.raises(ParseError) as catch:
+        m3u8.parse(playlists.SIMPLE_PLAYLIST_MESSY, strict=True)
+    assert str(catch.value) == 'Syntax error in manifest on line 5: JUNK'
