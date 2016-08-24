@@ -9,12 +9,6 @@ import itertools
 import re
 from m3u8 import protocol
 
-try:
-    import exceptions
-    ExceptionBaseClass = exceptions.Exception
-except ImportError:
-    ExceptionBaseClass = object
-
 '''
 http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.2
 http://stackoverflow.com/questions/2785755/how-to-split-but-ignore-separators-in-quoted-strings-in-python
@@ -27,7 +21,7 @@ def cast_date_time(value):
 def format_date_time(value):
     return value.isoformat()
 
-class ParseError(ExceptionBaseClass):
+class ParseError(Exception):
     def __init__(self, lineno, line):
         self.lineno = lineno
         self.line = line

@@ -277,6 +277,16 @@ g_50123.ts
 
 '''
 
+# The playlist fails if parsed as strict, but otherwise passes
+SIMPLE_PLAYLIST_MESSY = '''
+#EXTM3U
+#EXT-X-TARGETDURATION:5220
+#EXTINF:5220,
+http://media.example.com/entire.ts
+JUNK
+#EXT-X-ENDLIST
+'''
+
 DISCONTINUITY_PLAYLIST_WITH_PROGRAM_DATE_TIME = '''
 #EXTM3U
 #EXT-X-MEDIA-SEQUENCE:50116
