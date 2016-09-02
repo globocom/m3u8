@@ -75,7 +75,7 @@ def parse(content, strict=False):
         elif line.startswith(protocol.ext_x_discontinuity):
             state['discontinuity'] = True
 
-        elif line.startswith(protocol.ext_x_cue_out) or line.startswith(protocol.ext_x_cue_out_start):
+        elif line.startswith(protocol.ext_x_cue_out):
             _parse_cueout(line, state)
             state['cue_out'] = True
             state['cue_start'] = True
