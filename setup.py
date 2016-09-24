@@ -3,7 +3,8 @@ from setuptools import setup
 
 long_description = None
 if exists("README.rst"):
-    long_description = open("README.rst").read()
+    with  open("README.rst") as file:
+        long_description = file.read()
 
 install_reqs = [req for req in open(abspath(join(dirname(__file__), 'requirements.txt')))]
 
