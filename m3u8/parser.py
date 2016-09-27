@@ -80,6 +80,11 @@ def parse(content, strict=False):
             state['cue_out'] = True
             state['cue_start'] = True
 
+        elif line.startswith(protocol.ext_x_cue_out_start):
+            _parse_cueout_start(line, state, string_to_lines(content)[lineno-2])
+            state['cue_out'] = True
+            state['cue_start'] = True
+
         elif line.startswith(protocol.ext_x_version):
             _parse_simple_parameter(line, data)
 
@@ -246,6 +251,14 @@ def _parse_cueout(line, state):
     if res:
         state['current_cue_out_duration'] = res.group(1)
         state['current_cue_out_scte35'] = res.group(2)
+
+def _parse_cueout_start(line, state, prevline):
+    param, value = line.split(':', 1)
+    state['current_cue_out_duration'] = value
+    res = re.match('.*EXT-OATCLS-SCTE35:(.*)$', prevline)
+    if res:
+        state['current_cue_out_scte35'] = res.group(1)
+
 
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')
