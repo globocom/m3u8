@@ -34,19 +34,76 @@ directly from a string:
 
     m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ... ')
 
-Encryption key
---------------
 
-The segments may be encrypted, in this case the ``key`` attribute will
-be an object with all the attributes from `#EXT-X-KEY`_:
+Encryption keys
+---------------
+
+The segments may be or not encrypted. The ``keys`` attribute list will
+be an list  with all the different keys as described with `#EXT-X-KEY`_:
+
+Each key has the next properties:
 
 -  ``method``: ex.: "AES-128"
 -  ``uri``: the key uri, ex.: "http://videoserver.com/key.bin"
 -  ``iv``: the initialization vector, if available. Otherwise ``None``.
 
-If no ``#EXT-X-KEY`` is found, the ``key`` attribute will be ``None``.
+If no ``#EXT-X-KEY`` is found, the ``keys`` list will have a unique element ``None``. Multiple keys are supported.
 
-Multiple keys are supported.
+If unencrypted and encrypted segments are mixed in the M3U8 file, then the list will contain a ``None`` element, with one
+or more keys afterwards.
+
+To traverse the list of keys available:
+
+::
+
+    import m3u8
+
+    m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ...')
+    len(m3u8_obj.keys) => returns the number of keys available in the list (normally 1)
+    for key in m3u8_obj.keys:
+       if key:  # First one could be None
+          key.uri
+          key.method
+          key.iv
+
+
+Getting segments encrypted with one key
+---------------------------------------
+
+There are cases where listing segments for a given key is important. It's possible to
+retrieve the list of segments encrypted with one key via ``by_key`` method in the
+``segments`` list.
+
+Example of getting the segments with no encryption:
+
+::
+
+    import m3u8
+
+    m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ...')
+    segmk1 = m3u8_obj.segments.by_key(None)
+
+    # Get the list of segments encrypted using last key
+    segm = m3u8_obj.segments.by_key( m3u8_obj.keys[-1] )
+
+
+With this method, is now possible also to change the key from some of the segments programatically:
+
+
+::
+
+    import m3u8
+
+    m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ...')
+
+    # Create a new Key and replace it
+    new_key = m3u8.Key("AES-128", "/encrypted/newkey.bin", None, iv="0xf123ad23f22e441098aa87ee")
+    for segment in m3u8_obj.segments.by_key( m3u8_obj.keys[-1] ):
+        segm.key = new_key
+    # Remember to sync the key from the list as well
+    m3u8_obj.keys[-1] = new_key
+
+
 
 Variant playlists (variable bitrates)
 -------------------------------------

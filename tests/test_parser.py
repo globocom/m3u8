@@ -39,8 +39,8 @@ def test_should_parse_playlist_with_encripted_segments_from_string():
     data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS)
     assert 7794 == data['media_sequence']
     assert 15 == data['targetduration']
-    assert 'AES-128' == data['key']['method']
-    assert 'https://priv.example.com/key.php?r=52' == data['key']['uri']
+    assert 'AES-128' == data['keys'][0]['method']
+    assert 'https://priv.example.com/key.php?r=52' == data['keys'][0]['uri']
     assert ['http://media.example.com/fileSequence52-1.ts',
             'http://media.example.com/fileSequence52-2.ts',
             'http://media.example.com/fileSequence52-3.ts'] == [c['uri'] for c in data['segments']]
@@ -48,9 +48,9 @@ def test_should_parse_playlist_with_encripted_segments_from_string():
 
 def test_should_load_playlist_with_iv_from_string():
     data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
-    assert "/hls-key/key.bin" == data['key']['uri']
-    assert "AES-128" == data['key']['method']
-    assert "0X10ef8f758ca555115584bb5b3c687f52" == data['key']['iv']
+    assert "/hls-key/key.bin" == data['keys'][0]['uri']
+    assert "AES-128" == data['keys'][0]['method']
+    assert "0X10ef8f758ca555115584bb5b3c687f52" == data['keys'][0]['iv']
 
 def test_should_add_key_attribute_to_segment_from_playlist():
     data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
@@ -58,6 +58,20 @@ def test_should_add_key_attribute_to_segment_from_playlist():
     assert "/hls-key/key.bin" == first_segment_key['uri']
     assert "AES-128" == first_segment_key['method']
     assert "0X10ef8f758ca555115584bb5b3c687f52" == first_segment_key['iv']
+    last_segment_key = data['segments'][-1]['key']
+    assert "/hls-key/key2.bin" == last_segment_key['uri']
+    assert "AES-128" == last_segment_key['method']
+    assert "0Xcafe8f758ca555115584bb5b3c687f52" == last_segment_key['iv']
+
+def test_should_add_non_key_for_multiple_keys_unencrypted_and_encrypted():
+    data = m3u8.parse(playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED)
+    # First two segments have no Key, so it's not in the dictionary
+    assert 'key' not in data['segments'][0]
+    assert 'key' not in data['segments'][1]
+    third_segment_key = data['segments'][2]['key']
+    assert "/hls-key/key.bin" == third_segment_key['uri']
+    assert "AES-128" == third_segment_key['method']
+    assert "0X10ef8f758ca555115584bb5b3c687f52" == third_segment_key['iv']
     last_segment_key = data['segments'][-1]['key']
     assert "/hls-key/key2.bin" == last_segment_key['uri']
     assert "AES-128" == last_segment_key['method']
@@ -179,7 +193,7 @@ def test_should_parse_scte35_from_playlist():
     assert not data['segments'][2]['cue_out']
     assert data['segments'][3]['scte35']
     assert data['segments'][3]['cue_out']
-    assert '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg==' == data['segments'][4]['scte35'] 
+    assert '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg==' == data['segments'][4]['scte35']
     assert '50' == data['segments'][4]['scte35_duration']
 
 def test_parse_simple_playlist_messy():
