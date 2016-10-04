@@ -92,40 +92,38 @@ def test_keys_on_clear_playlist():
 def test_keys_on_simple_encrypted_playlist():
     obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS)
 
-    # TODO: The number of keys must be 1 with the next change on keys generation
-    # Same number of keys than number of segments
-    assert len(obj.keys) == 3
+    assert len(obj.keys) == 1
     assert obj.keys[0].uri == "https://priv.example.com/key.php?r=52"
 
 
-# TODO: These tests make no sense any longer. The keys are constructed
-# from the set of segments, not from data structure.
-# def test_key_attribute():
-#     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
-#     data = {'keys': [{'method': 'AES-128',
-#                     'uri': '/key',
-#                     'iv': 'foobar'}]}
-#     mock_parser_data(obj, data)
-#
-#     assert 'Key' == obj.keys[0].__class__.__name__
-#     assert 'AES-128' == obj.keys[0].method
-#     assert '/key' == obj.keys[0].uri
-#     assert 'foobar' == obj.keys[0].iv
-#
-# def test_key_attribute_on_none():
-#     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
-#     mock_parser_data(obj, {})
-#
-#     assert len(obj.keys) == 0
-#
-# def test_key_attribute_without_initialization_vector():
-#     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
-#     mock_parser_data(obj, {'keys': [{'method': 'AES-128',
-#                                    'uri': '/key'}]})
-#
-#     assert 'AES-128' == obj.keys[0].method
-#     assert '/key' == obj.keys[0].uri
-#     assert None == obj.keys[0].iv
+def test_key_attribute():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
+    data = {'keys': [{'method': 'AES-128',
+                    'uri': '/key',
+                    'iv': 'foobar'}]}
+    mock_parser_data(obj, data)
+
+    assert 'Key' == obj.keys[0].__class__.__name__
+    assert 'AES-128' == obj.keys[0].method
+    assert '/key' == obj.keys[0].uri
+    assert 'foobar' == obj.keys[0].iv
+
+
+def test_key_attribute_on_none():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
+    mock_parser_data(obj, {})
+
+    assert len(obj.keys) == 0
+
+
+def test_key_attribute_without_initialization_vector():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
+    mock_parser_data(obj, {'keys': [{'method': 'AES-128',
+                                   'uri': '/key'}]})
+
+    assert 'AES-128' == obj.keys[0].method
+    assert '/key' == obj.keys[0].uri
+    assert None == obj.keys[0].iv
 
 
 def test_segments_attribute():
@@ -381,18 +379,6 @@ def test_no_playlist_type_leaves_attribute_empty():
     assert obj.playlist_type is None
 
 
-# dump m3u8
-
-# Some problems with this test: the new multikey support "dumps" the same order than original m3u8,
-# but the new output is fully compliant with HLS standard and Apple's same playlists
-# (https://developer.apple.com/library/content/technotes/tn2288/_index.html)
-# def test_dumps_should_build_same_string():
-#     playlists_model = [playlists.PLAYLIST_WITH_NON_INTEGER_DURATION, playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV]
-#     for playlist in playlists_model:
-#         obj = m3u8.M3U8(playlist)
-#         expected = playlist.replace(', IV', ',IV').strip()
-#         assert expected == obj.dumps().strip()
-
 def test_dump_playlists_with_resolution():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_RESOLUTION)
 
@@ -515,6 +501,44 @@ def test_should_dump_complex_unencrypted_encrypted_keys():
         .strip()
 
     assert expected == obj.dumps().strip()
+
+
+def test_length_segments_by_key():
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED)
+
+    assert len(obj.segments.by_key(obj.keys[0])) == 2
+    assert len(obj.segments.by_key(obj.keys[1])) == 4
+    assert len(obj.segments.by_key(obj.keys[2])) == 2
+
+
+def test_list_segments_by_key():
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED)
+
+    # unencrypted segments
+    segments = obj.segments.by_key(None)
+    expected = "../../../../hls/streamNum82400.ts\n../../../../hls/streamNum82401.ts"
+    output = [ segment.uri for segment in segments ]
+    assert "\n".join(output).strip() == expected.strip()
+
+    # segments for last key
+    segments = obj.segments.by_key(obj.keys[2])
+    expected = "../../../../hls/streamNum82404.ts\n../../../../hls/streamNum82405.ts"
+    output = [ segment.uri for segment in segments ]
+    assert "\n".join(output).strip() == expected.strip()
+
+
+def test_replace_segment_key():
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED)
+
+    # Replace unencrypted segments with new key
+    new_key = Key("AES-128", "/hls-key/key0.bin", None, iv="0Xcafe8f758ca555115584bb5b3c687f52")
+    for segment in obj.segments.by_key(None):
+        segment.key = new_key
+
+    # Check dump
+    expected = playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED_UPDATED.strip()
+
+    assert obj.dumps().strip() == expected
 
 
 def test_should_dump_program_datetime_and_discontinuity():

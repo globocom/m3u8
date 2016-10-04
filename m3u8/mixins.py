@@ -25,8 +25,7 @@ class BasePathMixin(object):
             return self.uri
         else:
             if self.base_uri is None:
-                raise ValueError(
-                    'There can not be `absolute_uri` with no `base_uri` set')
+                raise ValueError('There can not be `absolute_uri` with no `base_uri` set')
             return _urijoin(self.base_uri, self.uri)
 
     @property

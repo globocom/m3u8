@@ -149,9 +149,11 @@ class M3U8(object):
 
 
     def _initialize_attributes(self):
-        self.segments = SegmentList([ Segment(base_uri=self.base_uri, **params)
-                                      for params in self.data.get('segments', []) ])
-        self.keys = [ key for key in set(segment.key for segment in self.segments) ]
+        self.keys = [ Key(base_uri=self.base_uri, **params) if params else None
+                      for params in self.data.get('keys', []) ]
+        self.segments = SegmentList([ Segment(base_uri=self.base_uri, keyobject=find_key(segment.get('key', {}), self.keys), **segment)
+                                      for segment in self.data.get('segments', []) ])
+        #self.keys = get_uniques([ segment.key for segment in self.segments ])
         for attr, param in self.simple_attributes:
             setattr(self, attr, self.data.get(param))
 
@@ -210,6 +212,7 @@ class M3U8(object):
         self.media.base_path = self._base_path
         self.segments.base_path = self._base_path
         self.playlists.base_path = self._base_path
+
 
     def add_playlist(self, playlist):
         self.is_variant = True
@@ -322,7 +325,7 @@ class Segment(BasePathMixin):
 
     def __init__(self, uri, base_uri, program_date_time=None, duration=None,
                  title=None, byterange=None, cue_out=False, discontinuity=False, key=None,
-                 scte35=None, scte35_duration=None):
+                 scte35=None, scte35_duration=None, keyobject=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -333,7 +336,8 @@ class Segment(BasePathMixin):
         self.cue_out = cue_out
         self.scte35 = scte35
         self.scte35_duration = scte35_duration
-        self.key = Key(base_uri=base_uri, **key) if key else None
+        self.key = keyobject
+        # Key(base_uri=base_uri, **key) if key else None
 
     def dumps(self, last_segment):
         output = []
@@ -384,12 +388,10 @@ class SegmentList(list, GroupedBasePathMixin):
     def uri(self):
         return [seg.uri for seg in self]
 
-    @property
-    def keys(self):
-        '''
-        Returns the unique set of keys in the list of segments
-        '''
-        return (segment.key for segment in self)
+
+    def by_key(self, key):
+        return [ segment for segment in self if segment.key == key ]
+
 
 
 class Key(BasePathMixin):
@@ -666,6 +668,19 @@ class PlaylistList(list, GroupedBasePathMixin):
     def __str__(self):
         output = [str(playlist) for playlist in self]
         return '\n'.join(output)
+
+
+def find_key(keydata, keylist):
+    if not keydata:
+        return None
+    for key in keylist:
+        if key:
+            # Check the intersection of keys and values
+            if keydata.get('uri', None) == key.uri and \
+               keydata.get('method', 'NONE') == key.method and \
+               keydata.get('iv', None) == key.iv:
+                return key
+    raise KeyError("No key found for key data")
 
 
 def denormalize_attribute(attribute):
