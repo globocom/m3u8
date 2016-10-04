@@ -30,8 +30,7 @@ def test_media_sequence_attribute():
 def test_program_date_time_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
-    assert arrow.get(
-        '2014-08-13T13:36:33+00:00').datetime == obj.program_date_time
+    assert arrow.get('2014-08-13T13:36:33+00:00').datetime == obj.program_date_time
 
 
 def test_program_date_time_attribute_for_each_segment():
@@ -182,8 +181,7 @@ def test_segments_attribute_with_byterange():
 
 
 def test_segment_attribute_with_multiple_keys():
-    obj = m3u8.M3U8(
-        playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
 
     segments = obj.segments
     assert segments[0].key.uri == '/hls-key/key.bin'

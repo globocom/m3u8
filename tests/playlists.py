@@ -526,13 +526,11 @@ MULTI_MEDIA_PLAYLIST = '''#EXTM3U
 448/chunklist_w370587926_b688000_vo_slen_t64TWFpbg==.m3u8
 '''
 
-RELATIVE_PLAYLIST_FILENAME = abspath(
-    join(dirname(__file__), 'playlists/relative-playlist.m3u8'))
+RELATIVE_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/relative-playlist.m3u8'))
 
 RELATIVE_PLAYLIST_URI = TEST_HOST + '/path/to/relative-playlist.m3u8'
 
-CUE_OUT_PLAYLIST_FILENAME = abspath(
-    join(dirname(__file__), 'playlists/cue_out.m3u8'))
+CUE_OUT_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/cue_out.m3u8'))
 
 CUE_OUT_PLAYLIST_URI = TEST_HOST + '/path/to/cue_out.m3u8'
 

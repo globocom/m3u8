@@ -49,8 +49,7 @@ def test_load_should_create_object_from_file_with_relative_segments():
     expected_ts1_path = '/entire1.ts'
     expected_ts2_abspath = '%s/entire2.ts' % os.path.dirname(base_uri)
     expected_ts2_path = '../entire2.ts'
-    expected_ts3_abspath = '%s/entire3.ts' % os.path.dirname(
-        os.path.dirname(base_uri))
+    expected_ts3_abspath = '%s/entire3.ts' % os.path.dirname(os.path.dirname(base_uri))
     expected_ts3_path = '../../entire3.ts'
     expected_ts4_abspath = '%s/entire4.ts' % base_uri
     expected_ts4_path = 'entire4.ts'
@@ -77,11 +76,9 @@ def test_load_should_create_object_from_uri_with_relative_segments():
     expected_key_path = '../key.bin'
     expected_ts1_abspath = '%s/entire1.ts' % (prefix)
     expected_ts1_path = '/entire1.ts'
-    expected_ts2_abspath = '%s%sentire2.ts' % (
-        prefix, os.path.normpath(base_uri + '/..') + '/')
+    expected_ts2_abspath = '%s%sentire2.ts' % (prefix, os.path.normpath(base_uri + '/..') + '/')
     expected_ts2_path = '../entire2.ts'
-    expected_ts3_abspath = '%s%sentire3.ts' % (
-        prefix, os.path.normpath(base_uri + '/../..'))
+    expected_ts3_abspath = '%s%sentire3.ts' % (prefix, os.path.normpath(base_uri + '/../..'))
     expected_ts3_path = '../../entire3.ts'
     expected_ts4_abspath = '%s%sentire4.ts' % (prefix, base_uri + '/')
     expected_ts4_path = 'entire4.ts'
