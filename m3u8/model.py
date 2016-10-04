@@ -8,7 +8,7 @@ import os
 import errno
 import math
 
-from m3u8 import parser
+from m3u8.parser import parse, format_date_time
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
 
 
@@ -136,7 +136,7 @@ class M3U8(object):
 
     def __init__(self, content=None, base_path=None, base_uri=None, strict=False):
         if content is not None:
-            self.data = parser.parse(content, strict)
+            self.data = parse(content, strict)
         else:
             self.data = {}
         self._base_uri = base_uri
@@ -244,7 +244,7 @@ class M3U8(object):
             output.append('#EXT-X-TARGETDURATION:' +
                           int_or_float_to_string(self.target_duration))
         if self.program_date_time is not None:
-            output.append('#EXT-X-PROGRAM-DATE-TIME:' + parser.format_date_time(self.program_date_time))
+            output.append('#EXT-X-PROGRAM-DATE-TIME:' + format_date_time(self.program_date_time))
         if not (self.playlist_type is None or self.playlist_type == ''):
             output.append('#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
         if self.is_i_frames_only:
@@ -350,7 +350,7 @@ class Segment(BasePathMixin):
             output.append('#EXT-X-DISCONTINUITY\n')
             if self.program_date_time:
                 output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' %
-                              parser.format_date_time(self.program_date_time))
+                              format_date_time(self.program_date_time))
         if self.cue_out:
             output.append('#EXT-X-CUE-OUT-CONT\n')
         output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
