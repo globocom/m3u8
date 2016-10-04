@@ -35,13 +35,9 @@ class BasePathMixin(object):
 
     @base_path.setter
     def base_path(self, newbase_path):
-        print "Old URI {}".format(self.uri)
         if not self.base_path:
-            print "Updating self.uri to {}/{}".format(newbase_path, self.uri)
             self.uri = "%s/%s" % (newbase_path, self.uri)
-        print "Updating the other way around"
         self.uri = self.uri.replace(self.base_path, newbase_path)
-        print "New URI {}".format(self.uri)
 
 
 class GroupedBasePathMixin(object):
