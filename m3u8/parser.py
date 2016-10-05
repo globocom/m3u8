@@ -284,19 +284,28 @@ def _parse_cueout(line, state):
         state['current_cue_out_duration'] = res.group(1)
         state['current_cue_out_scte35'] = res.group(2)
 
-def _parse_cueout_start(line, state, prevline):
+def _cueout_elemental(line, state, prevline):
     param, value = line.split(':', 1)
-    state['current_cue_out_duration'] = value
-    # Try Elemental flavor first
     res = re.match('.*EXT-OATCLS-SCTE35:(.*)$', prevline)
     if res:
         state['current_cue_out_scte35'] = res.group(1)
+        state['current_cue_out_duration'] = value
+        return True
     else:
-        # Then try Envivio flavor
-        res2 = re.match('.*DURATION=(.*),.*,CUE="(.*)"', value)
-        if res2:
-            state['current_cue_out_duration'] = res2.group(1)
-            state['current_cue_out_scte35'] = res2.group(2)
+        return False
+
+def _cueout_envivio(line, state, prevline):
+    param, value = line.split(':', 1)
+    res = re.match('.*DURATION=(.*),.*,CUE="(.*)"', value)
+    if res:
+        state['current_cue_out_duration'] = res.group(1)
+        state['current_cue_out_scte35'] = res.group(2)
+        return True
+    else:
+        return False
+
+def _parse_cueout_start(line, state, prevline):
+    _cueout_elemental(line, state, prevline) or _cueout_envivio(line, state, prevline)
     
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')

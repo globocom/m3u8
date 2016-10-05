@@ -73,8 +73,8 @@ def test_segment_cue_out_attribute():
     assert segments[3].cue_out == False
 
 
-def test_segment_scte35_attribute():
-    obj = m3u8.M3U8(playlists.CUE_OUT_WITH_SCTE35_PLAYLIST)
+def test_segment_elemental_scte35_attribute():
+    obj = m3u8.M3U8(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
     segments = obj.segments
     assert segments[4].cue_out == True
     assert segments[9].cue_out == False

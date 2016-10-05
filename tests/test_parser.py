@@ -189,7 +189,7 @@ def test_should_parse_program_date_time_from_playlist():
     assert cast_date_time('2014-08-13T13:36:33+00:00') == data['program_date_time']
 
 def test_should_parse_scte35_from_playlist():
-    data = m3u8.parse(playlists.CUE_OUT_WITH_SCTE35_PLAYLIST)
+    data = m3u8.parse(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
     assert not data['segments'][2]['cue_out']
     assert data['segments'][3]['scte35']
     assert data['segments'][3]['cue_out']
