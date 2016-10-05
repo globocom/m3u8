@@ -15,7 +15,8 @@ http://media.example.com/entire.ts
 #EXT-X-ENDLIST
 '''
 
-SIMPLE_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/simple-playlist.m3u8'))
+SIMPLE_PLAYLIST_FILENAME = abspath(
+    join(dirname(__file__), 'playlists/simple-playlist.m3u8'))
 
 SIMPLE_PLAYLIST_URI = TEST_HOST + '/simple.m3u8'
 TIMEOUT_SIMPLE_PLAYLIST_URI = TEST_HOST + '/timeout_simple.m3u8'
@@ -191,6 +192,27 @@ PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV = '''
 ../../../../hls/streamNum82405.ts
 '''
 
+PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_SORTED = '''
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:82400
+#EXT-X-ALLOW-CACHE:NO
+#EXT-X-VERSION:2
+#EXT-X-TARGETDURATION:8
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key.bin", IV=0X10ef8f758ca555115584bb5b3c687f52
+#EXTINF:8,
+../../../../hls/streamNum82400.ts
+#EXTINF:8,
+../../../../hls/streamNum82401.ts
+#EXTINF:8,
+../../../../hls/streamNum82402.ts
+#EXTINF:8,
+../../../../hls/streamNum82403.ts
+#EXTINF:8,
+../../../../hls/streamNum82404.ts
+#EXTINF:8,
+../../../../hls/streamNum82405.ts
+'''
+
 PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS = '''
 #EXTM3U
 #EXT-X-MEDIA-SEQUENCE:82400
@@ -212,6 +234,114 @@ PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS = '''
 #EXTINF:8,
 ../../../../hls/streamNum82405.ts
 '''
+
+PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS_SORTED = '''
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:82400
+#EXT-X-ALLOW-CACHE:NO
+#EXT-X-VERSION:2
+#EXT-X-TARGETDURATION:8
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key.bin",IV=0X10ef8f758ca555115584bb5b3c687f52
+#EXTINF:8,
+../../../../hls/streamNum82400.ts
+#EXTINF:8,
+../../../../hls/streamNum82401.ts
+#EXTINF:8,
+../../../../hls/streamNum82402.ts
+#EXTINF:8,
+../../../../hls/streamNum82403.ts
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key2.bin",IV=0Xcafe8f758ca555115584bb5b3c687f52
+#EXTINF:8,
+../../../../hls/streamNum82404.ts
+#EXTINF:8,
+../../../../hls/streamNum82405.ts
+'''
+
+PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED = '''
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:82400
+#EXT-X-ALLOW-CACHE:NO
+#EXT-X-VERSION:2
+#EXT-X-TARGETDURATION:8
+#EXTINF:8,
+../../../../hls/streamNum82400.ts
+#EXTINF:8,
+../../../../hls/streamNum82401.ts
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key.bin",IV=0X10ef8f758ca555115584bb5b3c687f52
+#EXTINF:8,
+../../../../hls/streamNum82400.ts
+#EXTINF:8,
+../../../../hls/streamNum82401.ts
+#EXTINF:8,
+../../../../hls/streamNum82402.ts
+#EXTINF:8,
+../../../../hls/streamNum82403.ts
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key2.bin",IV=0Xcafe8f758ca555115584bb5b3c687f52
+#EXTINF:8,
+../../../../hls/streamNum82404.ts
+#EXTINF:8,
+../../../../hls/streamNum82405.ts
+'''
+
+PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED_UPDATED = '''
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:82400
+#EXT-X-ALLOW-CACHE:NO
+#EXT-X-VERSION:2
+#EXT-X-TARGETDURATION:8
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key0.bin",IV=0Xcafe8f758ca555115584bb5b3c687f52
+#EXTINF:8,
+../../../../hls/streamNum82400.ts
+#EXTINF:8,
+../../../../hls/streamNum82401.ts
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key.bin",IV=0X10ef8f758ca555115584bb5b3c687f52
+#EXTINF:8,
+../../../../hls/streamNum82400.ts
+#EXTINF:8,
+../../../../hls/streamNum82401.ts
+#EXTINF:8,
+../../../../hls/streamNum82402.ts
+#EXTINF:8,
+../../../../hls/streamNum82403.ts
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key2.bin",IV=0Xcafe8f758ca555115584bb5b3c687f52
+#EXTINF:8,
+../../../../hls/streamNum82404.ts
+#EXTINF:8,
+../../../../hls/streamNum82405.ts
+'''
+
+PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED_NONE = '''
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:82400
+#EXT-X-ALLOW-CACHE:NO
+#EXT-X-VERSION:2
+#EXT-X-TARGETDURATION:8
+#EXTINF:8,
+../../../../hls/streamNum82400.ts
+#EXTINF:8,
+../../../../hls/streamNum82401.ts
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key.bin",IV=0X10ef8f758ca555115584bb5b3c687f52
+#EXTINF:8,
+../../../../hls/streamNum82400.ts
+#EXTINF:8,
+../../../../hls/streamNum82401.ts
+#EXTINF:8,
+../../../../hls/streamNum82402.ts
+#EXTINF:8,
+../../../../hls/streamNum82403.ts
+#EXT-X-KEY:METHOD=NONE,URI=""
+#EXTINF:8,
+../../../../hls/streamNum82404.ts
+#EXTINF:8,
+../../../../hls/streamNum82405.ts
+#EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key2.bin",IV=0Xcafe8f758ca555115584bb5b3c687f52
+#EXTINF:8,
+../../../../hls/streamNum82404.ts
+#EXTINF:8,
+../../../../hls/streamNum82405.ts
+
+'''
+
 
 SIMPLE_PLAYLIST_WITH_TITLE = '''
 #EXTM3U

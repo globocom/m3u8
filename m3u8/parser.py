@@ -15,19 +15,26 @@ http://stackoverflow.com/questions/2785755/how-to-split-but-ignore-separators-in
 '''
 ATTRIBUTELISTPATTERN = re.compile(r'''((?:[^,"']|"[^"]*"|'[^']*')+)''')
 
+
 def cast_date_time(value):
     return iso8601.parse_date(value)
+
 
 def format_date_time(value):
     return value.isoformat()
 
+
+
 class ParseError(Exception):
+
     def __init__(self, lineno, line):
         self.lineno = lineno
         self.line = line
 
     def __str__(self):
         return 'Syntax error in manifest on line %d: %s' % (self.lineno, self.line)
+
+
 
 def parse(content, strict=False):
     '''
@@ -41,15 +48,17 @@ def parse(content, strict=False):
         'is_independent_segments': False,
         'playlist_type': None,
         'playlists': [],
-        'iframe_playlists': [],
         'segments': [],
+        'iframe_playlists': [],
         'media': [],
-        }
+        'keys': [],
+    }
 
     state = {
         'expect_segment': False,
         'expect_playlist': False,
-        }
+        'current_key': None,
+    }
 
     lineno = 0
     for line in string_to_lines(content):
@@ -81,7 +90,7 @@ def parse(content, strict=False):
             state['cue_start'] = True
 
         elif line.startswith(protocol.ext_x_cue_out_start):
-            _parse_cueout_start(line, state, string_to_lines(content)[lineno-2])
+            _parse_cueout_start(line, state, string_to_lines(content)[lineno - 2])
             state['cue_out'] = True
             state['cue_start'] = True
 
@@ -92,8 +101,10 @@ def parse(content, strict=False):
             _parse_simple_parameter(line, data)
 
         elif line.startswith(protocol.ext_x_key):
-            state['current_key'] = _parse_key(line)
-            data['key'] = data.get('key', state['current_key'])
+            key = _parse_key(line)
+            state['current_key'] = key
+            if key not in data['keys']:
+                data['keys'].append(key)
 
         elif line.startswith(protocol.extinf):
             _parse_extinf(line, data, state, lineno, strict)
@@ -142,6 +153,7 @@ def parse(content, strict=False):
 
     return data
 
+
 def _parse_key(line):
     params = ATTRIBUTELISTPATTERN.split(line.replace(protocol.ext_x_key + ':', ''))[1::2]
     key = {}
@@ -149,6 +161,7 @@ def _parse_key(line):
         name, value = param.split('=', 1)
         key[normalize_attribute(name)] = remove_quotes(value)
     return key
+
 
 def _parse_extinf(line, data, state, lineno, strict):
     chunks = line.replace(protocol.extinf + ':', '').split(',')
@@ -165,6 +178,7 @@ def _parse_extinf(line, data, state, lineno, strict):
     state['segment']['duration'] = float(duration)
     state['segment']['title'] = remove_quotes(title)
 
+
 def _parse_ts_chunk(line, data, state):
     segment = state.pop('segment')
     if state.get('current_program_date_time'):
@@ -174,11 +188,16 @@ def _parse_ts_chunk(line, data, state):
     segment['cue_out'] = state.pop('cue_out', False)
     if state.get('current_cue_out_scte35'):
         segment['scte35'] = state['current_cue_out_scte35']
-        segment['scte35_duration'] = state['current_cue_out_duration'] 
+        segment['scte35_duration'] = state['current_cue_out_duration']
     segment['discontinuity'] = state.pop('discontinuity', False)
     if state.get('current_key'):
-      segment['key'] = state['current_key']
+        segment['key'] = state['current_key']
+    else:
+        # For unencrypted segments, the initial key would be None
+        if None not in data['keys']:
+            data['keys'].append(None)
     data['segments'].append(segment)
+
 
 def _parse_attribute_list(prefix, line, atribute_parser):
     params = ATTRIBUTELISTPATTERN.split(line.replace(prefix + ':', ''))[1::2]
@@ -195,6 +214,7 @@ def _parse_attribute_list(prefix, line, atribute_parser):
 
     return attributes
 
+
 def _parse_stream_inf(line, data, state):
     data['is_variant'] = True
     data['media_sequence'] = None
@@ -203,6 +223,7 @@ def _parse_stream_inf(line, data, state):
     atribute_parser["bandwidth"] = int
     atribute_parser["average_bandwidth"] = int
     state['stream_info'] = _parse_attribute_list(protocol.ext_x_stream_inf, line, atribute_parser)
+
 
 def _parse_i_frame_stream_inf(line, data):
     atribute_parser = remove_quotes_parser('codecs', 'uri')
@@ -214,10 +235,12 @@ def _parse_i_frame_stream_inf(line, data):
 
     data['iframe_playlists'].append(iframe_playlist)
 
+
 def _parse_media(line, data, state):
     quoted = remove_quotes_parser('uri', 'group_id', 'language', 'name', 'characteristics')
     media = _parse_attribute_list(protocol.ext_x_media, line, quoted)
     data['media'].append(media)
+
 
 def _parse_variant_playlist(line, data, state):
     playlist = {'uri': line,
@@ -225,10 +248,12 @@ def _parse_variant_playlist(line, data, state):
 
     data['playlists'].append(playlist)
 
+
 def _parse_byterange(line, state):
     if 'segment' not in state:
         state['segment'] = {}
     state['segment']['byterange'] = line.replace(protocol.ext_x_byterange + ':', '')
+
 
 def _parse_simple_parameter_raw_value(line, cast_to=str, normalize=False):
     param, value = line.split(':', 1)
@@ -237,13 +262,16 @@ def _parse_simple_parameter_raw_value(line, cast_to=str, normalize=False):
         value = normalize_attribute(value)
     return param, cast_to(value)
 
+
 def _parse_and_set_simple_parameter_raw_value(line, data, cast_to=str, normalize=False):
     param, value = _parse_simple_parameter_raw_value(line, cast_to, normalize)
     data[param] = value
     return data[param]
 
+
 def _parse_simple_parameter(line, data, cast_to=str):
     return _parse_and_set_simple_parameter_raw_value(line, data, cast_to, True)
+
 
 def _parse_cueout(line, state):
     param, value = line.split(':', 1)
@@ -251,6 +279,7 @@ def _parse_cueout(line, state):
     if res:
         state['current_cue_out_duration'] = res.group(1)
         state['current_cue_out_scte35'] = res.group(2)
+
 
 def _parse_cueout_start(line, state, prevline):
     param, value = line.split(':', 1)
@@ -263,8 +292,10 @@ def _parse_cueout_start(line, state, prevline):
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')
 
+
 def remove_quotes_parser(*attrs):
     return dict(zip(attrs, itertools.repeat(remove_quotes)))
+
 
 def remove_quotes(string):
     '''
@@ -281,8 +312,10 @@ def remove_quotes(string):
         return string[1:-1]
     return string
 
+
 def normalize_attribute(attribute):
     return attribute.replace('-', '_').lower().strip()
+
 
 def is_url(uri):
     return re.match(r'https?://', uri) is not None
