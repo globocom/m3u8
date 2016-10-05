@@ -288,24 +288,23 @@ def _cueout_elemental(line, state, prevline):
     param, value = line.split(':', 1)
     res = re.match('.*EXT-OATCLS-SCTE35:(.*)$', prevline)
     if res:
-        state['current_cue_out_scte35'] = res.group(1)
-        state['current_cue_out_duration'] = value
-        return True
+        return (res.group(1), value)
     else:
-        return False
+        return None
 
 def _cueout_envivio(line, state, prevline):
     param, value = line.split(':', 1)
     res = re.match('.*DURATION=(.*),.*,CUE="(.*)"', value)
     if res:
-        state['current_cue_out_duration'] = res.group(1)
-        state['current_cue_out_scte35'] = res.group(2)
-        return True
+        return (res.group(2), res.group(1))
     else:
-        return False
+        return None
 
 def _parse_cueout_start(line, state, prevline):
-    _cueout_elemental(line, state, prevline) or _cueout_envivio(line, state, prevline)
+    _cueout_state = _cueout_elemental(line, state, prevline) or _cueout_envivio(line, state, prevline)
+    if _cueout_state:
+        state['current_cue_out_scte35'] = _cueout_state[0]
+        state['current_cue_out_duration'] = _cueout_state[1]
     
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')
