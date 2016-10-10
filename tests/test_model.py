@@ -73,13 +73,20 @@ def test_segment_cue_out_attribute():
     assert segments[3].cue_out == False
 
 
-def test_segment_scte35_attribute():
-    obj = m3u8.M3U8(playlists.CUE_OUT_WITH_SCTE35_PLAYLIST)
+def test_segment_elemental_scte35_attribute():
+    obj = m3u8.M3U8(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
     segments = obj.segments
     assert segments[4].cue_out == True
     assert segments[9].cue_out == False
     assert segments[4].scte35 == '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg=='
 
+def test_segment_envivio_scte35_attribute():
+    obj = m3u8.M3U8(playlists.CUE_OUT_ENVIVIO_PLAYLIST)
+    segments = obj.segments
+    assert segments[3].cue_out == True
+    assert segments[4].scte35 == '/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=='
+    assert segments[5].scte35 == '/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=='
+    assert segments[7].cue_out == False
 
 def test_keys_on_clear_playlist():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
