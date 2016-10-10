@@ -77,6 +77,16 @@ def test_should_add_non_key_for_multiple_keys_unencrypted_and_encrypted():
     assert "AES-128" == last_segment_key['method']
     assert "0Xcafe8f758ca555115584bb5b3c687f52" == last_segment_key['iv']
 
+def test_should_handle_key_method_none_and_no_uri_attr():
+    data = m3u8.parse(playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED_NONE_AND_NO_URI_ATTR)
+    assert 'key' not in data['segments'][0]
+    assert 'key' not in data['segments'][1]
+    third_segment_key = data['segments'][2]['key']
+    assert "/hls-key/key.bin" == third_segment_key['uri']
+    assert "AES-128" == third_segment_key['method']
+    assert "0X10ef8f758ca555115584bb5b3c687f52" == third_segment_key['iv']
+    assert "NONE" == data['segments'][6]['key']['method']  
+
 def test_should_parse_title_from_playlist():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_TITLE)
     assert 1 == len(data['segments'])

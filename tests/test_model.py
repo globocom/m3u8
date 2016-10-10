@@ -507,6 +507,14 @@ def test_should_dump_complex_unencrypted_encrypted_keys():
 
     assert expected == obj.dumps().strip()
 
+def test_should_dump_complex_unencrypted_encrypted_keys_no_uri_attr():
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED_NONE_AND_NO_URI_ATTR)
+    expected = playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED_NONE_AND_NO_URI_ATTR \
+        .strip()
+
+    assert expected == obj.dumps().strip()
+
+
 
 def test_length_segments_by_key():
     obj = m3u8.M3U8(playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED)
