@@ -165,7 +165,8 @@ def _parse_key(line):
         name, value = param.split('=', 1)
         key[normalize_attribute(name)] = remove_quotes(value)
     if key['method'] == "NONE":
-        key['uri'] = ''
+        if 'uri' not in key:
+            key['uri'] = None
     return key
 
 
@@ -307,7 +308,7 @@ def _parse_cueout_start(line, state, prevline):
     if _cueout_state:
         state['current_cue_out_scte35'] = _cueout_state[0]
         state['current_cue_out_duration'] = _cueout_state[1]
-    
+
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')
 
