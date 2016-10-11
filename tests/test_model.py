@@ -544,7 +544,7 @@ def test_replace_segment_key():
     obj = m3u8.M3U8(playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED)
 
     # Replace unencrypted segments with new key
-    new_key = Key("AES-128", "/hls-key/key0.bin", None, iv="0Xcafe8f758ca555115584bb5b3c687f52")
+    new_key = Key("AES-128", None, "/hls-key/key0.bin", iv="0Xcafe8f758ca555115584bb5b3c687f52")
     for segment in obj.segments.by_key(None):
         segment.key = new_key
 

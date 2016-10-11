@@ -412,7 +412,7 @@ class Key(BasePathMixin):
 
     '''
 
-    def __init__(self, method, uri, base_uri, iv=None, keyformat=None, keyformatversions=None):
+    def __init__(self, method, base_uri, uri=None, iv=None, keyformat=None, keyformatversions=None):
         self.method = method
         self.uri = uri
         self.iv = iv
