@@ -123,6 +123,18 @@ def test_should_parse_variant_playlist_with_average_bandwidth():
     assert 65000 == playlists_list[3]['stream_info']['bandwidth']
     assert 63005 == playlists_list[3]['stream_info']['average_bandwidth']
 
+# This is actually not according to specification but as for example Twitch.tv
+# is producing master playlists that have bandwidth as floats (issue 72)
+# this tests that this situation does not break the parser and will just
+# truncate to a decimal-integer according to specification
+def test_should_parse_variant_playlist_with_bandwidth_as_float():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_BANDWIDTH_FLOAT)
+    playlists_list = list(data['playlists'])
+    assert 1280000 == playlists_list[0]['stream_info']['bandwidth']
+    assert 2560000 == playlists_list[1]['stream_info']['bandwidth']
+    assert 7680000 == playlists_list[2]['stream_info']['bandwidth']
+    assert 65000 == playlists_list[3]['stream_info']['bandwidth']
+
 def test_should_parse_variant_playlist_with_iframe_playlists():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS)
     iframe_playlists = list(data['iframe_playlists'])
