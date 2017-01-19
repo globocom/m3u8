@@ -4,23 +4,21 @@
 # license that can be found in the LICENSE file.
 
 import sys
-PYTHON_MAJOR_VERSION = sys.version_info
-
 import os
 import posixpath
 
 try:
-    import urlparse as url_parser
-    import urllib2
-    urlopen = urllib2.urlopen
-except ImportError:
-    import urllib.parse as url_parser
-    from urllib.request import urlopen as url_opener
-    urlopen = url_opener
-
+    from urllib.request import urlopen, Request
+    from urllib.error import HTTPError
+    from urllib.parse import urlparse, urljoin
+except ImportError:  # Python 2.x
+    from urllib2 import urlopen, Request, HTTPError
+    from urlparse import urlparse, urljoin
 
 from m3u8.model import M3U8, Playlist, IFramePlaylist, Media, Segment
 from m3u8.parser import parse, is_url, ParseError
+
+PYTHON_MAJOR_VERSION = sys.version_info
 
 __all__ = ('M3U8', 'Playlist', 'IFramePlaylist', 'Media',
            'Segment', 'loads', 'load', 'parse', 'ParseError')
@@ -34,22 +32,24 @@ def loads(content):
     return M3U8(content)
 
 
-def load(uri, timeout=None):
+def load(uri, timeout=None, headers={}):
     '''
     Retrieves the content from a given URI and returns a M3U8 object.
     Raises ValueError if invalid content or IOError if request fails.
-    Raises socket.timeout(python 2.7+) or urllib2.URLError(python 2.6) if timeout happens when loading from uri
+    Raises socket.timeout(python 2.7+) or urllib2.URLError(python 2.6) if
+    timeout happens when loading from uri
     '''
     if is_url(uri):
-        return _load_from_uri(uri, timeout)
+        return _load_from_uri(uri, timeout, headers)
     else:
         return _load_from_file(uri)
 
 # Support for python3 inspired by https://github.com/szemtiv/m3u8/
 
 
-def _load_from_uri(uri, timeout=None):
-    resource = urlopen(uri, timeout=timeout)
+def _load_from_uri(uri, timeout=None, headers={}):
+    request = Request(uri, headers)
+    resource = urlopen(request, timeout=timeout)
     base_uri = _parsed_url(_url_for(uri))
     if PYTHON_MAJOR_VERSION < (3,):
         content = _read_python2x(resource)
@@ -63,10 +63,10 @@ def _url_for(uri):
 
 
 def _parsed_url(url):
-    parsed_url = url_parser.urlparse(url)
+    parsed_url = urlparse(url)
     prefix = parsed_url.scheme + '://' + parsed_url.netloc
     base_path = posixpath.normpath(parsed_url.path + '/..')
-    return url_parser.urljoin(prefix, base_path)
+    return urljoin(prefix, base_path)
 
 
 def _read_python2x(resource):
@@ -74,7 +74,9 @@ def _read_python2x(resource):
 
 
 def _read_python3x(resource):
-    return resource.read().decode(resource.headers.get_content_charset(failobj="utf-8"))
+    return resource.read().decode(
+        resource.headers.get_content_charset(failobj="utf-8")
+    )
 
 
 def _load_from_file(uri):
