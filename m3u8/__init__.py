@@ -48,7 +48,7 @@ def load(uri, timeout=None, headers={}):
 
 
 def _load_from_uri(uri, timeout=None, headers={}):
-    request = Request(uri, headers)
+    request = Request(uri, headers=headers)
     resource = urlopen(request, timeout=timeout)
     base_uri = _parsed_url(_url_for(uri))
     if PYTHON_MAJOR_VERSION < (3,):
