@@ -106,9 +106,10 @@ def parse(content, strict=False):
 
         elif line.startswith(protocol.ext_x_key):
             key = _parse_key(line)
-            state['current_key'] = key
-            if key not in data['keys']:
-                data['keys'].append(key)
+            if key['method'] != 'NONE':
+                state['current_key'] = key
+                if key not in data['keys']:
+                    data['keys'].append(key)
 
         elif line.startswith(protocol.extinf):
             _parse_extinf(line, data, state, lineno, strict)
