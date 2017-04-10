@@ -136,6 +136,10 @@ def parse(content, strict=False):
         elif line.startswith(protocol.ext_x_endlist):
             data['is_endlist'] = True
 
+        elif line.startswith(protocol.ext_x_map):
+            data['segment_map_uri'] = _parse_segment_map_uri(line)
+
+        # Comments and whitespace
         elif line.startswith('#'):
             # comment
             pass
@@ -304,7 +308,16 @@ def _parse_cueout_start(line, state, prevline):
     if _cueout_state:
         state['current_cue_out_scte35'] = _cueout_state[0]
         state['current_cue_out_duration'] = _cueout_state[1]
-    
+
+
+def _parse_segment_map_uri(line):
+    """
+    :param line: '#EXT-X-MAP:URI="fileSequence0.mp4"'
+    :rtype: str 
+    """
+    return remove_quotes(line.replace(protocol.ext_x_map+':', '').split('=', 1)[1])
+
+
 def string_to_lines(string):
     return string.strip().replace('\r\n', '\n').split('\n')
 

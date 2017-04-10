@@ -176,6 +176,7 @@ class M3U8(object):
                                          uri=ifr_pl['uri'],
                                          iframe_stream_info=ifr_pl['iframe_stream_info'])
                                         )
+        self.segment_map_uri = self.data.get('segment_map_uri')
 
     def __unicode__(self):
         return self.dumps()

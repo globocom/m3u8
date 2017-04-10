@@ -251,3 +251,8 @@ def test_commaless_extinf_strict():
     with pytest.raises(ParseError) as e:
         m3u8.parse(playlists.SIMPLE_PLAYLIST_COMMALESS_EXTINF, strict=True)
     assert str(e.value) == 'Syntax error in manifest on line 3: #EXTINF:5220'
+
+
+def test_should_parse_segment_map_uri():
+    data = m3u8.parse(playlists.MAP_URI_PLAYLIST)
+    assert data['segment_map_uri'] == "fileSequence0.mp4"
