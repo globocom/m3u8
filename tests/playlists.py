@@ -598,6 +598,15 @@ MULTI_MEDIA_PLAYLIST = '''#EXTM3U
 448/chunklist_w370587926_b688000_vo_slen_t64TWFpbg==.m3u8
 '''
 
+MAP_URI_PLAYLIST = '''#EXTM3U
+#EXT-X-TARGETDURATION:2
+#EXT-X-VERSION:7
+#EXT-X-MEDIA-SEQUENCE:1
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-INDEPENDENT-SEGMENTS
+#EXT-X-MAP:URI="fileSequence0.mp4"
+'''
+
 RELATIVE_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/relative-playlist.m3u8'))
 
 RELATIVE_PLAYLIST_URI = TEST_HOST + '/path/to/relative-playlist.m3u8'
