@@ -26,7 +26,7 @@ directly from a string:
 
     import m3u8
 
-    m3u8_obj = m3u8.load('http://videoserver.com/playlist.m3u8')  # this could also be an absolute filename
+    m3u8_obj = m3u8.load('https://www.the5fire.com/static/demos/diaosi.m3u8')  # this could also be an absolute filename
     print m3u8_obj.segments
     print m3u8_obj.target_duration
 
