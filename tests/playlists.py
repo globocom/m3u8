@@ -604,7 +604,7 @@ MAP_URI_PLAYLIST = '''#EXTM3U
 #EXT-X-MEDIA-SEQUENCE:1
 #EXT-X-PLAYLIST-TYPE:VOD
 #EXT-X-INDEPENDENT-SEGMENTS
-#EXT-X-MAP:URI="fileSequence0.mp4"
+#EXT-X-MAP:URI="main.mp4",BYTERANGE="812@0"
 '''
 
 RELATIVE_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/relative-playlist.m3u8'))

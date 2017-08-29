@@ -692,7 +692,7 @@ def test_m3u8_should_propagate_base_uri_to_key():
 
 def test_segment_map_uri_attribute():
     obj = m3u8.M3U8(playlists.MAP_URI_PLAYLIST)
-    assert obj.segment_map_uri == "fileSequence0.mp4"
+    assert obj.segment_map['uri'] == "main.mp4"
 
 
 # custom asserts
