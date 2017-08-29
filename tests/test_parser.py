@@ -255,4 +255,9 @@ def test_commaless_extinf_strict():
 
 def test_should_parse_segment_map_uri():
     data = m3u8.parse(playlists.MAP_URI_PLAYLIST)
+    assert data['segment_map']['uri'] == "fileSequence0.mp4"
+
+
+def test_should_parse_segment_map_uri_with_byterange():
+    data = m3u8.parse(playlists.MAP_URI_PLAYLIST_WITH_BYTERANGE)
     assert data['segment_map']['uri'] == "main.mp4"

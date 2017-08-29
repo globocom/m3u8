@@ -138,7 +138,7 @@ def parse(content, strict=False):
 
         elif line.startswith(protocol.ext_x_map):
             quoted_parser = remove_quotes_parser('uri')
-            segment_map_info = _parse_attribute_list(protocol.ext_x_map, line, attribute_parser=quoted_parser)
+            segment_map_info = _parse_attribute_list(protocol.ext_x_map, line, quoted_parser)
             data['segment_map'] = segment_map_info
 
         # Comments and whitespace
