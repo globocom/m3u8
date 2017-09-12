@@ -230,10 +230,12 @@ def test_playlists_attribute():
     data = {'playlists': [{'uri': '/url/1.m3u8',
                            'stream_info': {'program_id': 1,
                                            'bandwidth': 320000,
+                                           'closed_captions': None,
                                            'video': 'high'}},
                           {'uri': '/url/2.m3u8',
                            'stream_info': {'program_id': 1,
                                            'bandwidth': 120000,
+                                           'closed_captions': None,
                                            'codecs': 'mp4a.40.5',
                                            'video': 'low'}},
                           ],
@@ -249,6 +251,7 @@ def test_playlists_attribute():
     assert '/url/1.m3u8' == obj.playlists[0].uri
     assert 1 == obj.playlists[0].stream_info.program_id
     assert 320000 == obj.playlists[0].stream_info.bandwidth
+    assert None == obj.playlists[0].stream_info.closed_captions
     assert None == obj.playlists[0].stream_info.codecs
 
     assert None == obj.playlists[0].media[0].uri
@@ -264,6 +267,7 @@ def test_playlists_attribute():
     assert '/url/2.m3u8' == obj.playlists[1].uri
     assert 1 == obj.playlists[1].stream_info.program_id
     assert 120000 == obj.playlists[1].stream_info.bandwidth
+    assert None == obj.playlists[1].stream_info.closed_captions
     assert 'mp4a.40.5' == obj.playlists[1].stream_info.codecs
 
     assert None == obj.playlists[1].media[0].uri
