@@ -278,7 +278,8 @@ class M3U8(object):
     def _create_sub_directories(self, filename):
         basename = os.path.dirname(filename)
         try:
-            os.makedirs(basename)
+            if basename:
+                os.makedirs(basename)
         except OSError as error:
             if error.errno != errno.EEXIST:
                 raise
