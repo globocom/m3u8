@@ -10,7 +10,7 @@ import arrow
 import datetime
 import m3u8
 import playlists
-from m3u8.model import Segment, Key
+from m3u8.model import Segment, Key, Media
 
 
 def test_target_duration_attribute():
@@ -692,6 +692,15 @@ def test_m3u8_should_propagate_base_uri_to_key():
     obj.base_uri = '/any/where/'
     assert '../key.bin' == obj.keys[0].uri
     assert '/any/key.bin' == obj.keys[0].absolute_uri
+
+
+def test_base_path_with_optional_uri_should_do_nothing():
+    media = Media(type='AUDIO', group_id='audio-group', name='English')
+    assert media.uri is None
+    assert media.base_uri is None
+    media.base_path = "base_path"
+    assert media.absolute_uri is None
+    assert media.base_path is None
 
 
 def test_segment_map_uri_attribute():
