@@ -261,3 +261,13 @@ def test_should_parse_segment_map_uri():
 def test_should_parse_segment_map_uri_with_byterange():
     data = m3u8.parse(playlists.MAP_URI_PLAYLIST_WITH_BYTERANGE)
     assert data['segment_map']['uri'] == "main.mp4"
+
+
+def test_should_parse_empty_uri_with_base_path():
+    data = m3u8.M3U8(
+            playlists.MEDIA_WITHOUT_URI_PLAYLIST,
+            base_path='base_path', base_uri='base_uri')
+    media = data.media[0]
+    assert media.uri is None
+    assert media.base_path is None
+    assert 'base_uri/' == media.base_uri

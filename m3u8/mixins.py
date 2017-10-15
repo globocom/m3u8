@@ -30,13 +30,17 @@ class BasePathMixin(object):
 
     @property
     def base_path(self):
+        if self.uri is None:
+            return None
         return os.path.dirname(self.uri)
 
     @base_path.setter
     def base_path(self, newbase_path):
-        if not self.base_path:
-            self.uri = "%s/%s" % (newbase_path, self.uri)
-        self.uri = self.uri.replace(self.base_path, newbase_path)
+        if self.uri is not None:
+            if not self.base_path:
+                self.uri = "%s/%s" % (newbase_path, self.uri)
+            else:
+                self.uri = self.uri.replace(self.base_path, newbase_path)
 
 
 class GroupedBasePathMixin(object):
