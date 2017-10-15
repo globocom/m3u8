@@ -461,6 +461,14 @@ JUNK
 #EXT-X-ENDLIST
 '''
 
+# The playlist fails if parsed as strict, but otherwise passes
+SIMPLE_PLAYLIST_TITLE_COMMA = '''
+#EXTM3U
+#EXTINF:5220,Title with a comma, end
+http://media.example.com/entire.ts
+#EXT-X-ENDLIST
+'''
+
 # Playlist with EXTINF record not ending with comma
 SIMPLE_PLAYLIST_COMMALESS_EXTINF = '''
 #EXTM3U

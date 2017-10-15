@@ -20,6 +20,10 @@ def test_should_parse_non_integer_duration_from_playlist_string():
     assert 5220.5 == data['targetduration']
     assert [5220.5] == [c['duration'] for c in data['segments']]
 
+def test_should_parse_comma_in_title():
+    data = m3u8.parse(playlists.SIMPLE_PLAYLIST_TITLE_COMMA)
+    assert ['Title with a comma, end'] == [c['title'] for c in data['segments']]
+
 def test_should_parse_simple_playlist_from_string_with_different_linebreaks():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST.replace('\n', '\r\n'))
     assert 5220 == data['targetduration']
