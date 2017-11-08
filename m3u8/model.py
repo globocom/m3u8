@@ -179,7 +179,8 @@ class M3U8(object):
                                         )
         self.segment_map = self.data.get('segment_map')
 
-        self.start = Start(**self.data.get('start', {}))
+        start = self.data.get('start', None)
+        self.start = start and Start(**start)
 
     def __unicode__(self):
         return self.dumps()
