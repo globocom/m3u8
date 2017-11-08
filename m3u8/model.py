@@ -253,7 +253,7 @@ class M3U8(object):
         if not (self.playlist_type is None or self.playlist_type == ''):
             output.append('#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
         if self.start:
-            output.append('#EXT-X-START:%s' % self.start.upper())
+            output.append('#EXT-X-START:%s' % self.start.upper().replace('_', '-'))
         if self.is_i_frames_only:
             output.append('#EXT-X-I-FRAMES-ONLY')
         if self.is_variant:
