@@ -8,6 +8,7 @@ import os
 import errno
 import math
 
+from m3u8 import protocol
 from m3u8.parser import parse, format_date_time
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
 
@@ -131,8 +132,7 @@ class M3U8(object):
         ('is_independent_segments', 'is_independent_segments'),
         ('version',          'version'),
         ('allow_cache',      'allow_cache'),
-        ('playlist_type',    'playlist_type'),
-        ('start',            'start')
+        ('playlist_type',    'playlist_type')
     )
 
     def __init__(self, content=None, base_path=None, base_uri=None, strict=False):
@@ -178,6 +178,8 @@ class M3U8(object):
                                          iframe_stream_info=ifr_pl['iframe_stream_info'])
                                         )
         self.segment_map = self.data.get('segment_map')
+
+        self.start = Start(**self.data.get('start', {}))
 
     def __unicode__(self):
         return self.dumps()
@@ -253,7 +255,7 @@ class M3U8(object):
         if not (self.playlist_type is None or self.playlist_type == ''):
             output.append('#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
         if self.start:
-            output.append('#EXT-X-START:%s' % self.start.upper().replace('_', '-'))
+            output.append(str(self.start))
         if self.is_i_frames_only:
             output.append('#EXT-X-I-FRAMES-ONLY')
         if self.is_variant:
@@ -677,6 +679,22 @@ class PlaylistList(list, GroupedBasePathMixin):
     def __str__(self):
         output = [str(playlist) for playlist in self]
         return '\n'.join(output)
+
+
+class Start(object):
+
+    def __init__(self, time_offset, precise=None):
+        self.time_offset = float(time_offset)
+        self.precise = precise
+
+    def __str__(self):
+        output = [
+            'TIME-OFFSET=' + str(self.time_offset)
+        ]
+        if self.precise and self.precise in ['YES', 'NO']:
+            output.append('PRECISE=' + str(self.precise))
+
+        return protocol.ext_start + ':' + ','.join(output)
 
 
 def find_key(keydata, keylist):
