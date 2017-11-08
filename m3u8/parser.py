@@ -141,6 +141,9 @@ def parse(content, strict=False):
             segment_map_info = _parse_attribute_list(protocol.ext_x_map, line, quoted_parser)
             data['segment_map'] = segment_map_info
 
+        elif line.startswith(protocol.ext_x_start):
+            key = _parse_key(line)
+
         # Comments and whitespace
         elif line.startswith('#'):
             # comment
