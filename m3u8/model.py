@@ -8,7 +8,7 @@ import os
 import errno
 import math
 
-from m3u8 import protocol
+from m3u8.protocol import ext_x_start
 from m3u8.parser import parse, format_date_time
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
 
@@ -695,7 +695,7 @@ class Start(object):
         if self.precise and self.precise in ['YES', 'NO']:
             output.append('PRECISE=' + str(self.precise))
 
-        return protocol.ext_start + ':' + ','.join(output)
+        return ext_x_start + ':' + ','.join(output)
 
 
 def find_key(keydata, keylist):
