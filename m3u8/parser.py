@@ -52,6 +52,7 @@ def parse(content, strict=False):
         'iframe_playlists': [],
         'media': [],
         'keys': [],
+        'start': None
     }
 
     state = {
@@ -142,7 +143,7 @@ def parse(content, strict=False):
             data['segment_map'] = segment_map_info
 
         elif line.startswith(protocol.ext_x_start):
-            key = _parse_key(line)
+            _parse_simple_parameter(line, data)
 
         # Comments and whitespace
         elif line.startswith('#'):

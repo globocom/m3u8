@@ -131,7 +131,8 @@ class M3U8(object):
         ('is_independent_segments', 'is_independent_segments'),
         ('version',          'version'),
         ('allow_cache',      'allow_cache'),
-        ('playlist_type',    'playlist_type')
+        ('playlist_type',    'playlist_type'),
+        ('start',            'start')
     )
 
     def __init__(self, content=None, base_path=None, base_uri=None, strict=False):
@@ -251,6 +252,8 @@ class M3U8(object):
             output.append('#EXT-X-PROGRAM-DATE-TIME:' + format_date_time(self.program_date_time))
         if not (self.playlist_type is None or self.playlist_type == ''):
             output.append('#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
+        if self.start:
+            output.append('#EXT-X-START:' + self.start)
         if self.is_i_frames_only:
             output.append('#EXT-X-I-FRAMES-ONLY')
         if self.is_variant:
