@@ -275,3 +275,15 @@ def test_should_parse_empty_uri_with_base_path():
     assert media.uri is None
     assert media.base_path is None
     assert 'base_uri/' == media.base_uri
+
+
+def test_should_parse_start_with_negative_time_offset():
+    data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_START_NEGATIVE_OFFSET)
+    assert data['start']['time_offset'] == -2.0
+    assert not hasattr(data['start'], 'precise')
+
+
+def test_should_parse_start_with_precise():
+    data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_START_PRECISE)
+    assert data['start']['time_offset'] == 10.5
+    assert data['start']['precise'] == 'YES'

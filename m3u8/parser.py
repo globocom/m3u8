@@ -51,7 +51,7 @@ def parse(content, strict=False):
         'segments': [],
         'iframe_playlists': [],
         'media': [],
-        'keys': [],
+        'keys': []
     }
 
     state = {
@@ -140,6 +140,13 @@ def parse(content, strict=False):
             quoted_parser = remove_quotes_parser('uri')
             segment_map_info = _parse_attribute_list(protocol.ext_x_map, line, quoted_parser)
             data['segment_map'] = segment_map_info
+
+        elif line.startswith(protocol.ext_x_start):
+            attribute_parser = {
+                "time_offset": lambda x: float(x)
+            }
+            start_info = _parse_attribute_list(protocol.ext_x_start, line, attribute_parser)
+            data['start'] = start_info
 
         # Comments and whitespace
         elif line.startswith('#'):
