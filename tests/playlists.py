@@ -15,6 +15,24 @@ http://media.example.com/entire.ts
 #EXT-X-ENDLIST
 '''
 
+SIMPLE_PLAYLIST_WITH_START_NEGATIVE_OFFSET = '''
+#EXTM3U
+#EXT-X-TARGETDURATION:5220
+#EXT-X-START:TIME-OFFSET=-2.0
+#EXTINF:5220,
+http://media.example.com/entire.ts
+#EXT-X-ENDLIST
+'''
+
+SIMPLE_PLAYLIST_WITH_START_PRECISE = '''
+#EXTM3U
+#EXT-X-TARGETDURATION:5220
+#EXT-X-START:TIME-OFFSET=10.5,PRECISE=YES
+#EXTINF:5220,
+http://media.example.com/entire.ts
+#EXT-X-ENDLIST
+'''
+
 SIMPLE_PLAYLIST_FILENAME = abspath(
     join(dirname(__file__), 'playlists/simple-playlist.m3u8'))
 

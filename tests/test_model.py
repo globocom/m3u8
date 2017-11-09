@@ -8,6 +8,9 @@
 
 import arrow
 import datetime
+
+from m3u8.protocol import ext_x_start
+
 import m3u8
 import playlists
 from m3u8.model import Segment, Key, Media
@@ -711,6 +714,21 @@ def test_segment_map_uri_attribute():
 def test_segment_map_uri_attribute_with_byterange():
     obj = m3u8.M3U8(playlists.MAP_URI_PLAYLIST_WITH_BYTERANGE)
     assert obj.segment_map['uri'] == "main.mp4"
+
+
+def test_start_with_negative_offset():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_START_NEGATIVE_OFFSET)
+    assert obj.start.time_offset == -2.0
+    assert obj.start.precise is None
+    assert ext_x_start + ':TIME-OFFSET=-2.0\n' in obj.dumps()
+
+
+def test_start_with_precise():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_START_PRECISE)
+    assert obj.start.time_offset == 10.5
+    assert obj.start.precise == 'YES'
+    assert ext_x_start + ':TIME-OFFSET=10.5,PRECISE=YES\n' in obj.dumps()
+
 
 # custom asserts
 

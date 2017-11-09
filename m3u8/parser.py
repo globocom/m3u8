@@ -142,8 +142,9 @@ def parse(content, strict=False):
             data['segment_map'] = segment_map_info
 
         elif line.startswith(protocol.ext_x_start):
-            attribute_parser = {}
-            attribute_parser["time_offset"] = lambda x: float(x)
+            attribute_parser = {
+                "time_offset": lambda x: float(x)
+            }
             start_info = _parse_attribute_list(protocol.ext_x_start, line, attribute_parser)
             data['start'] = start_info
 
