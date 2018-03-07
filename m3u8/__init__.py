@@ -50,16 +50,12 @@ def load(uri, timeout=None, headers={}):
 def _load_from_uri(uri, timeout=None, headers={}):
     request = Request(uri, headers=headers)
     resource = urlopen(request, timeout=timeout)
-    base_uri = _parsed_url(_url_for(request))
+    base_uri = _parsed_url(resource.geturl())
     if PYTHON_MAJOR_VERSION < (3,):
         content = _read_python2x(resource)
     else:
         content = _read_python3x(resource)
     return M3U8(content, base_uri=base_uri)
-
-
-def _url_for(request):
-    return urlopen(request).geturl()
 
 
 def _parsed_url(url):
