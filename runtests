@@ -4,6 +4,12 @@ test_server_stdout=tests/server.stdout
 
 function install_deps {
     pip install -r requirements-dev.txt
+
+    # fix arrow dependency issue
+    PYTHON_VERSION=`python -c 'import sys; version=sys.version_info[:3]; print("{0}.{1}.{2}".format(*version))'`
+    if [[ "${PYTHON_VERSION}" == 2.* ]]; then
+        pip install backports.functools-lru-cache
+    fi
 }
 
 function start_server {
