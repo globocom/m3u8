@@ -256,7 +256,9 @@ class M3U8(object):
         if not (self.playlist_type is None or self.playlist_type == ''):
             output.append('#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
         if self.segment_map:
-            output.append('#EXT-X-MAP:URI="%s"' % self.segment_map)
+            br = self.segment_map.get('byterange')
+            map_br = ',BYTERANGE="%s"' % br if br is not None else ''
+            output.append('#EXT-X-MAP:URI="%s"%s' % (self.segment_map['uri'], map_br))
         if self.start:
             output.append(str(self.start))
         if self.is_i_frames_only:
