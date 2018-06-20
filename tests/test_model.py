@@ -663,6 +663,19 @@ def test_none_media_sequence_gracefully_ignored():
     expected = '#EXTM3U\n'
     assert result == expected
 
+def test_0_discontinuity_sequence_added_to_file():
+    obj = m3u8.M3U8()
+    obj.discontinuity_sequence = 0
+    result = obj.dumps()
+    expected = '#EXTM3U\n'
+    assert result == expected
+
+def test_none_discontinuity_sequence_gracefully_ignored():
+    obj = m3u8.M3U8()
+    obj.discontinuity_sequence = None
+    result = obj.dumps()
+    expected = '#EXTM3U\n'
+    assert result == expected
 
 def test_should_correctly_update_base_path_if_its_blank():
     segment = Segment('entire.ts', 'http://1.2/')

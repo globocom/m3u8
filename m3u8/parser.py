@@ -75,6 +75,9 @@ def parse(content, strict=False):
         elif line.startswith(protocol.ext_x_media_sequence):
             _parse_simple_parameter(line, data, int)
 
+        elif line.startswith(protocol.ext_x_discontinuity_sequence):
+            _parse_simple_parameter(line, data, int)
+
         elif line.startswith(protocol.ext_x_program_date_time):
             _, program_date_time = _parse_simple_parameter_raw_value(line, cast_date_time)
             if not data.get('program_date_time'):

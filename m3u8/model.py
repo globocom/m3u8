@@ -132,7 +132,8 @@ class M3U8(object):
         ('is_independent_segments', 'is_independent_segments'),
         ('version',          'version'),
         ('allow_cache',      'allow_cache'),
-        ('playlist_type',    'playlist_type')
+        ('playlist_type',    'playlist_type'),
+        ('discontinuity_sequence', 'discontinuity_sequence')
     )
 
     def __init__(self, content=None, base_path=None, base_uri=None, strict=False):
@@ -244,6 +245,9 @@ class M3U8(object):
             output.append('#EXT-X-INDEPENDENT-SEGMENTS')
         if self.media_sequence:
             output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
+        if self.discontinuity_sequence:
+            output.append('#EXT-X-DISCONTINUITY-SEQUENCE:{}'.format(
+                int_or_float_to_string(self.discontinuity_sequence)))
         if self.allow_cache:
             output.append('#EXT-X-ALLOW-CACHE:' + self.allow_cache.upper())
         if self.version:

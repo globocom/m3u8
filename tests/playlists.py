@@ -649,6 +649,14 @@ MEDIA_WITHOUT_URI_PLAYLIST = '''#EXTM3U
 ch001-audio_312640_eng=312000.m3u8
 '''
 
+SIMPLE_PLAYLIST_WITH_DISCONTINUITY_SEQUENCE = '''#EXTM3U
+#EXT-X-TARGETDURATION:5220
+#EXT-X-DISCONTINUITY-SEQUENCE:123
+#EXTINF:5220,
+http://media.example.com/entire.ts
+#EXT-X-ENDLIST
+'''
+
 RELATIVE_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/relative-playlist.m3u8'))
 
 RELATIVE_PLAYLIST_URI = TEST_HOST + '/path/to/relative-playlist.m3u8'

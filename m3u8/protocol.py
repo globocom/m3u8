@@ -5,6 +5,7 @@
 
 ext_x_targetduration = '#EXT-X-TARGETDURATION'
 ext_x_media_sequence = '#EXT-X-MEDIA-SEQUENCE'
+ext_x_discontinuity_sequence = '#EXT-X-DISCONTINUITY-SEQUENCE'
 ext_x_program_date_time = '#EXT-X-PROGRAM-DATE-TIME'
 ext_x_media = '#EXT-X-MEDIA'
 ext_x_playlist_type = '#EXT-X-PLAYLIST-TYPE'
