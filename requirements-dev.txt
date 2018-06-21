@@ -1,5 +1,5 @@
 -r requirements.txt
-arrow
+arrow==0.9.0
 pytest
 bottle
 pytest-cov
