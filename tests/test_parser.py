@@ -89,7 +89,7 @@ def test_should_handle_key_method_none_and_no_uri_attr():
     assert "/hls-key/key.bin" == third_segment_key['uri']
     assert "AES-128" == third_segment_key['method']
     assert "0X10ef8f758ca555115584bb5b3c687f52" == third_segment_key['iv']
-    assert "NONE" == data['segments'][6]['key']['method']  
+    assert "NONE" == data['segments'][6]['key']['method']
 
 def test_should_parse_title_from_playlist():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_TITLE)
@@ -287,3 +287,7 @@ def test_should_parse_start_with_precise():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_START_PRECISE)
     assert data['start']['time_offset'] == 10.5
     assert data['start']['precise'] == 'YES'
+
+def test_simple_playlist_with_discontinuity_sequence():
+    data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_DISCONTINUITY_SEQUENCE)
+    assert data['discontinuity_sequence'] == 123
