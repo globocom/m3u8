@@ -565,9 +565,11 @@ class IFramePlaylist(BasePathMixin):
         self.iframe_stream_info = StreamInfo(
             bandwidth=iframe_stream_info.get('bandwidth'),
             video=iframe_stream_info.get('video'),
-            audio=iframe_stream_info.get('audio'),
-            subtitles=iframe_stream_info.get('subtitles'),
-            closed_captions=iframe_stream_info.get('closed_captions'),
+            # Audio, subtitles, and closed captions should not exist in
+            # EXT-X-I-FRAME-STREAM-INF, so just hardcode them to None.
+            audio=None,
+            subtitles=None,
+            closed_captions=None,
             average_bandwidth=None,
             program_id=iframe_stream_info.get('program_id'),
             resolution=resolution_pair,
