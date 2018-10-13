@@ -96,6 +96,14 @@ http://example.com/with-cc-hi.m3u8
 http://example.com/with-cc-low.m3u8
 '''
 
+VARIANT_PLAYLIST_WITH_VIDEO_CC_SUBS_AND_AUDIO = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=7680000,CLOSED-CAPTIONS="cc",SUBTITLES="sub",AUDIO="aud",VIDEO="vid"
+http://example.com/with-everything-hi.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,CLOSED-CAPTIONS="cc",SUBTITLES="sub",AUDIO="aud",VIDEO="vid"
+http://example.com/with-everything-low.m3u8
+'''
+
 VARIANT_PLAYLIST_WITH_AVERAGE_BANDWIDTH = '''
 #EXTM3U
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1280000,AVERAGE-BANDWIDTH=1252345

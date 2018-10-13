@@ -490,6 +490,9 @@ class Playlist(BasePathMixin):
 
         self.stream_info = StreamInfo(
             bandwidth=stream_info['bandwidth'],
+            video=stream_info.get('video'),
+            audio=stream_info.get('audio'),
+            subtitles=stream_info.get('subtitles'),
             closed_captions=stream_info.get('closed_captions'),
             average_bandwidth=stream_info.get('average_bandwidth'),
             program_id=stream_info.get('program_id'),
@@ -561,7 +564,12 @@ class IFramePlaylist(BasePathMixin):
 
         self.iframe_stream_info = StreamInfo(
             bandwidth=iframe_stream_info.get('bandwidth'),
-            closed_captions=iframe_stream_info.get('closed_captions'),
+            video=iframe_stream_info.get('video'),
+            # Audio, subtitles, and closed captions should not exist in
+            # EXT-X-I-FRAME-STREAM-INF, so just hardcode them to None.
+            audio=None,
+            subtitles=None,
+            closed_captions=None,
             average_bandwidth=None,
             program_id=iframe_stream_info.get('program_id'),
             resolution=resolution_pair,
@@ -590,7 +598,7 @@ class IFramePlaylist(BasePathMixin):
 
 StreamInfo = namedtuple(
     'StreamInfo',
-    ['bandwidth', 'closed_captions', 'average_bandwidth', 'program_id', 'resolution', 'codecs']
+    ['bandwidth', 'closed_captions', 'average_bandwidth', 'program_id', 'resolution', 'codecs', 'audio', 'video', 'subtitles']
 )
 
 
