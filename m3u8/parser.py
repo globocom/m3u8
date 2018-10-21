@@ -323,7 +323,7 @@ def _parse_cueout_start(line, state, prevline):
 
 
 def string_to_lines(string):
-    return string.strip().replace('\r\n', '\n').split('\n')
+    return string.strip().splitlines()
 
 
 def remove_quotes_parser(*attrs):
@@ -341,7 +341,7 @@ def remove_quotes(string):
 
     '''
     quotes = ('"', "'")
-    if string and string[0] in quotes and string[-1] in quotes:
+    if string.startswith(quotes) and string.endswith(quotes):
         return string[1:-1]
     return string
 
@@ -351,4 +351,5 @@ def normalize_attribute(attribute):
 
 
 def is_url(uri):
-    return re.match(r'https?://', uri) is not None
+    return uri.startswith(('https://', 'http://'))
+
