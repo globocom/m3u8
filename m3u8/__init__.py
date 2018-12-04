@@ -24,12 +24,18 @@ __all__ = ('M3U8', 'Playlist', 'IFramePlaylist', 'Media',
            'Segment', 'loads', 'load', 'parse', 'ParseError')
 
 
-def loads(content):
+def loads(content, uri=None):
     '''
     Given a string with a m3u8 content, returns a M3U8 object.
+    Optionally parses a uri to set a correct base_uri on the M3U8 object.
     Raises ValueError if invalid content
     '''
-    return M3U8(content)
+
+    if uri is None:
+        return M3U8(content)
+    else:
+        base_uri = _parsed_url(uri)
+        return M3U8(content, base_uri=base_uri)
 
 
 def load(uri, timeout=None, headers={}):
