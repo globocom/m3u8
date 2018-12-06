@@ -111,6 +111,13 @@ def test_absolute_uri_should_handle_empty_base_uri_path():
     assert 'http://example.com/key.bin' == key.absolute_uri
 
 
+def test_presence_of_base_uri_if_provided_when_loading_from_string():
+    with open(playlists.RELATIVE_PLAYLIST_FILENAME) as f:
+        content = f.read()
+    obj = m3u8.loads(content, uri='http://media.example.com/path/playlist.m3u8')
+    assert obj.base_uri == 'http://media.example.com/path/'
+
+
 def test_raise_timeout_exception_if_timeout_happens_when_loading_from_uri():
     try:
         obj = m3u8.load(playlists.TIMEOUT_SIMPLE_PLAYLIST_URI, timeout=1)
