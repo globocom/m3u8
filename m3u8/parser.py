@@ -35,8 +35,7 @@ class ParseError(Exception):
         return 'Syntax error in manifest on line %d: %s' % (self.lineno, self.line)
 
 
-
-def parse(content, strict=False):
+def parse(content, strict=False, custom_tags_parser=None):
     '''
     Given a M3U8 playlist content returns a dictionary with all data found
     '''
@@ -153,8 +152,8 @@ def parse(content, strict=False):
 
         # Comments and whitespace
         elif line.startswith('#'):
-            # comment
-            pass
+            if callable(custom_tags_parser):
+                custom_tags_parser(line, data, lineno)
 
         elif line.strip() == '':
             # blank lines are legal

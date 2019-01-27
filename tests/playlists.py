@@ -673,6 +673,14 @@ http://media.example.com/entire.ts
 #EXT-X-ENDLIST
 '''
 
+SIMPLE_PLAYLIST_WITH_CUSTOM_TAGS = '''#EXTM3U
+#EXT-X-MOVIE: million dollar baby
+#EXT-X-TARGETDURATION:5220
+#EXTINF:5220,
+http://media.example.com/entire.ts
+#EXT-X-ENDLIST
+'''
+
 RELATIVE_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/relative-playlist.m3u8'))
 
 RELATIVE_PLAYLIST_URI = TEST_HOST + '/path/to/relative-playlist.m3u8'
