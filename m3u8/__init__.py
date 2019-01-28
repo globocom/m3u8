@@ -24,7 +24,7 @@ __all__ = ('M3U8', 'Playlist', 'IFramePlaylist', 'Media',
            'Segment', 'loads', 'load', 'parse', 'ParseError')
 
 
-def loads(content, uri=None):
+def loads(content, uri=None, custom_tags_parser=None):
     '''
     Given a string with a m3u8 content, returns a M3U8 object.
     Optionally parses a uri to set a correct base_uri on the M3U8 object.
@@ -32,13 +32,13 @@ def loads(content, uri=None):
     '''
 
     if uri is None:
-        return M3U8(content)
+        return M3U8(content, custom_tags_parser)
     else:
         base_uri = _parsed_url(uri)
-        return M3U8(content, base_uri=base_uri)
+        return M3U8(content, base_uri=base_uri, custom_tags_parser=custom_tags_parser)
 
 
-def load(uri, timeout=None, headers={}):
+def load(uri, timeout=None, headers={}, custom_tags_parser=None):
     '''
     Retrieves the content from a given URI and returns a M3U8 object.
     Raises ValueError if invalid content or IOError if request fails.
@@ -46,14 +46,14 @@ def load(uri, timeout=None, headers={}):
     timeout happens when loading from uri
     '''
     if is_url(uri):
-        return _load_from_uri(uri, timeout, headers)
+        return _load_from_uri(uri, timeout, headers, custom_tags_parser)
     else:
-        return _load_from_file(uri)
+        return _load_from_file(uri, custom_tags_parser)
 
 # Support for python3 inspired by https://github.com/szemtiv/m3u8/
 
 
-def _load_from_uri(uri, timeout=None, headers={}):
+def _load_from_uri(uri, timeout=None, headers={}, custom_tags_parser=None):
     request = Request(uri, headers=headers)
     resource = urlopen(request, timeout=timeout)
     base_uri = _parsed_url(resource.geturl())
@@ -61,7 +61,7 @@ def _load_from_uri(uri, timeout=None, headers={}):
         content = _read_python2x(resource)
     else:
         content = _read_python3x(resource)
-    return M3U8(content, base_uri=base_uri)
+    return M3U8(content, base_uri=base_uri, custom_tags_parser=custom_tags_parser)
 
 
 def _parsed_url(url):
@@ -81,8 +81,8 @@ def _read_python3x(resource):
     )
 
 
-def _load_from_file(uri):
+def _load_from_file(uri, custom_tags_parser=None):
     with open(uri) as fileobj:
         raw_content = fileobj.read().strip()
     base_uri = os.path.dirname(uri)
-    return M3U8(raw_content, base_uri=base_uri)
+    return M3U8(raw_content, base_uri=base_uri, custom_tags_parser=custom_tags_parser)

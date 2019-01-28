@@ -313,3 +313,16 @@ def test_should_parse_start_with_precise():
 def test_simple_playlist_with_discontinuity_sequence():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_DISCONTINUITY_SEQUENCE)
     assert data['discontinuity_sequence'] == 123
+
+def test_simple_playlist_with_custom_tags():
+    def get_movie(line, data, lineno):
+        custom_tag = line.split(':')
+        if len(custom_tag) == 2:
+            data['movie'] = custom_tag[1].strip()
+
+    data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_CUSTOM_TAGS, strict=False, custom_tags_parser=get_movie)
+    assert data['movie'] == 'million dollar baby'
+    assert 5220 == data['targetduration']
+    assert 0 == data['media_sequence']
+    assert ['http://media.example.com/entire.ts'] == [c['uri'] for c in data['segments']]
+    assert [5220] == [c['duration'] for c in data['segments']]
