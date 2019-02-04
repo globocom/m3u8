@@ -1,6 +1,6 @@
 -r requirements.txt
 arrow==0.9.0
-pytest
 bottle
+pytest
 pytest-cov>=2.4.0,<2.6
 python-coveralls
