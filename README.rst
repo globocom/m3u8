@@ -183,6 +183,31 @@ The iframe_playlist object used in the for loop above has a few attributes:
 -  ``base_uri``: the base uri of the variant playlist (if given)
 -  ``iframe_stream_info``: a ``StreamInfo`` object (same as a regular playlist)
 
+Custom tags
+-----------
+
+Quoting the documentation::
+
+    Lines that start with the character '#' are either comments or tags.
+    Tags begin with #EXT.  They are case-sensitive.  All other lines that
+    begin with '#' are comments and SHOULD be ignored.
+
+This library ignores all the non standard tags by default. If you want them to be collected while loading the file content,
+you need to pass a function to the `load/loads` functions, following the example below:
+
+::
+
+    import m3u8
+
+    def get_movie(line, data, lineno):
+        if line.startswith('#MOVIE-NAME:'):
+            custom_tag = line.split(':')
+            data['movie'] = custom_tag[1].strip()
+
+    m3u8_obj = m3u8.load('http://videoserver.com/playlist.m3u8', custom_tags_parser=get_movie)
+    print(m3u8_obj.data['movie'])  #  million dollar baby
+
+
 Running Tests
 =============
 
