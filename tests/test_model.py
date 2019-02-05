@@ -6,7 +6,6 @@
 # Tests M3U8 class to make sure all attributes and methods use the correct
 # data returned from parser.parse()
 
-import arrow
 import datetime
 
 from m3u8.protocol import ext_x_start
@@ -14,6 +13,23 @@ from m3u8.protocol import ext_x_start
 import m3u8
 import playlists
 from m3u8.model import Segment, Key, Media
+
+
+class UTC(datetime.tzinfo):
+    """tzinfo class used for backwards compatibility reasons.
+    Extracted from the official documentation.
+    Ref: https://docs.python.org/2/library/datetime.html#datetime.tzinfo.fromutc
+    """
+    def utcoffset(self, dt):
+        return datetime.timedelta(0)
+
+    def tzname(self, dt):
+        return 'UTC'
+
+    def dst(self, dt):
+        return datetime.timedelta(0)
+
+utc = UTC()
 
 
 def test_target_duration_attribute():
@@ -33,13 +49,13 @@ def test_media_sequence_attribute():
 def test_program_date_time_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
-    assert arrow.get('2014-08-13T13:36:33+00:00').datetime == obj.program_date_time
+    assert datetime.datetime(2014, 8, 13, 13, 36, 33, tzinfo=utc) == obj.program_date_time
 
 
 def test_program_date_time_attribute_for_each_segment():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
-    first_program_date_time = arrow.get('2014-08-13T13:36:33+00:00').datetime
+    first_program_date_time = datetime.datetime(2014, 8, 13, 13, 36, 33, tzinfo=utc)
     for idx, segment in enumerate(obj.segments):
         assert segment.program_date_time == first_program_date_time + \
             datetime.timedelta(seconds=idx * 3)
@@ -48,8 +64,8 @@ def test_program_date_time_attribute_for_each_segment():
 def test_program_date_time_attribute_with_discontinuity():
     obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
-    first_program_date_time = arrow.get('2014-08-13T13:36:33+00:00').datetime
-    discontinuity_program_date_time = arrow.get('2014-08-13T13:36:55+00:00').datetime
+    first_program_date_time = datetime.datetime(2014, 8, 13, 13, 36, 33, tzinfo=utc)
+    discontinuity_program_date_time = datetime.datetime(2014, 8, 13, 13, 36, 55, tzinfo=utc)
 
     segments = obj.segments
 
