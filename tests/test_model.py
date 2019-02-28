@@ -108,7 +108,7 @@ def test_segment_envivio_scte35_attribute():
     assert segments[7].cue_out == False
 
 def test_ad_marker():
-    ad_marker = AdMarker('elemental', 12, 3.80)
+    ad_marker = AdMarker('elemental', 12, 3.80, '', '')
     assert ad_marker.dumps() == '''#EXT-X-CUE-OUT:12.00
 #EXT-X-CUE-OUT-CONT: 3.80/12
 #EXT-X-CUE-OUT-CONT: 7.60/12
