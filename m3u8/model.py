@@ -7,6 +7,7 @@ from collections import namedtuple
 import os
 import errno
 import math
+from decimal import *
 
 from m3u8.protocol import ext_x_start
 from m3u8.parser import parse, format_date_time
@@ -385,6 +386,76 @@ class Segment(BasePathMixin):
     def __str__(self):
         return self.dumps(None)
 
+class AdMarker(object):
+    '''
+    Ad Marker for M3u8 Playlist
+
+    `type`
+        Type for ad marker. Example: elemental
+
+    `total_duration`
+        Total duration for Ad Markers.
+
+    `ad_marker_duration`
+        Ad Marker Duration for single ad marker unit.
+    '''
+    TYPES = [ 'elemental', 'scte35-enhanced' ]
+
+    def __init__(self, type, total_duration, ad_marker_duration, oatcls_scte35, asset_caid):
+        self.type = type
+        self.total_duration = total_duration
+        self.ad_marker_duration = ad_marker_duration
+        self.oatcls_scte35 = oatcls_scte35
+        self.asset_caid = asset_caid
+
+    def get_type(self):
+        return self._type
+
+    def set_type(self, t):
+        if t not in TYPES:
+            raise Exception("Invalid type. Only supports {}".format(''.join(TYPES)))
+        self._type = t
+
+    def get_ad_marker_duration(self):
+        return self._ad_marker_duration
+
+    def set_ad_marker_duration(self, ad_m_d):
+        if ad_m_d > self.total_duration:
+            raise Exception("Invalid ad_marker_duration. Cannot be greater than total_duration")
+        self._ad_marker_duration = ad_m_d
+
+    def dumps(self, last_segment):
+        TWOPLACES = Decimal(10) ** -2
+        output = []
+        float_total_duration = Decimal(self.total_duration).quantize(TWOPLACES)
+        float_ad_marker_duration = Decimal(self.ad_marker_duration).quantize(TWOPLACES)
+        elapsed_duration = Decimal(0).quantize(TWOPLACES)
+
+        if self.type == 'elemental':
+            output.append("#EXT-X-CUE-OUT:{}\n".format(float_total_duration))
+            while elapsed_duration < float_total_duration:
+                if (float_total_duration - elapsed_duration) < float_ad_marker_duration:
+                    elapsed_duration = elapsed_duration + (float_total_duration - elapsed_duration)
+                else:
+                    elapsed_duration = elapsed_duration + float_ad_marker_duration
+                output.append("#EXT-X-CUE-OUT-CONT: {}/{}\n".format(elapsed_duration, self.total_duration))
+            output.append("#EXT-X-CUE-IN")
+        elif self.type == 'scte35-enhanced':
+            output.append("#EXT-OATCLS-SCTE35:{}\n".format(self.oatcls_scte35))
+            output.append("#EXT-X-ASSET:CAID={}\n".format(self.asset_caid))
+            output.append("#EXT-X-CUE-OUT:{}\n".format(float_total_duration))
+            while elapsed_duration < float_total_duration:
+                if (float_total_duration - elapsed_duration) < float_ad_marker_duration:
+                    elapsed_duration = elapsed_duration + (float_total_duration - elapsed_duration)
+                else:
+                    elapsed_duration = elapsed_duration + float_ad_marker_duration
+                output.append("#EXT-X-CUE-OUT-CONT:ElapsedTime={},Duration={},SCTE35={}\n".format(elapsed_duration, float_total_duration, self.oatcls_scte35))
+            output.append("#EXT-X-CUE-IN")
+
+        return ''.join(output)
+
+    def __str__(self):
+        return self.dumps()
 
 class SegmentList(list, GroupedBasePathMixin):
 
