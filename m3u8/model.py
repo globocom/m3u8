@@ -402,6 +402,7 @@ class AdMarker(object):
     TYPES = [ 'elemental', 'scte35-enhanced' ]
 
     def __init__(self, type, total_duration, ad_marker_duration, oatcls_scte35, asset_caid):
+        self.key = None
         self.type = type
         self.total_duration = total_duration
         self.ad_marker_duration = ad_marker_duration
