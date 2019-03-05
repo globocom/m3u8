@@ -107,15 +107,11 @@ def test_segment_envivio_scte35_attribute():
     assert segments[5].scte35 == '/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=='
     assert segments[7].cue_out == False
 
-def test_ad_marker():
-    ad_marker = AdMarker('elemental', 12, 3.80, '', '')
-    assert ad_marker.dumps() == '''#EXT-X-CUE-OUT:12.00
-#EXT-X-CUE-OUT-CONT: 3.80/12
-#EXT-X-CUE-OUT-CONT: 7.60/12
-#EXT-X-CUE-OUT-CONT: 11.40/12
-#EXT-X-CUE-OUT-CONT: 12.00/12
-#EXT-X-CUE-IN
-'''
+def test_elemental_ad_marker():
+    ad_marker = AdMarker('elemental', 12, '', '')
+    print ad_marker.dumps(None)
+    assert ad_marker.dumps(None) == '''#EXT-X-CUE-OUT:12.00
+#EXT-X-CUE-IN'''
 
 def test_keys_on_clear_playlist():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
