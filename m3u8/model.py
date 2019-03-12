@@ -354,6 +354,10 @@ class Segment(BasePathMixin):
 
     def dumps(self, last_segment):
         output = []
+        if self.discontinuity:
+            output.append('#EXT-X-DISCONTINUITY\n')
+            return ''.join(output)
+
         if last_segment and self.key != last_segment.key:
             output.append(str(self.key))
             output.append('\n')
