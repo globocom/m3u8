@@ -368,6 +368,7 @@ class Segment(BasePathMixin):
             if self.program_date_time:
                 output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' %
                               format_date_time(self.program_date_time))
+            return ''.join(output)
         if self.cue_out:
             output.append('#EXT-X-CUE-OUT-CONT\n')
         output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
