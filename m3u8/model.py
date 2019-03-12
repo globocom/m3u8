@@ -336,7 +336,7 @@ class Segment(BasePathMixin):
       Key used to encrypt the segment (EXT-X-KEY)
     '''
 
-    def __init__(self, uri, base_uri, program_date_time=None, duration=None,
+    def __init__(self, uri=None, base_uri=None, program_date_time=None, duration=None,
                  title=None, byterange=None, cue_out=False, discontinuity=False, key=None,
                  scte35=None, scte35_duration=None, keyobject=None):
         self.uri = uri
