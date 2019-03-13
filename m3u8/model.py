@@ -263,6 +263,13 @@ class M3U8(object):
             output.append(str(self.start))
         if self.is_i_frames_only:
             output.append('#EXT-X-I-FRAMES-ONLY')
+        if self.segment_map:
+            map_output = []
+            if self.segment_map.get('uri'):
+                map_output.append('URI=' + quoted(self.segment_map['uri']))
+            if self.segment_map.get('byterange'):
+                map_output.append('BYTERANGE=' + self.segment_map['byterange'])
+            output.append('#EXT-X-MAP:' + ','.join(map_output))
         if self.is_variant:
             if self.media:
                 output.append(str(self.media))

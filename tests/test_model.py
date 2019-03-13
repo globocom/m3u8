@@ -483,6 +483,16 @@ def test_dump_should_include_program_date_time():
     assert "EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:33+00:00" in obj.dumps().strip()
 
 
+def test_dump_should_include_segment_level_program_date_time():
+    obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_PROGRAM_DATE_TIME)
+    # Tag being expected is in the segment level, not the global one
+    assert "#EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:55+00:00" in obj.dumps().strip()
+
+def test_dump_should_include_map_attributes():
+    obj = m3u8.M3U8(playlists.MAP_URI_PLAYLIST_WITH_BYTERANGE)
+
+    assert 'EXT-X-MAP:URI="main.mp4",BYTERANGE="812@0"' in obj.dumps().strip()
+
 def test_dump_should_work_for_playlists_using_byteranges():
     obj = m3u8.M3U8(playlists.PLAYLIST_USING_BYTERANGES)
 
