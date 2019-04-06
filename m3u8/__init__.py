@@ -15,7 +15,7 @@ except ImportError:  # Python 2.x
     from urllib2 import urlopen, Request, HTTPError
     from urlparse import urlparse, urljoin
 
-from m3u8.model import M3U8, Playlist, IFramePlaylist, Media, Segment, AdMarker
+from m3u8.model import M3U8, Playlist, IFramePlaylist, Media, Segment, AdMarker, SegmentList
 from m3u8.parser import parse, is_url, ParseError
 
 PYTHON_MAJOR_VERSION = sys.version_info
