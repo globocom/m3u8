@@ -415,6 +415,7 @@ class AdMarker(object):
         self.total_duration = total_duration
         self.oatcls_scte35 = oatcls_scte35
         self.asset_caid = asset_caid
+        self.discontinuity = False
 
     def get_type(self):
         return self._type
