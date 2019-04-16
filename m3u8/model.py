@@ -409,10 +409,11 @@ class AdMarker(object):
     '''
     TYPES = [ 'elemental', 'scte35-enhanced' ]
 
-    def __init__(self, type, total_duration, oatcls_scte35, asset_caid):
+    def __init__(self, type, duration, oatcls_scte35, asset_caid):
         self.key = None
         self.type = type
-        self.total_duration = total_duration
+        self.duration = duration
+
         self.oatcls_scte35 = oatcls_scte35
         self.asset_caid = asset_caid
         self.discontinuity = False
@@ -428,16 +429,16 @@ class AdMarker(object):
     def dumps(self, last_segment):
         TWOPLACES = Decimal(10) ** -2
         output = []
-        float_total_duration = Decimal(self.total_duration).quantize(TWOPLACES)
+        float_duration = Decimal(self.duration).quantize(TWOPLACES)
         elapsed_duration = Decimal(0).quantize(TWOPLACES)
 
         if self.type == 'elemental':
-            output.append("#EXT-X-CUE-OUT:{}\n".format(float_total_duration))
+            output.append("#EXT-X-CUE-OUT:{}\n".format(float_duration))
             output.append("#EXT-X-CUE-IN")
         elif self.type == 'scte35-enhanced':
             output.append("#EXT-OATCLS-SCTE35:{}\n".format(self.oatcls_scte35))
             output.append("#EXT-X-ASSET:CAID={}\n".format(self.asset_caid))
-            output.append("#EXT-X-CUE-OUT:{}\n".format(float_total_duration))
+            output.append("#EXT-X-CUE-OUT:{}\n".format(float_duration))
             output.append("#EXT-X-CUE-IN")
 
         return ''.join(output)
