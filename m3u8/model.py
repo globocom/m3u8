@@ -398,24 +398,15 @@ class AdMarker(object):
     `type`
         Type for ad marker. Example: elemental
 
-    `total_duration`
+    `duration`
         Total duration for Ad Markers.
-
-    `oatcls_scte35`
-        OATCLS-SCTE35 containing the base64 encoded raw bytes of the original SCTE-35 ad avail message
-
-    `asset_caid`
-        ASSET containing the CAID or UPID as specified in the original SCTE35 message.
     '''
-    TYPES = [ 'elemental', 'scte35-enhanced' ]
+    TYPES = [ 'elemental', 'scte']
 
-    def __init__(self, type, duration, oatcls_scte35, asset_caid):
+    def __init__(self, type, duration):
         self.key = None
         self.type = type
         self.duration = duration
-
-        self.oatcls_scte35 = oatcls_scte35
-        self.asset_caid = asset_caid
         self.discontinuity = False
 
     def get_type(self):
@@ -435,11 +426,9 @@ class AdMarker(object):
         if self.type == 'elemental':
             output.append("#EXT-X-CUE-OUT:{}\n".format(float_duration))
             output.append("#EXT-X-CUE-IN")
-        elif self.type == 'scte35-enhanced':
-            output.append("#EXT-OATCLS-SCTE35:{}\n".format(self.oatcls_scte35))
-            output.append("#EXT-X-ASSET:CAID={}\n".format(self.asset_caid))
-            output.append("#EXT-X-CUE-OUT:{}\n".format(float_duration))
-            output.append("#EXT-X-CUE-IN")
+        elif self.type == 'scte':
+            output.append("#EXT-X-SCTE-OUT:{}\n".format(float_duration))
+            output.append("#EXT-X-SCTE-IN")
 
         return ''.join(output)
 
