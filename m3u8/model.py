@@ -8,6 +8,7 @@ import os
 import errno
 import math
 from decimal import *
+from datetime import datetime
 
 from m3u8.protocol import ext_x_start
 from m3u8.parser import parse, format_date_time
@@ -400,14 +401,24 @@ class AdMarker(object):
 
     `duration`
         Total duration for Ad Markers.
+
+    `scte_id`
+        Splice Id. Example: splice-6FFFFFF0
+    `start_date`
+        Ad Marker start date. Example: 2019-04T00:15:00Z
+    `scte35_out`
+        scte35_out. Default: 0xF
     '''
     TYPES = [ 'elemental', 'scte']
 
-    def __init__(self, type, duration):
+    def __init__(self, type, duration, scte_id='', start_date=datetime.utcnow().strftime('%Y-%mT%XZ'), scte35_out = '0xF'):
         self.key = None
         self.type = type
         self.duration = duration
         self.discontinuity = False
+        self.scte_id = scte_id
+        self.start_date = start_date
+        self.scte35_out = scte35_out
 
     def get_type(self):
         return self._type
@@ -419,16 +430,16 @@ class AdMarker(object):
 
     def dumps(self, last_segment):
         TWOPLACES = Decimal(10) ** -2
+        THREEPLACES = Decimal(10) ** -3
         output = []
-        float_duration = Decimal(self.duration).quantize(TWOPLACES)
-        elapsed_duration = Decimal(0).quantize(TWOPLACES)
 
         if self.type == 'elemental':
-            output.append("#EXT-X-CUE-OUT:{}\n".format(float_duration))
+            float_duration_two_places = Decimal(self.duration).quantize(TWOPLACES)
+            output.append("#EXT-X-CUE-OUT:{}\n".format(float_duration_two_places))
             output.append("#EXT-X-CUE-IN")
         elif self.type == 'scte':
-            output.append("#EXT-X-SCTE-OUT:{}\n".format(float_duration))
-            output.append("#EXT-X-SCTE-IN")
+            float_duration_three_places = Decimal(self.duration).quantize(THREEPLACES)
+            output.append("#EXT-X-DATERANGE:ID=\"{}\",START-DATE=\"{}\\\",DURATION={},SCTE35-OUT={}".format(self.scte_id, self.start_date, float_duration_three_places, self.scte35_out))
 
         return ''.join(output)
 
