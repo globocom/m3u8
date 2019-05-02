@@ -109,13 +109,14 @@ def test_segment_envivio_scte35_attribute():
 
 def test_elemental_ad_marker():
     ad_marker = AdMarker('elemental', 12)
-    print ad_marker.dumps(None)
     assert ad_marker.dumps(None) == '#EXT-X-CUE-OUT:12.00\n#EXT-X-CUE-IN'
 
 def test_scte_ad_marker():
-    ad_marker = AdMarker('scte', 12)
-    print ad_marker.dumps(None)
-    assert ad_marker.dumps(None) == '#EXT-X-SCTE-OUT:12.00\n#EXT-X-SCTE-IN'
+    duration = 35
+    scte_id = 'splice-6FFFFFF0'
+    start_date = datetime.datetime.utcnow().strftime('%Y-%mT%XZ')
+    ad_marker = AdMarker('scte', duration, scte_id, start_date)
+    assert ad_marker.dumps(None) == "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{}\\\",DURATION=35.000,SCTE35-OUT=0xF".format(start_date)
 
 def test_keys_on_clear_playlist():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
