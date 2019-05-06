@@ -382,7 +382,6 @@ class Segment(BasePathMixin):
             output.append('#EXT-X-BYTERANGE:%s\n' % self.byterange)
 
         output.append(self.uri)
-        print(output)
         return ''.join(output)
 
     def __str__(self):
