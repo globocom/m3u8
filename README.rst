@@ -32,7 +32,7 @@ directly from a string:
     m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ... ')
 
 Supported tags
-=============
+==============
 
 * #EXT-X-TARGETDURATION
 * #EXT-X-MEDIA-SEQUENCE
