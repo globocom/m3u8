@@ -32,7 +32,7 @@ def loads(content, uri=None, custom_tags_parser=None):
     '''
 
     if uri is None:
-        return M3U8(content, custom_tags_parser)
+        return M3U8(content, custom_tags_parser=custom_tags_parser)
     else:
         base_uri = _parsed_url(uri)
         return M3U8(content, base_uri=base_uri, custom_tags_parser=custom_tags_parser)
