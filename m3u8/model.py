@@ -440,7 +440,7 @@ class AdMarker(object):
         return ''.join(output)
 
     def __str__(self):
-        return self.dumps()
+        return self.dumps(None)
 
 class SegmentList(list, GroupedBasePathMixin):
 
