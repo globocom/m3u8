@@ -116,7 +116,8 @@ def test_scte_ad_marker():
     scte_id = 'splice-6FFFFFF0'
     start_date = datetime.datetime.utcnow().strftime('%Y-%mT%XZ')
     ad_marker = AdMarker('scte', duration, scte_id, start_date)
-    assert ad_marker.dumps(None) == "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{}\\\",DURATION=35.000,SCTE35-OUT=0xF".format(start_date)
+    excpected_result = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",DURATION=35.000,SCTE35-OUT=0xF\n#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",SCTE35-IN=0xF".format(d=start_date)
+    assert ad_marker.dumps(None) == excpected_result
 
 def test_keys_on_clear_playlist():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)

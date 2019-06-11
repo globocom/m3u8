@@ -434,12 +434,13 @@ class AdMarker(object):
             output.append("#EXT-X-CUE-IN")
         elif self.type == 'scte':
             float_duration_three_places = Decimal(self.duration).quantize(THREEPLACES)
-            output.append("#EXT-X-DATERANGE:ID=\"{}\",START-DATE=\"{}\\\",DURATION={},SCTE35-OUT={}".format(self.scte_id, self.start_date, float_duration_three_places, self.scte35_out))
+            output.append("#EXT-X-DATERANGE:ID=\"{}\",START-DATE=\"{}\\\",DURATION={},SCTE35-OUT={}\n".format(self.scte_id, self.start_date, float_duration_three_places, self.scte35_out))
+            output.append("#EXT-X-DATERANGE:ID=\"{}\",START-DATE=\"{}\\\",SCTE35-IN={}".format(self.scte_id, self.start_date, self.scte35_out))
 
         return ''.join(output)
 
     def __str__(self):
-        return self.dumps()
+        return self.dumps(None)
 
 class SegmentList(list, GroupedBasePathMixin):
 
