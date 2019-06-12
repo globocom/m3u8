@@ -108,15 +108,17 @@ def test_segment_envivio_scte35_attribute():
     assert segments[7].cue_out == False
 
 def test_elemental_ad_marker():
-    ad_marker = AdMarker('elemental', 12)
-    assert ad_marker.dumps(None) == '#EXT-X-CUE-OUT:12.00\n#EXT-X-CUE-IN'
+    segment = Segment('entire.ts', 'http://1.2/', duration=1)
+    ad_marker = AdMarker('elemental', 2, segment)
+    assert ad_marker.dumps(None) == '#EXT-X-CUE-OUT:2.00\n#EXTINF:1,\nentire.ts\n#EXTINF:1,\nentire.ts\n#EXT-X-CUE-IN'
 
 def test_scte_ad_marker():
-    duration = 35
+    segment = Segment('entire.ts', 'http://1.2/', duration=1)
+    duration = 2
     scte_id = 'splice-6FFFFFF0'
     start_date = datetime.datetime.utcnow().strftime('%Y-%mT%XZ')
-    ad_marker = AdMarker('scte', duration, scte_id, start_date)
-    excpected_result = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",DURATION=35.000,SCTE35-OUT=0xF\n#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",SCTE35-IN=0xF".format(d=start_date)
+    ad_marker = AdMarker('scte', duration, segment, scte_id, start_date)
+    excpected_result = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",DURATION=2.000,SCTE35-OUT=0xF\n#EXTINF:1,\nentire.ts\n#EXTINF:1,\nentire.ts\n#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",SCTE35-IN=0xF".format(d=start_date)
     assert ad_marker.dumps(None) == excpected_result
 
 def test_keys_on_clear_playlist():

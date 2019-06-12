@@ -406,7 +406,7 @@ class AdMarker(object):
     '''
     TYPES = [ 'elemental', 'scte']
 
-    def __init__(self, type, duration, scte_id='', start_date=datetime.utcnow().strftime('%Y-%mT%XZ'), scte35_out = '0xF'):
+    def __init__(self, type, duration, underlying_segment, scte_id='', start_date=datetime.utcnow().strftime('%Y-%mT%XZ'), scte35_out = '0xF'):
         self.key = None
         self.type = type
         self.duration = duration
@@ -414,6 +414,8 @@ class AdMarker(object):
         self.scte_id = scte_id
         self.start_date = start_date
         self.scte35_out = scte35_out
+        self.underlying_segment = underlying_segment
+        self.underlying_segments_str = self.get_underlying_segments_string()
 
     def get_type(self):
         return self._type
@@ -423,6 +425,14 @@ class AdMarker(object):
             raise Exception("Invalid type. Only supports {}".format(''.join(TYPES)))
         self._type = t
 
+    def get_underlying_segments_string(self):
+        result = ''
+        no_of_segment_to_add = int(math.ceil(self.duration / self.underlying_segment.duration))
+        for i in range(no_of_segment_to_add):
+            result += self.underlying_segment.dumps(None) + '\n'
+        return result
+
+
     def dumps(self, last_segment):
         TWOPLACES = Decimal(10) ** -2
         THREEPLACES = Decimal(10) ** -3
@@ -431,10 +441,12 @@ class AdMarker(object):
         if self.type == 'elemental':
             float_duration_two_places = Decimal(self.duration).quantize(TWOPLACES)
             output.append("#EXT-X-CUE-OUT:{}\n".format(float_duration_two_places))
+            output.append(self.underlying_segments_str)
             output.append("#EXT-X-CUE-IN")
         elif self.type == 'scte':
             float_duration_three_places = Decimal(self.duration).quantize(THREEPLACES)
             output.append("#EXT-X-DATERANGE:ID=\"{}\",START-DATE=\"{}\\\",DURATION={},SCTE35-OUT={}\n".format(self.scte_id, self.start_date, float_duration_three_places, self.scte35_out))
+            output.append(self.underlying_segments_str)
             output.append("#EXT-X-DATERANGE:ID=\"{}\",START-DATE=\"{}\\\",SCTE35-IN={}".format(self.scte_id, self.start_date, self.scte35_out))
 
         return ''.join(output)
