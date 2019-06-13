@@ -568,7 +568,10 @@ class Playlist(BasePathMixin):
         if self.stream_info.program_id:
             stream_inf.append('PROGRAM-ID=%d' % self.stream_info.program_id)
         if self.stream_info.closed_captions:
-            stream_inf.append('CLOSED-CAPTIONS=%s' % self.stream_info.closed_captions)
+            closed_captions_str = self.stream_info.closed_captions
+            if self.stream_info.closed_captions is not 'NONE':
+                closed_captions_str = '"{}"'.format(self.stream_info.closed_captions)
+            stream_inf.append('CLOSED-CAPTIONS=%s' % closed_captions_str)
         if self.stream_info.bandwidth:
             stream_inf.append('BANDWIDTH=%d' % self.stream_info.bandwidth)
         if self.stream_info.average_bandwidth:
