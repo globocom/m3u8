@@ -109,7 +109,7 @@ def test_segment_envivio_scte35_attribute():
 
 def test_elemental_ad_marker():
     segment = Segment('entire.ts', 'http://1.2/', duration=1)
-    ad_marker = AdMarker('elemental', 2, segment)
+    ad_marker = AdMarker('elemental', 2, segment, 'full')
     assert ad_marker.dumps(None) == '#EXT-X-CUE-OUT:2.00\n#EXTINF:1,\nentire.ts\n#EXTINF:1,\nentire.ts\n#EXT-X-CUE-IN'
 
 def test_scte_ad_marker():
@@ -117,7 +117,7 @@ def test_scte_ad_marker():
     duration = 2
     scte_id = 'splice-6FFFFFF0'
     start_date = datetime.datetime.utcnow().strftime('%Y-%mT%XZ')
-    ad_marker = AdMarker('scte', duration, segment, scte_id, start_date)
+    ad_marker = AdMarker('scte', duration, segment, 'full', scte_id, start_date)
     excpected_result = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",DURATION=2.000,SCTE35-OUT=0xF\n#EXTINF:1,\nentire.ts\n#EXTINF:1,\nentire.ts\n#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",SCTE35-IN=0xF".format(d=start_date)
     assert ad_marker.dumps(None) == excpected_result
 
