@@ -12,7 +12,7 @@ from m3u8.protocol import ext_x_start
 
 import m3u8
 import playlists
-from m3u8.model import Segment, Key, Media, AdMarker
+from m3u8.model import Segment, Key, Media, AdSignal
 
 
 class UTC(datetime.tzinfo):
@@ -107,19 +107,24 @@ def test_segment_envivio_scte35_attribute():
     assert segments[5].scte35 == '/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=='
     assert segments[7].cue_out == False
 
-def test_elemental_ad_marker():
-    segment = Segment('entire.ts', 'http://1.2/', duration=1)
-    ad_marker = AdMarker('elemental', 2, segment, 'full')
-    assert ad_marker.dumps(None) == '#EXT-X-CUE-OUT:2.00\n#EXTINF:1,\nentire.ts\n#EXTINF:1,\nentire.ts\n#EXT-X-CUE-IN'
+def test_elemental_ad_signal():
+    ad_signal_start = AdSignal('elemental', 2, 'start')
+    ad_signal_end = AdSignal('elemental', 2, 'end')
 
-def test_scte_ad_marker():
-    segment = Segment('entire.ts', 'http://1.2/', duration=1)
+    assert ad_signal_start.dumps(None) == '#EXT-X-CUE-OUT:2.00'
+    assert ad_signal_end.dumps(None) == '#EXT-X-CUE-IN'
+
+def test_scte_ad_signal():
     duration = 2
     scte_id = 'splice-6FFFFFF0'
     start_date = datetime.datetime.utcnow().strftime('%Y-%mT%XZ')
-    ad_marker = AdMarker('scte', duration, segment, 'full', scte_id, start_date)
-    excpected_result = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",DURATION=2.000,SCTE35-OUT=0xF\n#EXTINF:1,\nentire.ts\n#EXTINF:1,\nentire.ts\n#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",SCTE35-IN=0xF".format(d=start_date)
-    assert ad_marker.dumps(None) == excpected_result
+    ad_signal_start = AdSignal('scte', duration, 'start', scte_id, start_date)
+    ad_signal_end = AdSignal('scte', duration, 'end', scte_id, start_date)
+    expected_result_start = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",DURATION=2.000,SCTE35-OUT=0xF".format(d=start_date)
+    expected_result_end = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",SCTE35-IN=0xF".format(d=start_date)
+
+    assert ad_signal_start.dumps(None) == expected_result_start
+    assert ad_signal_end.dumps(None) == expected_result_end
 
 def test_keys_on_clear_playlist():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)

@@ -387,7 +387,7 @@ class Segment(BasePathMixin):
     def __str__(self):
         return self.dumps(None)
 
-class AdMarker(object):
+class AdSignal(object):
     '''
     Ad Marker for M3u8 Playlist
 
@@ -405,9 +405,9 @@ class AdMarker(object):
         scte35_out. Default: 0xF
     '''
     TYPES = [ 'elemental', 'scte']
-    MARKER_TYPE = ['full', 'start', 'end']
+    MARKER_TYPE = ['start', 'end']
 
-    def __init__(self, type, duration, underlying_segment, marker_type='full', scte_id='', start_date=datetime.utcnow().strftime('%Y-%mT%XZ'), scte35_out = '0xF'):
+    def __init__(self, type, duration, marker_type='full', scte_id='', start_date=datetime.utcnow().strftime('%Y-%mT%XZ'), scte35_out = '0xF'):
         self.key = None
         self.type = type
         self.duration = duration
@@ -415,8 +415,6 @@ class AdMarker(object):
         self.scte_id = scte_id
         self.start_date = start_date
         self.scte35_out = scte35_out
-        self.underlying_segment = underlying_segment
-        self.underlying_segments_str = self.get_underlying_segments_string()
         self.marker_type = marker_type
 
     def get_type(self):
@@ -435,14 +433,6 @@ class AdMarker(object):
             raise Exception("Invalid marker type. Only supports {}".format(''.join(MARKER_TYPE)))
         self._marker_type = mt
 
-    def get_underlying_segments_string(self):
-        result = ''
-        no_of_segment_to_add = int(math.ceil(self.duration / self.underlying_segment.duration))
-        for i in range(no_of_segment_to_add):
-            result += self.underlying_segment.dumps(None) + '\n'
-        return result
-
-
     def dumps(self, last_segment):
         TWOPLACES = Decimal(10) ** -2
         THREEPLACES = Decimal(10) ** -3
@@ -450,34 +440,23 @@ class AdMarker(object):
 
         if self.type == 'elemental':
             float_duration_two_places = Decimal(self.duration).quantize(TWOPLACES)
-            cue_out = "#EXT-X-CUE-OUT:{}\n".format(float_duration_two_places)
+            cue_out = "#EXT-X-CUE-OUT:{}".format(float_duration_two_places)
             cue_in = "#EXT-X-CUE-IN"
 
             if self.marker_type == 'start':
-                output.append(cue_out)
-                return ''.join(output)
+                return cue_out
             if self.marker_type == 'end':
-                output.append(cue_in)
-                return ''.join(output)
-            output.append(cue_out)
-            output.append(self.underlying_segments_str)
-            output.append(cue_in)
+                return cue_in
 
         elif self.type == 'scte':
             float_duration_three_places = Decimal(self.duration).quantize(THREEPLACES)
-            cue_out = "#EXT-X-DATERANGE:ID=\"{}\",START-DATE=\"{}\\\",DURATION={},SCTE35-OUT={}\n".format(self.scte_id, self.start_date, float_duration_three_places, self.scte35_out)
+            cue_out = "#EXT-X-DATERANGE:ID=\"{}\",START-DATE=\"{}\\\",DURATION={},SCTE35-OUT={}".format(self.scte_id, self.start_date, float_duration_three_places, self.scte35_out)
             cue_in = "#EXT-X-DATERANGE:ID=\"{}\",START-DATE=\"{}\\\",SCTE35-IN={}".format(self.scte_id, self.start_date, self.scte35_out)
 
             if self.marker_type == 'start':
-                output.append(cue_out)
-                return ''.join(output)
+                return cue_out
             if self.marker_type == 'end':
-                output.append(cue_in)
-                return ''.join(output)
-            output.append(cue_out)
-            output.append(self.underlying_segments_str)
-            output.append(cue_in)
-        return ''.join(output)
+                return cue_in
 
     def __str__(self):
         return self.dumps(None)
