@@ -255,8 +255,6 @@ class M3U8(object):
         if self.target_duration:
             output.append('#EXT-X-TARGETDURATION:' +
                           int_or_float_to_string(self.target_duration))
-        if self.program_date_time is not None:
-            output.append('#EXT-X-PROGRAM-DATE-TIME:' + format_date_time(self.program_date_time))
         if not (self.playlist_type is None or self.playlist_type == ''):
             output.append('#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
         if self.start:
@@ -313,8 +311,14 @@ class Segment(BasePathMixin):
       title attribute from EXTINF parameter
 
     `program_date_time`
-      Returns the EXT-X-PROGRAM-DATE-TIME as a datetime
+      Returns the EXT-X-PROGRAM-DATE-TIME as a datetime. This field is only set
+      if EXT-X-PROGRAM-DATE-TIME exists for this segment
       http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.5
+
+    `current_program_date_time`
+      Returns a datetime of this segment, either the value of `program_date_time`
+      when EXT-X-PROGRAM-DATE-TIME is set or a calculated value based on previous
+      segments' EXT-X-PROGRAM-DATE-TIME and EXTINF values
 
     `discontinuity`
       Returns a boolean indicating if a EXT-X-DISCONTINUITY tag exists
@@ -342,15 +346,17 @@ class Segment(BasePathMixin):
       Key used to encrypt the segment (EXT-X-KEY)
     '''
 
-    def __init__(self, uri, base_uri, program_date_time=None, duration=None,
-                 title=None, byterange=None, cue_out=False, discontinuity=False, key=None,
-                 scte35=None, scte35_duration=None, keyobject=None):
+    def __init__(self, uri, base_uri, program_date_time=None, current_program_date_time=None,
+                 duration=None, title=None, byterange=None, cue_out=False,
+                 discontinuity=False, key=None, scte35=None, scte35_duration=None,
+                 keyobject=None):
         self.uri = uri
         self.duration = duration
         self.title = title
         self.base_uri = base_uri
         self.byterange = byterange
         self.program_date_time = program_date_time
+        self.current_program_date_time = current_program_date_time
         self.discontinuity = discontinuity
         self.cue_out = cue_out
         self.scte35 = scte35
@@ -371,9 +377,9 @@ class Segment(BasePathMixin):
 
         if self.discontinuity:
             output.append('#EXT-X-DISCONTINUITY\n')
-            if self.program_date_time:
-                output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' %
-                              format_date_time(self.program_date_time))
+        if self.program_date_time:
+            output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' %
+                          format_date_time(self.program_date_time))
         if self.cue_out:
             output.append('#EXT-X-CUE-OUT-CONT\n')
         output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))

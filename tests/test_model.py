@@ -56,9 +56,16 @@ def test_program_date_time_attribute_for_each_segment():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
     first_program_date_time = datetime.datetime(2014, 8, 13, 13, 36, 33, tzinfo=utc)
-    for idx, segment in enumerate(obj.segments):
-        assert segment.program_date_time == first_program_date_time + \
-            datetime.timedelta(seconds=idx * 3)
+
+    # first segment contains both program_date_time and current_program_date_time
+    assert obj.segments[0].program_date_time == first_program_date_time
+    assert obj.segments[0].current_program_date_time == first_program_date_time
+
+    # other segments contain only current_program_date_time
+    for idx, segment in enumerate(obj.segments[1:]):
+        assert segment.program_date_time is None
+        assert segment.current_program_date_time == first_program_date_time + \
+            datetime.timedelta(seconds=(idx+1) * 3)
 
 
 def test_program_date_time_attribute_with_discontinuity():
@@ -69,9 +76,32 @@ def test_program_date_time_attribute_with_discontinuity():
 
     segments = obj.segments
 
+    # first segment has EXT-X-PROGRAM-DATE-TIME
     assert segments[0].program_date_time == first_program_date_time
+    assert segments[0].current_program_date_time == first_program_date_time
+
+    # second segment does not have EXT-X-PROGRAM-DATE-TIME
+    assert segments[1].program_date_time is None
+    assert segments[1].current_program_date_time == first_program_date_time + datetime.timedelta(seconds=3)
+
+    # segment with EXT-X-DISCONTINUITY also has EXT-X-PROGRAM-DATE-TIME
     assert segments[5].program_date_time == discontinuity_program_date_time
-    assert segments[6].program_date_time == discontinuity_program_date_time + datetime.timedelta(seconds=3)
+    assert segments[5].current_program_date_time == discontinuity_program_date_time
+
+    # subsequent segment does not have EXT-X-PROGRAM-DATE-TIME
+    assert segments[6].current_program_date_time == discontinuity_program_date_time + datetime.timedelta(seconds=3)
+    assert segments[6].program_date_time is None
+
+
+def test_program_date_time_attribute_without_discontinuity():
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_PROGRAM_DATE_TIME_WITHOUT_DISCONTINUITY)
+
+    first_program_date_time = datetime.datetime(2019, 6, 10, 0, 5, tzinfo=utc)
+
+    for idx, segment in enumerate(obj.segments):
+        program_date_time = first_program_date_time + datetime.timedelta(seconds=idx * 6)
+        assert segment.program_date_time == program_date_time
+        assert segment.current_program_date_time == program_date_time
 
 
 def test_segment_discontinuity_attribute():
@@ -487,6 +517,16 @@ def test_dump_should_include_segment_level_program_date_time():
     obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_PROGRAM_DATE_TIME)
     # Tag being expected is in the segment level, not the global one
     assert "#EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:55+00:00" in obj.dumps().strip()
+
+
+def test_dump_should_include_segment_level_program_date_time_without_discontinuity():
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_PROGRAM_DATE_TIME_WITHOUT_DISCONTINUITY)
+
+    output = obj.dumps().strip()
+    assert "#EXT-X-PROGRAM-DATE-TIME:2019-06-10T00:05:00+00:00" in output
+    assert "#EXT-X-PROGRAM-DATE-TIME:2019-06-10T00:05:06+00:00" in output
+    assert "#EXT-X-PROGRAM-DATE-TIME:2019-06-10T00:05:12+00:00" in output
+
 
 def test_dump_should_include_map_attributes():
     obj = m3u8.M3U8(playlists.MAP_URI_PLAYLIST_WITH_BYTERANGE)

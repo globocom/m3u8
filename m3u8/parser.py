@@ -82,6 +82,7 @@ def parse(content, strict=False, custom_tags_parser=None):
             if not data.get('program_date_time'):
                 data['program_date_time'] = program_date_time
             state['current_program_date_time'] = program_date_time
+            state['program_date_time'] = program_date_time
 
         elif line.startswith(protocol.ext_x_discontinuity):
             state['discontinuity'] = True
@@ -200,8 +201,10 @@ def _parse_extinf(line, data, state, lineno, strict):
 
 def _parse_ts_chunk(line, data, state):
     segment = state.pop('segment')
+    if state.get('program_date_time'):
+        segment['program_date_time'] = state.pop('program_date_time')
     if state.get('current_program_date_time'):
-        segment['program_date_time'] = state['current_program_date_time']
+        segment['current_program_date_time'] = state['current_program_date_time']
         state['current_program_date_time'] += datetime.timedelta(seconds=segment['duration'])
     segment['uri'] = line
     segment['cue_out'] = state.pop('cue_out', False)
