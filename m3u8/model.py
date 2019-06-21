@@ -407,7 +407,7 @@ class AdSignal(object):
     TYPES = [ 'elemental', 'scte']
     MARKER_TYPE = ['start', 'end']
 
-    def __init__(self, type, duration, marker_type='full', scte_id='', start_date=datetime.utcnow().isoformat(), scte35_out = '0xF'):
+    def __init__(self, type, duration, marker_type='full', scte_id='', start_date=datetime.utcnow().strftime('%Y-%mT%XZ'), scte35_out = '0xF'):
         self.key = None
         self.type = type
         self.duration = duration
