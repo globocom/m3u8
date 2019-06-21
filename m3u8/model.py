@@ -413,7 +413,7 @@ class AdSignal(object):
         self.duration = duration
         self.discontinuity = False
         self.scte_id = scte_id
-        self.start_date = start_date
+        self.start_date = start_date.isoformat()
         self.scte35_out = scte35_out
         self.marker_type = marker_type
 
