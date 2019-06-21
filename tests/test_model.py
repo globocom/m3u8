@@ -7,6 +7,7 @@
 # data returned from parser.parse()
 
 import datetime
+from datetime import timedelta
 
 from m3u8.protocol import ext_x_start
 
@@ -117,11 +118,11 @@ def test_elemental_ad_signal():
 def test_scte_ad_signal():
     duration = 2
     scte_id = 'splice-6FFFFFF0'
-    start_date = datetime.datetime.utcnow().strftime('%Y-%mT%XZ')
+    start_date = datetime.datetime.utcnow()
     ad_signal_start = AdSignal('scte', duration, 'start', scte_id, start_date)
     ad_signal_end = AdSignal('scte', duration, 'end', scte_id, start_date)
-    expected_result_start = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\",DURATION=2.000,SCTE35-OUT=0xF".format(d=start_date)
-    expected_result_end = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\",SCTE35-IN=0xF".format(d=start_date)
+    expected_result_start = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\",DURATION=2.000,SCTE35-OUT=0xF".format(d=start_date.isoformat())
+    expected_result_end = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\",SCTE35-IN=0xF".format(d=(start_date+timedelta(seconds=duration)).isoformat())
 
     assert ad_signal_start.dumps(None) == expected_result_start
     assert ad_signal_end.dumps(None) == expected_result_end
