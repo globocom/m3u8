@@ -120,8 +120,8 @@ def test_scte_ad_signal():
     start_date = datetime.datetime.utcnow().strftime('%Y-%mT%XZ')
     ad_signal_start = AdSignal('scte', duration, 'start', scte_id, start_date)
     ad_signal_end = AdSignal('scte', duration, 'end', scte_id, start_date)
-    expected_result_start = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",DURATION=2.000,SCTE35-OUT=0xF".format(d=start_date)
-    expected_result_end = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\\\",SCTE35-IN=0xF".format(d=start_date)
+    expected_result_start = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\",DURATION=2.000,SCTE35-OUT=0xF".format(d=start_date)
+    expected_result_end = "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"{d}\",SCTE35-IN=0xF".format(d=start_date)
 
     assert ad_signal_start.dumps(None) == expected_result_start
     assert ad_signal_end.dumps(None) == expected_result_end
