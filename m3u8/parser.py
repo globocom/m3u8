@@ -187,11 +187,14 @@ def _parse_extinf(line, data, state, lineno, strict):
     chunks = line.replace(protocol.extinf + ':', '').split(',', 1)
     if len(chunks) == 2:
         duration, title = chunks
+        if not strict:
+            duration = re.search(r'^\s*-?\+?\d+\.?\d*', duration).group(0)
     elif len(chunks) == 1:
         if strict:
             raise ParseError(lineno, line)
         else:
             duration = chunks[0]
+            duration = re.search(r'^\s*-?\+?\d+\.?\d*', duration).group(0)
             title = ''
     if 'segment' not in state:
         state['segment'] = {}
