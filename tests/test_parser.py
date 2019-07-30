@@ -326,3 +326,11 @@ def test_simple_playlist_with_custom_tags():
     assert 0 == data['media_sequence']
     assert ['http://media.example.com/entire.ts'] == [c['uri'] for c in data['segments']]
     assert [5220] == [c['duration'] for c in data['segments']]
+
+def test_master_playlist_with_frame_rate():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_FRAME_RATE)
+    playlists_list = list(data['playlists'])
+    assert 25 == playlists_list[0]['stream_info']['frame_rate']
+    assert 50 == playlists_list[1]['stream_info']['frame_rate']
+    assert 60 == playlists_list[2]['stream_info']['frame_rate']
+    assert 12.5 == playlists_list[3]['stream_info']['frame_rate']
