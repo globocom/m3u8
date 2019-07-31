@@ -507,6 +507,12 @@ def test_dump_should_work_for_iframe_playlists():
     assert expected == obj.dumps().strip()
 
 
+def test_dump_should_include_frame_rate():
+    # Regression test related to https://github.com/globocom/m3u8/issues/146
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_FRAME_RATE)
+
+    assert "FRAME-RATE=25.000" in obj.dumps().strip()
+
 def test_dump_should_include_program_date_time():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
@@ -580,13 +586,13 @@ def test_should_dump_complex_unencrypted_encrypted_keys():
 
     assert expected == obj.dumps().strip()
 
+
 def test_should_dump_complex_unencrypted_encrypted_keys_no_uri_attr():
     obj = m3u8.M3U8(playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED_NONE_AND_NO_URI_ATTR)
     expected = playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED_NONE_AND_NO_URI_ATTR \
         .strip()
 
     assert expected == obj.dumps().strip()
-
 
 
 def test_length_segments_by_key():
