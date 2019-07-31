@@ -707,4 +707,16 @@ CUE_OUT_PLAYLIST_FILENAME = abspath(join(dirname(__file__), 'playlists/cue_out.m
 
 CUE_OUT_PLAYLIST_URI = TEST_HOST + '/path/to/cue_out.m3u8'
 
+VARIANT_PLAYLIST_WITH_FRAME_RATE = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1280000,FRAME-RATE=25
+http://example.com/low.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=2560000,FRAME-RATE=50
+http://example.com/mid.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=7680000,FRAME-RATE=60
+http://example.com/hi.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,FRAME-RATE=12.5,CODECS="mp4a.40.5,avc1.42801e"
+http://example.com/audio-only.m3u8
+'''
+
 del abspath, dirname, join
