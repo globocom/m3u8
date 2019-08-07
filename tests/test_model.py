@@ -8,7 +8,7 @@
 
 import datetime
 
-from m3u8.protocol import ext_x_start
+from m3u8.protocol import ext_x_start, ext_x_part
 
 import m3u8
 import playlists
@@ -825,6 +825,12 @@ def test_should_dump_frame_rate():
     assert expected == obj.dumps().strip()
 
 
+def test_ll_playlist():
+    obj = m3u8.M3U8(playlists.LOW_LATENCY_DELTA_UPDATE_PLAYLIST)
+    assert len(obj.rendition_reports) == 2
+    assert len(obj.segments[2].parts) == 12
+    print(obj.dumps())
+    assert (ext_x_part + ':DURATION=0.33334,URI="filePart271.0.ts"') in obj.dumps()
 
 # custom asserts
 

@@ -341,3 +341,18 @@ def test_master_playlist_with_frame_rate():
     assert 50 == playlists_list[1]['stream_info']['frame_rate']
     assert 60 == playlists_list[2]['stream_info']['frame_rate']
     assert 12.5 == playlists_list[3]['stream_info']['frame_rate']
+
+def test_low_latency_playlist():
+    data = m3u8.parse(playlists.LOW_LATENCY_DELTA_UPDATE_PLAYLIST)
+    assert data['server_control']['can_block_reload'] == 'YES'
+    assert data['server_control']['can_skip_until'] == 12.0
+    assert data['server_control']['part_hold_back'] == 1.0
+    assert data['part_inf']['part_target'] == 0.33334
+    assert data['skip']['skipped_segments'] == 3
+    assert len(data['segments'][2]['parts']) == 12
+    assert data['segments'][2]['parts'][0]['duration'] == 0.33334
+    assert data['segments'][2]['parts'][0]['uri'] == "filePart271.0.ts"
+    assert len(data['rendition_reports']) == 2
+    assert data['rendition_reports'][0]['uri'] == "../1M/waitForMSN.php"
+    assert data['rendition_reports'][0]['last_msn'] == 273
+    assert data['rendition_reports'][0]['last_part'] == 3
