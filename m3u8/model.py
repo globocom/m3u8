@@ -527,10 +527,6 @@ class PartialSegmentList(list, GroupedBasePathMixin):
         output = [str(part) for part in self]
         return '\n'.join(output)
 
-    @property
-    def uri(self):
-        return [part.uri for part in self]
-
 class Key(BasePathMixin):
     '''
     Key used to encrypt the segments in a m3u8 playlist (EXT-X-KEY)
@@ -863,10 +859,6 @@ class RenditionReportList(list, GroupedBasePathMixin):
     def __str__(self):
         output = [str(report) for report in self]
         return '\n'.join(output)
-
-    @property
-    def uri(self):
-        return [report.uri for report in self]
 
 class ServerControl(object):
     def __init__(self, can_skip_until=None, can_block_reload=None,
