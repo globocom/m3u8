@@ -384,7 +384,7 @@ class Segment(BasePathMixin):
             output.append('#EXT-X-CUE-OUT-CONT\n')
         output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
         if self.title:
-            output.append(quoted(self.title))
+            output.append(self.title)
 
         output.append('\n')
 

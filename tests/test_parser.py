@@ -91,11 +91,18 @@ def test_should_handle_key_method_none_and_no_uri_attr():
     assert "0X10ef8f758ca555115584bb5b3c687f52" == third_segment_key['iv']
     assert "NONE" == data['segments'][6]['key']['method']
 
-def test_should_parse_title_from_playlist():
-    data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_TITLE)
+def test_should_parse_quoted_title_from_playlist():
+    data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_QUOTED_TITLE)
     assert 1 == len(data['segments'])
     assert 5220 == data['segments'][0]['duration']
-    assert "A sample title" == data['segments'][0]['title']
+    assert '"A sample title"' == data['segments'][0]['title']
+    assert "http://media.example.com/entire.ts" == data['segments'][0]['uri']
+
+def test_should_parse_unquoted_title_from_playlist():
+    data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_UNQUOTED_TITLE)
+    assert 1 == len(data['segments'])
+    assert 5220 == data['segments'][0]['duration']
+    assert "A sample unquoted title" == data['segments'][0]['title']
     assert "http://media.example.com/entire.ts" == data['segments'][0]['uri']
 
 def test_should_parse_variant_playlist():
