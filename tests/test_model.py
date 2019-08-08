@@ -12,7 +12,7 @@ from m3u8.protocol import ext_x_start, ext_x_part
 
 import m3u8
 import playlists
-from m3u8.model import Segment, Key, Media
+from m3u8.model import Segment, Key, Media, RenditionReport, PartialSegment
 
 
 class UTC(datetime.tzinfo):
@@ -831,6 +831,56 @@ def test_ll_playlist():
     assert len(obj.segments[2].parts) == 12
     print(obj.dumps())
     assert (ext_x_part + ':DURATION=0.33334,URI="filePart271.0.ts"') in obj.dumps()
+
+def test_add_rendition_report_to_playlist():
+    obj = m3u8.M3U8()
+
+    obj.add_rendition_report(
+        RenditionReport(
+            base_uri='',
+            uri='../1M/waitForMSN.php',
+            last_msn=273,
+            last_part=3
+        )
+    )
+
+    result = obj.dumps()
+    expected = '#EXT-X-RENDITION-REPORT:URI="../1M/waitForMSN.php",LAST-MSN=273,LAST-PART=3'
+
+    assert expected in result
+
+def test_add_part_to_segment():
+    obj = Segment(
+        uri='fileSequence271.ts',
+        duration=4.00008
+    )
+
+    obj.add_part(
+        PartialSegment(
+            '',
+            'filePart271.0.ts',
+            0.33334
+        )
+    )
+
+    result = obj.dumps(None)
+    expected = '#EXT-X-PART:DURATION=0.33334,URI="filePart271.0.ts"'
+
+    assert expected in result
+
+def test_partial_segment_gap_and_byterange():
+    obj = PartialSegment(
+        '',
+        'filePart271.0.ts',
+        0.33334,
+        byterange='9400@376',
+        gap='YES'
+    )
+
+    result = obj.dumps(None)
+    expected = '#EXT-X-PART:DURATION=0.33334,URI="filePart271.0.ts",BYTERANGE=9400@376,GAP=YES'
+
+    assert result == expected
 
 # custom asserts
 
