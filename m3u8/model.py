@@ -390,7 +390,7 @@ class Segment(BasePathMixin):
         self.scte35 = scte35
         self.scte35_duration = scte35_duration
         self.key = keyobject
-        self.parts = PartialSegmentList( [ PartialSegment(base_uri=self.base_uri, **partial) for partial in parts ] ) if parts else None
+        self.parts = PartialSegmentList( [ PartialSegment(base_uri=self.base_uri, **partial) for partial in parts ] if parts else [] )
 
         # Key(base_uri=base_uri, **key) if key else None
 
