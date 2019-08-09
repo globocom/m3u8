@@ -683,7 +683,7 @@ class Media(BasePathMixin):
         if self.forced:
             media_out.append('FORCED=' + self.forced)
         if self.instream_id:
-            media_out.append('INSTREAM-ID=' + self.instream_id)
+            media_out.append('INSTREAM-ID=' + quoted(self.instream_id))
         if self.characteristics:
             media_out.append('CHARACTERISTICS=' + quoted(self.characteristics))
 
