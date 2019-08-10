@@ -196,7 +196,7 @@ def _parse_extinf(line, data, state, lineno, strict):
     if 'segment' not in state:
         state['segment'] = {}
     state['segment']['duration'] = float(duration)
-    state['segment']['title'] = remove_quotes(title)
+    state['segment']['title'] = title
 
 
 def _parse_ts_chunk(line, data, state):
