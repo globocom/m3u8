@@ -183,6 +183,18 @@ class M3U8(object):
         start = self.data.get('start', None)
         self.start = start and Start(**start)
 
+        server_control = self.data.get('server_control', None)
+        self.server_control = server_control and ServerControl(**server_control)
+
+        part_inf = self.data.get('part_inf', None)
+        self.part_inf = part_inf and PartInformation(**part_inf)
+
+        skip = self.data.get('skip', None)
+        self.skip = skip and Skip(**skip)
+
+        self.rendition_reports = RenditionReportList([ RenditionReport(base_uri=self.base_uri, **rendition_report)
+                                                  for rendition_report in self.data.get('rendition_reports', []) ])
+
     def __unicode__(self):
         return self.dumps()
 
@@ -235,6 +247,9 @@ class M3U8(object):
     def add_segment(self, segment):
         self.segments.append(segment)
 
+    def add_rendition_report(self, report):
+        self.rendition_reports.append(report)
+
     def dumps(self):
         '''
         Returns the current m3u8 as a string.
@@ -268,13 +283,23 @@ class M3U8(object):
             if self.segment_map.get('byterange'):
                 map_output.append('BYTERANGE=' + self.segment_map['byterange'])
             output.append('#EXT-X-MAP:' + ','.join(map_output))
+        if self.server_control:
+            output.append(str(self.server_control))
         if self.is_variant:
             if self.media:
                 output.append(str(self.media))
             output.append(str(self.playlists))
             if self.iframe_playlists:
                 output.append(str(self.iframe_playlists))
+        if self.part_inf:
+            output.append(str(self.part_inf))
+        if self.skip:
+            output.append(str(self.skip))
+
         output.append(str(self.segments))
+
+        if self.rendition_reports:
+            output.append(str(self.rendition_reports))
 
         if self.is_endlist:
             output.append('#EXT-X-ENDLIST')
@@ -344,12 +369,15 @@ class Segment(BasePathMixin):
 
     `key`
       Key used to encrypt the segment (EXT-X-KEY)
+
+    `parts`
+      partial segments that make up this segment
     '''
 
-    def __init__(self, uri, base_uri, program_date_time=None, current_program_date_time=None,
+    def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, byterange=None, cue_out=False,
                  discontinuity=False, key=None, scte35=None, scte35_duration=None,
-                 keyobject=None):
+                 keyobject=None, parts=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -362,10 +390,17 @@ class Segment(BasePathMixin):
         self.scte35 = scte35
         self.scte35_duration = scte35_duration
         self.key = keyobject
+        self.parts = PartialSegmentList( [ PartialSegment(base_uri=self.base_uri, **partial) for partial in parts ] if parts else [] )
+
         # Key(base_uri=base_uri, **key) if key else None
+
+    def add_part(self, part):
+        self.parts.append(part)
 
     def dumps(self, last_segment):
         output = []
+
+
         if last_segment and self.key != last_segment.key:
             output.append(str(self.key))
             output.append('\n')
@@ -382,16 +417,22 @@ class Segment(BasePathMixin):
                           format_date_time(self.program_date_time))
         if self.cue_out:
             output.append('#EXT-X-CUE-OUT-CONT\n')
-        output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
-        if self.title:
-            output.append(self.title)
 
-        output.append('\n')
+        if self.parts:
+            output.append(str(self.parts))
+            output.append('\n')
 
-        if self.byterange:
-            output.append('#EXT-X-BYTERANGE:%s\n' % self.byterange)
+        if self.uri:
+            if self.duration:
+                output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
+                if self.title:
+                    output.append(self.title)
+                output.append('\n')
 
-        output.append(self.uri)
+            if self.byterange:
+                output.append('#EXT-X-BYTERANGE:%s\n' % self.byterange)
+
+            output.append(self.uri)
 
         return ''.join(output)
 
@@ -418,6 +459,73 @@ class SegmentList(list, GroupedBasePathMixin):
         return [ segment for segment in self if segment.key == key ]
 
 
+
+class PartialSegment(BasePathMixin):
+    '''
+    A partial segment from a M3U8 playlist
+
+    `uri`
+      a string with the segment uri
+
+    `program_date_time`
+      Returns the EXT-X-PROGRAM-DATE-TIME as a datetime. This field is only set
+      if EXT-X-PROGRAM-DATE-TIME exists for this segment
+      http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.5
+
+    `current_program_date_time`
+      Returns a datetime of this segment, either the value of `program_date_time`
+      when EXT-X-PROGRAM-DATE-TIME is set or a calculated value based on previous
+      segments' EXT-X-PROGRAM-DATE-TIME and EXTINF values
+
+    `duration`
+      duration attribute from EXTINF parameter
+
+    `byterange`
+      byterange attribute from EXT-X-BYTERANGE parameter
+
+    `independent`
+      the Partial Segment contains an independent frame
+
+    `gap`
+      the Partial Segment is not available
+    '''
+
+    def __init__(self, base_uri, uri, duration, program_date_time=None,
+                 current_program_date_time=None, byterange=None,
+                 independent=None, gap=None):
+        self.base_uri = base_uri
+        self.uri = uri
+        self.duration = duration
+        self.program_date_time = program_date_time
+        self.current_program_date_time = current_program_date_time
+        self.byterange = byterange
+        self.independent = independent
+        self.gap = gap
+
+    def dumps(self, last_segment):
+        output = ['#EXT-X-PART:DURATION=%s,URI="%s"' % (
+            int_or_float_to_string(self.duration), self.uri
+        )]
+
+        if self.independent:
+            output.append(',INDEPENDENT=%s' % self.independent)
+
+        if self.byterange:
+            output.append(',BYTERANGE=%s' % self.byterange)
+
+        if self.gap:
+            output.append(',GAP=%s' % self.gap)
+
+        return ''.join(output)
+
+    def __str__(self):
+        return self.dumps(None)
+
+class PartialSegmentList(list, GroupedBasePathMixin):
+
+    def __str__(self):
+        output = [str(part) for part in self]
+        return '\n'.join(output)
 
 class Key(BasePathMixin):
     '''
@@ -726,6 +834,80 @@ class Start(object):
 
         return ext_x_start + ':' + ','.join(output)
 
+class RenditionReport(BasePathMixin):
+    def __init__(self, base_uri, uri, last_msn, last_part=None):
+        self.base_uri = base_uri
+        self.uri = uri
+        self.last_msn = last_msn
+        self.last_part = last_part
+
+    def dumps(self):
+        report = []
+        report.append('URI=' + quoted(self.uri))
+        report.append('LAST-MSN=' + int_or_float_to_string(self.last_msn))
+        if self.last_part:
+            report.append('LAST-PART=' + int_or_float_to_string(
+                self.last_part))
+
+        return ('#EXT-X-RENDITION-REPORT:' + ','.join(report))
+
+    def __str__(self):
+        return self.dumps()
+
+class RenditionReportList(list, GroupedBasePathMixin):
+
+    def __str__(self):
+        output = [str(report) for report in self]
+        return '\n'.join(output)
+
+class ServerControl(object):
+    def __init__(self, can_skip_until=None, can_block_reload=None,
+                 hold_back=None, part_hold_back=None):
+        self.can_skip_until = can_skip_until
+        self.can_block_reload = can_block_reload
+        self.hold_back = hold_back
+        self.part_hold_back = part_hold_back
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    def dumps(self):
+        ctrl = []
+        if self.can_block_reload:
+            ctrl.append('CAN-BLOCK-RELOAD=%s' % self.can_block_reload)
+        for attr in ['hold_back', 'part_hold_back', 'can_skip_until']:
+            if self[attr]:
+                ctrl.append('%s=%s' % (
+                    denormalize_attribute(attr),
+                    int_or_float_to_string(self[attr])
+                ))
+
+        return '#EXT-X-SERVER-CONTROL:' + ','.join(ctrl)
+
+    def __str__(self):
+        return self.dumps()
+
+class Skip(object):
+    def __init__(self, skipped_segments=None):
+        self.skipped_segments = skipped_segments
+
+    def dumps(self):
+        return '#EXT-X-SKIP:SKIPPED-SEGMENTS=%s' % int_or_float_to_string(
+            self.skipped_segments)
+
+    def __str__(self):
+        return self.dumps()
+
+class PartInformation(object):
+    def __init__(self, part_target=None):
+        self.part_target = part_target
+
+    def dumps(self):
+        return '#EXT-X-PART-INF:PART-TARGET=%s' % int_or_float_to_string(
+            self.part_target)
+
+    def __str__(self):
+        return self.dumps()
 
 def find_key(keydata, keylist):
     if not keydata:

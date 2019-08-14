@@ -59,6 +59,11 @@ Supported tags
 * #EXT-X-CUE-SPAN
 * #EXT-X-MAP
 * #EXT-X-START
+* #EXT-X-SERVER-CONTROL
+* #EXT-X-PART-INF
+* #EXT-X-PART
+* #EXT-X-RENDITION-REPORT
+* #EXT-X-SKIP
 
 Encryption keys
 ---------------

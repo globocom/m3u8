@@ -15,13 +15,13 @@ except ImportError:  # Python 2.x
     from urllib2 import urlopen, Request, HTTPError
     from urlparse import urlparse, urljoin
 
-from m3u8.model import M3U8, Playlist, IFramePlaylist, Media, Segment
+from m3u8.model import M3U8, Playlist, IFramePlaylist, Media, Segment, PartialSegment, PartialSegmentList, PartInformation, RenditionReport, ServerControl
 from m3u8.parser import parse, is_url, ParseError
 
 PYTHON_MAJOR_VERSION = sys.version_info
 
 __all__ = ('M3U8', 'Playlist', 'IFramePlaylist', 'Media',
-           'Segment', 'loads', 'load', 'parse', 'ParseError')
+           'Segment', 'PartialSegment', 'PartialSegmentList', 'PartInformation', 'RenditionReport', 'ServerControl', 'loads', 'load', 'parse', 'ParseError')
 
 
 def loads(content, uri=None, custom_tags_parser=None):

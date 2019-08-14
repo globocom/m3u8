@@ -50,7 +50,10 @@ def parse(content, strict=False, custom_tags_parser=None):
         'segments': [],
         'iframe_playlists': [],
         'media': [],
-        'keys': []
+        'keys': [],
+        'rendition_reports': [],
+        'skip': {},
+        'part_inf': {}
     }
 
     state = {
@@ -151,6 +154,21 @@ def parse(content, strict=False, custom_tags_parser=None):
             start_info = _parse_attribute_list(protocol.ext_x_start, line, attribute_parser)
             data['start'] = start_info
 
+        elif line.startswith(protocol.ext_x_server_control):
+            _parse_server_control(line, data, state)
+
+        elif line.startswith(protocol.ext_x_part_inf):
+            _parse_part_inf(line, data, state)
+
+        elif line.startswith(protocol.ext_x_rendition_report):
+            _parse_rendition_report(line, data, state)
+
+        elif line.startswith(protocol.ext_x_part):
+            _parse_part(line, data, state)
+
+        elif line.startswith(protocol.ext_x_skip):
+            _parse_skip(line, data, state)
+
         # Comments and whitespace
         elif line.startswith('#'):
             if callable(custom_tags_parser):
@@ -170,6 +188,10 @@ def parse(content, strict=False, custom_tags_parser=None):
 
         elif strict:
             raise ParseError(lineno, line)
+
+    # there could be remaining partial segments
+    if 'segment' in state:
+        data['segments'].append(state.pop('segment'))
 
     return data
 
@@ -324,6 +346,66 @@ def _parse_cueout_start(line, state, prevline):
         state['current_cue_out_scte35'] = _cueout_state[0]
         state['current_cue_out_duration'] = _cueout_state[1]
 
+def _parse_server_control(line, data, state):
+    attribute_parser = {
+        "can_block_reload": str,
+        "hold_back":        lambda x: float(x),
+        "part_hold_back":   lambda x: float(x),
+        "can_skip_until":   lambda x: float(x)
+    }
+
+    data['server_control'] = _parse_attribute_list(
+        protocol.ext_x_server_control, line, attribute_parser
+    )
+
+def _parse_part_inf(line, data, state):
+    attribute_parser = {
+        "part_target": lambda x: float(x)
+    }
+
+    data['part_inf'] = _parse_attribute_list(
+        protocol.ext_x_part_inf, line, attribute_parser
+    )
+
+def _parse_rendition_report(line, data, state):
+    attribute_parser = remove_quotes_parser('uri')
+    attribute_parser['last_msn'] = int
+    attribute_parser['last_part'] = int
+
+    rendition_report = _parse_attribute_list(
+        protocol.ext_x_rendition_report, line, attribute_parser
+    )
+
+    data['rendition_reports'].append(rendition_report)
+
+def _parse_part(line, data, state):
+    attribute_parser = remove_quotes_parser('uri')
+    attribute_parser['duration'] = lambda x: float(x)
+    attribute_parser['independent'] = str
+    attribute_parser['gap'] = str
+    attribute_parser['byterange'] = str
+
+    part = _parse_attribute_list(protocol.ext_x_part, line, attribute_parser)
+
+    # this should always be true according to spec
+    if state.get('current_program_date_time'):
+        part['program_date_time'] = state['current_program_date_time']
+        state['current_program_date_time'] += datetime.timedelta(seconds=part['duration'])
+
+    if 'segment' not in state:
+        state['segment'] = {}
+    segment = state['segment']
+    if 'parts' not in segment:
+        segment['parts'] = []
+
+    segment['parts'].append(part)
+
+def _parse_skip(line, data, state):
+    attribute_parser = {
+        "skipped_segments": int
+    }
+
+    data['skip'] = _parse_attribute_list(protocol.ext_x_skip, line, attribute_parser)
 
 def string_to_lines(string):
     return string.strip().splitlines()
