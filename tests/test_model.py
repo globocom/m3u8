@@ -245,6 +245,13 @@ def test_segment_attribute_with_multiple_keys():
     assert segments[4].key.uri == '/hls-key/key2.bin'
     assert segments[5].key.uri == '/hls-key/key2.bin'
 
+def test_segment_title_dumps():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_QUOTED_TITLE)
+
+    result = obj.segments[0].dumps(None).strip()
+    expected = '#EXTINF:5220,"A sample title"\nhttp://media.example.com/entire.ts'
+
+    assert result == expected
 
 def test_is_variant_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
