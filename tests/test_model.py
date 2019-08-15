@@ -890,7 +890,7 @@ def test_should_dump_frame_rate():
 
     assert expected == obj.dumps().strip()
 
-@pytest.mark.skipif(sys.version_info >= (3,), reason="unicode only available in v3")
+@pytest.mark.skipif(sys.version_info >= (3,), reason="unicode not available in v3")
 def test_m3u8_unicode_method():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
 
