@@ -12,7 +12,7 @@ setup(
     name="m3u8",
     author='Globo.com',
     author_email='videos3@corp.globo.com',
-    version="0.3.11",
+    version="0.3.12",
     license='MIT',
     zip_safe=False,
     include_package_data=True,
