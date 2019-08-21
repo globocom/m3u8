@@ -304,6 +304,10 @@ class M3U8(object):
         if self.is_endlist:
             output.append('#EXT-X-ENDLIST')
 
+        # ensure that the last line is terminated correctly
+        if output[-1] and not output[-1].endswith('\n'):
+            output.append('')
+
         return '\n'.join(output)
 
     def dump(self, filename):
