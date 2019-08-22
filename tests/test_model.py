@@ -889,6 +889,13 @@ def test_partial_segment_gap_and_byterange():
 
     assert result == expected
 
+def test_endswith_newline():
+    obj = m3u8.loads(playlists.SIMPLE_PLAYLIST)
+
+    manifest = obj.dumps()
+
+    assert manifest.endswith('#EXT-X-ENDLIST\n')
+
 # custom asserts
 
 
