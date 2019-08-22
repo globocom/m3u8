@@ -894,7 +894,7 @@ def test_endswith_newline():
 
     manifest = obj.dumps()
 
-    assert manifest.endswith('\n')
+    assert manifest.endswith('#EXT-X-ENDLIST\n')
 
 # custom asserts
 
