@@ -7,12 +7,15 @@
 # data returned from parser.parse()
 
 import datetime
+import os
+import pytest
+import sys
 
 from m3u8.protocol import ext_x_start, ext_x_part
 
 import m3u8
 import playlists
-from m3u8.model import Segment, Key, Media, RenditionReport, PartialSegment
+from m3u8.model import Segment, Key, Media, MediaList, RenditionReport, PartialSegment, denormalize_attribute, find_key
 
 
 class UTC(datetime.tzinfo):
@@ -121,6 +124,13 @@ def test_segment_cue_out_attribute():
     assert segments[2].cue_out == True
     assert segments[3].cue_out == False
 
+def test_segment_cue_out_dumps():
+    obj = m3u8.M3U8(playlists.CUE_OUT_PLAYLIST)
+
+    result = obj.dumps()
+    expected = '#EXT-X-CUE-OUT'
+
+    assert expected in result
 
 def test_segment_elemental_scte35_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
@@ -136,6 +146,11 @@ def test_segment_envivio_scte35_attribute():
     assert segments[4].scte35 == '/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=='
     assert segments[5].scte35 == '/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=='
     assert segments[7].cue_out == False
+
+def test_segment_unknown_scte35_attribute():
+    obj = m3u8.M3U8(playlists.CUE_OUT_INVALID_PLAYLIST)
+    assert obj.segments[0].scte35 == None
+    assert obj.segments[0].scte35_duration == None
 
 def test_keys_on_clear_playlist():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
@@ -473,6 +488,21 @@ def test_dump_should_create_sub_directories(tmpdir):
 
     assert_file_content(filename, expected)
 
+def test_dump_should_raise_if_create_sub_directories_fails(tmpdir, monkeypatch):
+    def raiseOSError(*args):
+        raise OSError
+
+    monkeypatch.setattr(os, "makedirs", raiseOSError)
+
+    raised = False
+    try:
+        obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
+        obj.dump(str(tmpdir.join('subdir1', 'playlist.m3u8')))
+    except OSError as e:
+        raised = True
+    finally:
+        assert raised
+
 
 def test_dump_should_work_for_variant_streams():
     obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST)
@@ -633,6 +663,13 @@ def test_replace_segment_key():
 
     assert obj.dumps().strip() == expected
 
+def test_keyformat_and_keyformatversion():
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_KEYFORMAT_AND_KEYFORMATVERSIONS)
+
+    result = obj.dumps().strip()
+    expected = 'KEYFORMAT="com.apple.streamingkeydelivery",KEYFORMATVERSIONS="1"'
+
+    assert expected in result
 
 def test_should_dump_program_datetime_and_discontinuity():
     obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_PROGRAM_DATE_TIME)
@@ -645,6 +682,8 @@ def test_should_normalize_segments_and_key_urls_if_base_path_passed_to_construct
     base_path = 'http://videoserver.com/hls/live'
 
     obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV, base_path)
+
+    assert obj.base_path == base_path
 
     expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_SORTED \
         .replace(', IV', ',IV') \
@@ -750,12 +789,22 @@ def test_none_discontinuity_sequence_gracefully_ignored():
     expected = '#EXTM3U\n'
     assert result == expected
 
+def test_non_zero_discontinuity_sequence_added_to_file():
+    obj = m3u8.M3U8()
+    obj.discontinuity_sequence = 1
+    result = obj.dumps()
+    expected = '#EXT-X-DISCONTINUITY-SEQUENCE:1'
+    assert expected in result
+
 def test_should_correctly_update_base_path_if_its_blank():
     segment = Segment('entire.ts', 'http://1.2/')
     assert not segment.base_path
     segment.base_path = "base_path"
     assert "http://1.2/base_path/entire.ts" == segment.absolute_uri
 
+def test_base_path_should_just_return_uri_if_absolute():
+    segment = Segment('http://1.2/entire.ts', '')
+    assert 'http://1.2/entire.ts' == segment.absolute_uri
 
 def test_m3u8_should_propagate_base_uri_to_segments():
     with open(playlists.RELATIVE_PLAYLIST_FILENAME) as f:
@@ -791,6 +840,16 @@ def test_base_path_with_optional_uri_should_do_nothing():
     assert media.absolute_uri is None
     assert media.base_path is None
 
+def test_medialist_uri_method():
+    langs = ['English', 'French', 'German']
+    ml = MediaList()
+    for lang in langs:
+        ml.append(Media(type='AUDIO', group_id='audio-group', name=lang, uri=('/%s.m3u8' % lang)))
+
+    assert len(ml.uri) == len(langs)
+    assert ml.uri[0] == '/%s.m3u8' % langs[0]
+    assert ml.uri[1] == '/%s.m3u8' % langs[1]
+    assert ml.uri[2] == '/%s.m3u8' % langs[2]
 
 def test_segment_map_uri_attribute():
     obj = m3u8.M3U8(playlists.MAP_URI_PLAYLIST)
@@ -831,6 +890,53 @@ def test_should_dump_frame_rate():
 
     assert expected == obj.dumps().strip()
 
+@pytest.mark.skipif(sys.version_info >= (3,), reason="unicode not available in v3")
+def test_m3u8_unicode_method():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
+
+    result = unicode(obj).strip()
+    expected = playlists.SIMPLE_PLAYLIST.strip()
+    assert result == expected
+
+def test_add_segment_to_playlist():
+    obj = m3u8.M3U8()
+
+    obj.add_segment(
+        Segment(
+            'entire.ts',
+            'http://1.2/',
+            duration=1
+        )
+    )
+
+def test_segment_str_method():
+    segment = Segment('entire.ts', 'http://1.2/', duration=1)
+
+    expected = '#EXTINF:1,\nentire.ts'
+    result = str(segment).strip()
+
+    assert result == expected
+
+def test_attribute_denormaliser():
+    result = denormalize_attribute('test_test')
+    expected = 'TEST-TEST'
+
+    assert result == expected
+
+def test_find_key_throws_when_no_match():
+    threw = False
+    try:
+        find_key({
+            'method':   'AES-128',
+            'iv':       0x12345678,
+            'uri':      'http://1.2/'
+        }, [
+            # deliberately empty
+        ])
+    except KeyError as e:
+        threw = True
+    finally:
+        assert threw
 
 def test_ll_playlist():
     obj = m3u8.M3U8(playlists.LOW_LATENCY_DELTA_UPDATE_PLAYLIST)
