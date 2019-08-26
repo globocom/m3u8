@@ -427,7 +427,7 @@ class Segment(BasePathMixin):
             output.append('\n')
 
         if self.uri:
-            if self.duration:
+            if self.duration is not None:
                 output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
                 if self.title:
                     output.append(self.title)
