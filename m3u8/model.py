@@ -195,9 +195,9 @@ class M3U8(object):
         self.rendition_reports = RenditionReportList([ RenditionReport(base_uri=self.base_uri, **rendition_report)
                                                   for rendition_report in self.data.get('rendition_reports', []) ])
 
-        self.session_data = [ SessionData(**session_data)
+        self.session_data = SessionDataList([ SessionData(**session_data)
                              for session_data in self.data.get('session_data', [])
-                             if 'data_id' in session_data ]
+                             if 'data_id' in session_data ])
 
     def __unicode__(self):
         return self.dumps()
@@ -299,6 +299,8 @@ class M3U8(object):
             output.append(str(self.part_inf))
         if self.skip:
             output.append(str(self.skip))
+        if self.session_data:
+            output.append(str(self.session_data))
 
         output.append(str(self.segments))
 
@@ -809,22 +811,26 @@ class Media(BasePathMixin):
         return self.dumps()
 
 
-class MediaList(list, GroupedBasePathMixin):
+class TagList(list):
 
     def __str__(self):
-        output = [str(playlist) for playlist in self]
+        output = [str(tag) for tag in self]
         return '\n'.join(output)
+
+
+class MediaList(TagList, GroupedBasePathMixin):
 
     @property
     def uri(self):
         return [media.uri for media in self]
 
 
-class PlaylistList(list, GroupedBasePathMixin):
+class PlaylistList(TagList, GroupedBasePathMixin):
+    pass
 
-    def __str__(self):
-        output = [str(playlist) for playlist in self]
-        return '\n'.join(output)
+
+class SessionDataList(TagList):
+    pass
 
 
 class Start(object):
