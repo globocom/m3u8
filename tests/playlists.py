@@ -802,4 +802,17 @@ http://example.com/hi.m3u8
 http://example.com/audio-only.m3u8
 '''
 
+SESSION_DATA_PLAYLIST = '''#EXTM3U
+#EXT-X-VERSION:4
+#EXT-X-SESSION-DATA:DATA-ID="com.example.value",VALUE="example",LANGUAGE="en"
+'''
+
+MULTIPLE_SESSION_DATA_PLAYLIST = '''#EXTM3U
+#EXT-X-VERSION:4
+#EXT-X-SESSION-DATA:DATA-ID="com.example.value",VALUE="example",LANGUAGE="en"
+#EXT-X-SESSION-DATA:DATA-ID="com.example.value",VALUE="example",LANGUAGE="ru"
+#EXT-X-SESSION-DATA:DATA-ID="com.example.value",VALUE="example",LANGUAGE="de"
+#EXT-X-SESSION-DATA:DATA-ID="com.example.title",URI="title.json"
+'''
+
 del abspath, dirname, join
