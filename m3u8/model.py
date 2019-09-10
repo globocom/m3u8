@@ -932,7 +932,7 @@ class SessionData(object):
         elif self.uri:
             session_data_out.append('URI=' + quoted(self.uri))
         if self.language:
-            session_data_out.append('LANGUAGE' + quoted(self.language))
+            session_data_out.append('LANGUAGE=' + quoted(self.language))
 
         return '#EXT-X-SESSION-DATA=' + ','.join(session_data_out)
 
