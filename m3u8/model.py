@@ -195,6 +195,10 @@ class M3U8(object):
         self.rendition_reports = RenditionReportList([ RenditionReport(base_uri=self.base_uri, **rendition_report)
                                                   for rendition_report in self.data.get('rendition_reports', []) ])
 
+        self.session_data = SessionDataList([ SessionData(**session_data)
+                             for session_data in self.data.get('session_data', [])
+                             if 'data_id' in session_data ])
+
     def __unicode__(self):
         return self.dumps()
 
@@ -295,6 +299,8 @@ class M3U8(object):
             output.append(str(self.part_inf))
         if self.skip:
             output.append(str(self.skip))
+        if self.session_data:
+            output.append(str(self.session_data))
 
         output.append(str(self.segments))
 
@@ -805,22 +811,26 @@ class Media(BasePathMixin):
         return self.dumps()
 
 
-class MediaList(list, GroupedBasePathMixin):
+class TagList(list):
 
     def __str__(self):
-        output = [str(playlist) for playlist in self]
+        output = [str(tag) for tag in self]
         return '\n'.join(output)
+
+
+class MediaList(TagList, GroupedBasePathMixin):
 
     @property
     def uri(self):
         return [media.uri for media in self]
 
 
-class PlaylistList(list, GroupedBasePathMixin):
+class PlaylistList(TagList, GroupedBasePathMixin):
+    pass
 
-    def __str__(self):
-        output = [str(playlist) for playlist in self]
-        return '\n'.join(output)
+
+class SessionDataList(TagList):
+    pass
 
 
 class Start(object):
@@ -909,6 +919,28 @@ class PartInformation(object):
     def dumps(self):
         return '#EXT-X-PART-INF:PART-TARGET=%s' % int_or_float_to_string(
             self.part_target)
+
+    def __str__(self):
+        return self.dumps()
+
+class SessionData(object):
+    def __init__(self, data_id, value=None, uri=None, language=None):
+        self.data_id = data_id
+        self.value = value
+        self.uri = uri
+        self.language = language
+
+    def dumps(self):
+        session_data_out = ['DATA-ID=' + quoted(self.data_id)]
+
+        if self.value:
+            session_data_out.append('VALUE=' + quoted(self.value))
+        elif self.uri:
+            session_data_out.append('URI=' + quoted(self.uri))
+        if self.language:
+            session_data_out.append('LANGUAGE=' + quoted(self.language))
+
+        return '#EXT-X-SESSION-DATA:' + ','.join(session_data_out)
 
     def __str__(self):
         return self.dumps()

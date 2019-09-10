@@ -317,6 +317,34 @@ def test_should_parse_start_with_precise():
     assert data['start']['time_offset'] == 10.5
     assert data['start']['precise'] == 'YES'
 
+
+def test_should_parse_session_data():
+    data = m3u8.parse(playlists.SESSION_DATA_PLAYLIST)
+    assert data['session_data'][0]['data_id'] == 'com.example.value'
+    assert data['session_data'][0]['value'] == 'example'
+    assert data['session_data'][0]['language'] == 'en'
+
+
+def test_should_parse_multiple_session_data():
+    data = m3u8.parse(playlists.MULTIPLE_SESSION_DATA_PLAYLIST)
+
+    assert len(data['session_data']) == 4
+
+    assert data['session_data'][0]['data_id'] == 'com.example.value'
+    assert data['session_data'][0]['value'] == 'example'
+    assert data['session_data'][0]['language'] == 'en'
+
+    assert data['session_data'][1]['data_id'] == 'com.example.value'
+    assert data['session_data'][1]['value'] == 'example'
+    assert data['session_data'][1]['language'] == 'ru'
+
+    assert data['session_data'][2]['data_id'] == 'com.example.value'
+    assert data['session_data'][2]['value'] == 'example'
+    assert data['session_data'][2]['language'] == 'de'
+
+    assert data['session_data'][3]['data_id'] == 'com.example.title'
+    assert data['session_data'][3]['uri'] == 'title.json'
+
 def test_simple_playlist_with_discontinuity_sequence():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_DISCONTINUITY_SEQUENCE)
     assert data['discontinuity_sequence'] == 123

@@ -15,7 +15,7 @@ from m3u8.protocol import ext_x_start, ext_x_part
 
 import m3u8
 import playlists
-from m3u8.model import Segment, Key, Media, MediaList, RenditionReport, PartialSegment, denormalize_attribute, find_key
+from m3u8.model import Segment, Key, Media, MediaList, RenditionReport, PartialSegment, denormalize_attribute, find_key, SessionData
 
 
 class UTC(datetime.tzinfo):
@@ -631,6 +631,18 @@ def test_should_dump_complex_unencrypted_encrypted_keys_no_uri_attr():
 
     assert expected == obj.dumps().strip()
 
+def test_should_dump_session_data():
+    obj = m3u8.M3U8(playlists.SESSION_DATA_PLAYLIST)
+    expected = playlists.SESSION_DATA_PLAYLIST.strip()
+
+    assert expected == obj.dumps().strip()
+
+def test_should_dump_multiple_session_data():
+    obj = m3u8.M3U8(playlists.MULTIPLE_SESSION_DATA_PLAYLIST)
+    expected = playlists.MULTIPLE_SESSION_DATA_PLAYLIST.strip()
+
+    assert expected == obj.dumps().strip()
+
 
 
 def test_length_segments_by_key():
@@ -999,6 +1011,43 @@ def test_partial_segment_gap_and_byterange():
 
     result = obj.dumps(None)
     expected = '#EXT-X-PART:DURATION=0.33334,URI="filePart271.0.ts",BYTERANGE=9400@376,GAP=YES'
+
+    assert result == expected
+
+def test_session_data_with_value():
+    obj = SessionData(
+        'com.example.value',
+        'example',
+        language='en'
+    )
+
+    result = obj.dumps()
+    expected = '#EXT-X-SESSION-DATA:DATA-ID="com.example.value",VALUE="example",LANGUAGE="en"'
+
+    assert result == expected
+
+def test_session_data_with_uri():
+    obj = SessionData(
+        'com.example.value',
+        uri='example.json',
+        language='en'
+    )
+
+    result = obj.dumps()
+    expected = '#EXT-X-SESSION-DATA:DATA-ID="com.example.value",URI="example.json",LANGUAGE="en"'
+
+    assert result == expected
+
+def test_session_data_cannot_be_created_with_value_and_uri_at_the_same_time():
+    obj = SessionData(
+        'com.example.value',
+        value='example',
+        uri='example.json',
+        language='en'
+    )
+
+    result = obj.dumps()
+    expected = '#EXT-X-SESSION-DATA:DATA-ID="com.example.value",VALUE="example",LANGUAGE="en"'
 
     assert result == expected
 
