@@ -934,7 +934,7 @@ class SessionData(object):
         if self.language:
             session_data_out.append('LANGUAGE=' + quoted(self.language))
 
-        return '#EXT-X-SESSION-DATA=' + ','.join(session_data_out)
+        return '#EXT-X-SESSION-DATA:' + ','.join(session_data_out)
 
     def __str__(self):
         return self.dumps()
