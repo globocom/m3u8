@@ -64,6 +64,7 @@ Supported tags
 * #EXT-X-PART
 * #EXT-X-RENDITION-REPORT
 * #EXT-X-SKIP
+* #EXT-X-SESSION-DATA
 
 Encryption keys
 ---------------
