@@ -3,7 +3,6 @@
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
-from collections import namedtuple
 import os
 import errno
 import math
@@ -640,26 +639,8 @@ class Playlist(BasePathMixin):
             self.media += filter(lambda m: m.group_id == group_id, media)
 
     def __str__(self):
-        stream_inf = []
-        if self.stream_info.program_id:
-            stream_inf.append('PROGRAM-ID=%d' % self.stream_info.program_id)
-        if self.stream_info.closed_captions:
-            stream_inf.append('CLOSED-CAPTIONS=%s' % self.stream_info.closed_captions)
-        if self.stream_info.bandwidth:
-            stream_inf.append('BANDWIDTH=%d' % self.stream_info.bandwidth)
-        if self.stream_info.average_bandwidth:
-            stream_inf.append('AVERAGE-BANDWIDTH=%d' %
-                              self.stream_info.average_bandwidth)
-        if self.stream_info.resolution:
-            res = str(self.stream_info.resolution[
-                      0]) + 'x' + str(self.stream_info.resolution[1])
-            stream_inf.append('RESOLUTION=' + res)
-        if self.stream_info.frame_rate:
-            stream_inf.append('FRAME-RATE=%.5g' % self.stream_info.frame_rate)
-        if self.stream_info.codecs:
-            stream_inf.append('CODECS=' + quoted(self.stream_info.codecs))
-
         media_types = []
+        stream_inf = [str(self.stream_info)]
         for media in self.media:
             if media.type in media_types:
                 continue
@@ -731,10 +712,51 @@ class IFramePlaylist(BasePathMixin):
 
         return '#EXT-X-I-FRAME-STREAM-INF:' + ','.join(iframe_stream_inf)
 
-StreamInfo = namedtuple(
-    'StreamInfo',
-    ['bandwidth', 'closed_captions', 'average_bandwidth', 'program_id', 'resolution', 'codecs', 'audio', 'video', 'subtitles', 'frame_rate']
-)
+
+class StreamInfo(object):
+    bandwidth = None
+    closed_captions = None
+    average_bandwidth = None
+    program_id = None
+    resolution = None
+    codecs = None
+    audio = None
+    video = None
+    subtitles = None
+    frame_rate = None
+
+    def __init__(self, **kwargs):
+        self.bandwidth = kwargs.get("bandwidth")
+        self.closed_captions = kwargs.get("closed_captions")
+        self.average_bandwidth = kwargs.get("average_bandwidth")
+        self.program_id = kwargs.get("program_id")
+        self.resolution = kwargs.get("resolution")
+        self.codecs = kwargs.get("codecs")
+        self.audio = kwargs.get("audio")
+        self.video = kwargs.get("video")
+        self.subtitles = kwargs.get("subtitles")
+        self.frame_rate = kwargs.get("frame_rate")
+
+    def __str__(self):
+        stream_inf = []
+        if self.program_id is not None:
+            stream_inf.append('PROGRAM-ID=%d' % self.program_id)
+        if self.closed_captions is not None:
+            stream_inf.append('CLOSED-CAPTIONS=%s' % self.closed_captions)
+        if self.bandwidth is not None:
+            stream_inf.append('BANDWIDTH=%d' % self.bandwidth)
+        if self.average_bandwidth is not None:
+            stream_inf.append('AVERAGE-BANDWIDTH=%d' %
+                              self.average_bandwidth)
+        if self.resolution is not None:
+            res = str(self.resolution[
+                      0]) + 'x' + str(self.resolution[1])
+            stream_inf.append('RESOLUTION=' + res)
+        if self.frame_rate is not None:
+            stream_inf.append('FRAME-RATE=%.5g' % self.frame_rate)
+        if self.codecs is not None:
+            stream_inf.append('CODECS=' + quoted(self.codecs))
+        return ",".join(stream_inf)
 
 
 class Media(BasePathMixin):
