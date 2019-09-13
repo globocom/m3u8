@@ -815,4 +815,8 @@ MULTIPLE_SESSION_DATA_PLAYLIST = '''#EXTM3U
 #EXT-X-SESSION-DATA:DATA-ID="com.example.title",URI="title.json"
 '''
 
+VERSION_PLAYLIST = '''#EXTM3U
+#EXT-X-VERSION:4
+'''
+
 del abspath, dirname, join

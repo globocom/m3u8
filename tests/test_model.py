@@ -413,6 +413,17 @@ def test_version_attribute():
     mock_parser_data(obj, {})
     assert None == obj.version
 
+def test_version_settable_as_int():
+    obj = m3u8.loads(playlists.VERSION_PLAYLIST)
+    obj.version = 9
+
+    assert "#EXT-X-VERSION:9" in obj.dumps().strip()
+
+def test_version_settable_as_string():
+    obj = m3u8.loads(playlists.VERSION_PLAYLIST)
+    obj.version = '9'
+
+    assert "#EXT-X-VERSION:9" in obj.dumps().strip()
 
 def test_allow_cache_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
