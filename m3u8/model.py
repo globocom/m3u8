@@ -269,7 +269,7 @@ class M3U8(object):
         if self.allow_cache:
             output.append('#EXT-X-ALLOW-CACHE:' + self.allow_cache.upper())
         if self.version:
-            output.append('#EXT-X-VERSION:' + self.version)
+            output.append('#EXT-X-VERSION:' + str(self.version))
         if self.target_duration:
             output.append('#EXT-X-TARGETDURATION:' +
                           int_or_float_to_string(self.target_duration))
