@@ -407,8 +407,8 @@ def test_iframe_playlists_attribute():
 
 def test_version_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
-    mock_parser_data(obj, {'version': '2'})
-    assert '2' == obj.version
+    mock_parser_data(obj, {'version': 2})
+    assert 2 == obj.version
 
     mock_parser_data(obj, {})
     assert None == obj.version
