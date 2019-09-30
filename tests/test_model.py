@@ -983,12 +983,12 @@ def test_add_rendition_report_to_playlist():
             base_uri='',
             uri='../1M/waitForMSN.php',
             last_msn=273,
-            last_part=3
+            last_part=0
         )
     )
 
     result = obj.dumps()
-    expected = '#EXT-X-RENDITION-REPORT:URI="../1M/waitForMSN.php",LAST-MSN=273,LAST-PART=3'
+    expected = '#EXT-X-RENDITION-REPORT:URI="../1M/waitForMSN.php",LAST-MSN=273,LAST-PART=0'
 
     assert expected in result
 
