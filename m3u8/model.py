@@ -881,7 +881,7 @@ class RenditionReport(BasePathMixin):
         report = []
         report.append('URI=' + quoted(self.uri))
         report.append('LAST-MSN=' + int_or_float_to_string(self.last_msn))
-        if self.last_part:
+        if self.last_part is not None:
             report.append('LAST-PART=' + int_or_float_to_string(
                 self.last_part))
 
