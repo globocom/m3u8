@@ -106,7 +106,7 @@ def parse(content, strict=False, custom_tags_parser=None):
             state['cue_start'] = True
 
         elif line.startswith(protocol.ext_x_version):
-            _parse_simple_parameter(line, data)
+            _parse_simple_parameter(line, data, int)
 
         elif line.startswith(protocol.ext_x_allow_cache):
             _parse_simple_parameter(line, data)
