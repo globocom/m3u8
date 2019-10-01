@@ -39,8 +39,8 @@ def test_should_parse_sliding_window_playlist_from_string():
             'https://priv.example.com/fileSequence2682.ts'] == [c['uri'] for c in data['segments']]
     assert [8, 8, 8] == [c['duration'] for c in data['segments']]
 
-def test_should_parse_playlist_with_encripted_segments_from_string():
-    data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS)
+def test_should_parse_playlist_with_encrypted_segments_from_string():
+    data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS)
     assert 7794 == data['media_sequence']
     assert 15 == data['targetduration']
     assert 'AES-128' == data['keys'][0]['method']
@@ -51,13 +51,13 @@ def test_should_parse_playlist_with_encripted_segments_from_string():
     assert [15, 15, 15] == [c['duration'] for c in data['segments']]
 
 def test_should_load_playlist_with_iv_from_string():
-    data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
     assert "/hls-key/key.bin" == data['keys'][0]['uri']
     assert "AES-128" == data['keys'][0]['method']
     assert "0X10ef8f758ca555115584bb5b3c687f52" == data['keys'][0]['iv']
 
 def test_should_add_key_attribute_to_segment_from_playlist():
-    data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
+    data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
     first_segment_key = data['segments'][0]['key']
     assert "/hls-key/key.bin" == first_segment_key['uri']
     assert "AES-128" == first_segment_key['method']
@@ -232,11 +232,11 @@ def test_should_parse_endlist_playlist():
     assert False == data['is_endlist']
 
 def test_should_parse_ALLOW_CACHE():
-    data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
     assert 'no' == data['allow_cache']
 
 def test_should_parse_VERSION():
-    data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
     assert 2 == data['version']
 
 def test_should_parse_program_date_time_from_playlist():

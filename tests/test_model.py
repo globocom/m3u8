@@ -160,7 +160,7 @@ def test_keys_on_clear_playlist():
 
 
 def test_keys_on_simple_encrypted_playlist():
-    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS)
 
     assert len(obj.keys) == 1
     assert obj.keys[0].uri == "https://priv.example.com/key.php?r=52"
@@ -252,7 +252,7 @@ def test_segments_attribute_with_byterange():
 
 
 def test_segment_attribute_with_multiple_keys():
-    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
 
     segments = obj.segments
     assert segments[0].key.uri == '/hls-key/key.bin'
@@ -435,7 +435,7 @@ def test_allow_cache_attribute():
 
 
 def test_files_attribute_should_list_all_files_including_segments_and_key():
-    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS)
     files = [
         'https://priv.example.com/key.php?r=52',
         'http://media.example.com/fileSequence52-1.ts',
@@ -479,9 +479,9 @@ def test_dump_playlists_with_resolution():
 
 
 def test_dump_should_build_file_with_same_content(tmpdir):
-    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
 
-    expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_SORTED.replace(', IV', ',IV').strip()
+    expected = playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_SORTED.replace(', IV', ',IV').strip()
     filename = str(tmpdir.join('playlist.m3u8'))
 
     obj.dump(filename)
@@ -490,9 +490,9 @@ def test_dump_should_build_file_with_same_content(tmpdir):
 
 
 def test_dump_should_create_sub_directories(tmpdir):
-    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
 
-    expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_SORTED.replace(', IV', ',IV').strip()
+    expected = playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_SORTED.replace(', IV', ',IV').strip()
     filename = str(tmpdir.join('subdir1', 'subdir2', 'playlist.m3u8'))
 
     obj.dump(filename)
@@ -614,8 +614,8 @@ def test_should_dump_without_endlist_tag():
 
 
 def test_should_dump_multiple_keys():
-    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
-    expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS_SORTED.strip()
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS)
+    expected = playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS_SORTED.strip()
 
     assert expected == obj.dumps().strip()
 
@@ -711,11 +711,11 @@ def test_should_dump_program_datetime_and_discontinuity():
 def test_should_normalize_segments_and_key_urls_if_base_path_passed_to_constructor():
     base_path = 'http://videoserver.com/hls/live'
 
-    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV, base_path)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV, base_path)
 
     assert obj.base_path == base_path
 
-    expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_SORTED \
+    expected = playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_SORTED \
         .replace(', IV', ',IV') \
         .replace('../../../../hls', base_path) \
         .replace('/hls-key', base_path) \
@@ -739,10 +739,10 @@ def test_should_normalize_variant_streams_urls_if_base_path_passed_to_constructo
 def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated():
     base_path = 'http://videoserver.com/hls/live'
 
-    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
     obj.base_path = base_path     # update later
 
-    expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_SORTED \
+    expected = playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_SORTED \
         .replace(', IV', ',IV') \
         .replace('../../../../hls', base_path) \
         .replace('/hls-key', base_path) \
@@ -754,10 +754,10 @@ def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated()
 def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated():
     base_path = 'http://videoserver.com/hls/live'
 
-    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV)
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
     obj.base_path = base_path
 
-    expected = playlists.PLAYLIST_WITH_ENCRIPTED_SEGMENTS_AND_IV_SORTED \
+    expected = playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_SORTED \
         .replace(', IV', ',IV') \
         .replace('../../../../hls', base_path) \
         .replace('/hls-key', base_path) \
