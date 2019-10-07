@@ -34,37 +34,37 @@ directly from a string:
 Supported tags
 ==============
 
-* #EXT-X-TARGETDURATION
-* #EXT-X-MEDIA-SEQUENCE
-* #EXT-X-DISCONTINUITY-SEQUENCE
-* #EXT-X-PROGRAM-DATE-TIME
-* #EXT-X-MEDIA
-* #EXT-X-PLAYLIST-TYPE
-* #EXT-X-KEY
-* #EXT-X-STREAM-INF
-* #EXT-X-VERSION
+* `#EXT-X-TARGETDURATION`_
+* `#EXT-X-MEDIA-SEQUENCE`_
+* `#EXT-X-DISCONTINUITY-SEQUENCE`_
+* `#EXT-X-PROGRAM-DATE-TIME`_
+* `#EXT-X-MEDIA`_
+* `#EXT-X-PLAYLIST-TYPE`_
+* `#EXT-X-KEY`_
+* `#EXT-X-STREAM-INF`_
+* `#EXT-X-VERSION`_
 * #EXT-X-ALLOW-CACHE
-* #EXT-X-ENDLIST
-* #EXTINF
-* #EXT-X-I-FRAMES-ONLY
-* #EXT-X-BYTERANGE
-* #EXT-X-I-FRAME-STREAM-INF
-* #EXT-X-DISCONTINUITY
+* `#EXT-X-ENDLIST`_
+* `#EXTINF`_
+* `#EXT-X-I-FRAMES-ONLY`_
+* `#EXT-X-BYTERANGE`_
+* `#EXT-X-I-FRAME-STREAM-INF`_
+* `#EXT-X-DISCONTINUITY`_
 * #EXT-X-CUE-OUT
 * #EXT-X-CUE-OUT-CONT
-* #EXT-X-INDEPENDENT-SEGMENTS
+* `#EXT-X-INDEPENDENT-SEGMENTS`_
 * #EXT-OATCLS-SCTE35
 * #EXT-X-CUE-OUT
 * #EXT-X-CUE-IN
 * #EXT-X-CUE-SPAN
-* #EXT-X-MAP
-* #EXT-X-START
+* `#EXT-X-MAP`_
+* `#EXT-X-START`_
 * #EXT-X-SERVER-CONTROL
 * #EXT-X-PART-INF
 * #EXT-X-PART
 * #EXT-X-RENDITION-REPORT
 * #EXT-X-SKIP
-* #EXT-X-SESSION-DATA
+* `#EXT-X-SESSION-DATA`_
 
 Encryption keys
 ---------------
@@ -234,15 +234,32 @@ than a few minutes, please open an issue to make sure we don't work on
 the same thing.
 
 .. _m3u8: https://tools.ietf.org/html/rfc8216
+.. _#EXT-X-VERSION: https://tools.ietf.org/html/rfc8216#section-4.3.1.2
+.. _#EXTINF: https://tools.ietf.org/html/rfc8216#section-4.3.2.1
+.. _#EXT-X-BYTERANGE: https://tools.ietf.org/html/rfc8216#section-4.3.2.2
+.. _#EXT-X-DISCONTINUITY: https://tools.ietf.org/html/rfc8216#section-4.3.2.3
 .. _#EXT-X-KEY: https://tools.ietf.org/html/rfc8216#section-4.3.2.4
+.. _#EXT-X-MAP: https://tools.ietf.org/html/rfc8216#section-4.3.2.5
+.. _#EXT-X-PROGRAM-DATE-TIME: https://tools.ietf.org/html/rfc8216#section-4.3.2.6
+.. _#EXT-X-DATERANGE: https://tools.ietf.org/html/rfc8216#section-4.3.2.7
+.. _#EXT-X-TARGETDURATION: https://tools.ietf.org/html/rfc8216#section-4.3.3.1
+.. _#EXT-X-MEDIA-SEQUENCE: https://tools.ietf.org/html/rfc8216#section-4.3.3.2
+.. _#EXT-X-DISCONTINUITY-SEQUENCE: https://tools.ietf.org/html/rfc8216#section-4.3.3.3
+.. _#EXT-X-ENDLIST: https://tools.ietf.org/html/rfc8216#section-4.3.3.4
+.. _#EXT-X-PLAYLIST-TYPE: https://tools.ietf.org/html/rfc8216#section-4.3.3.5
+.. _#EXT-X-I-FRAMES-ONLY: https://tools.ietf.org/html/rfc8216#section-4.3.3.6
+.. _#EXT-X-MEDIA: https://tools.ietf.org/html/rfc8216#section-4.3.4.1
+.. _#EXT-X-STREAM-INF: https://tools.ietf.org/html/rfc8216#section-4.3.4.2
+.. _#EXT-X-I-FRAME-STREAM-INF: https://tools.ietf.org/html/rfc8216#section-4.3.4.3
+.. _#EXT-X-SESSION-DATA: https://tools.ietf.org/html/rfc8216#section-4.3.4.4
+.. _#EXT-X-INDEPENDENT-SEGMENTS: https://tools.ietf.org/html/rfc8216#section-4.3.5.1
+.. _#EXT-X-START: https://tools.ietf.org/html/rfc8216#section-4.3.5.2
 .. _issue 1: https://github.com/globocom/m3u8/issues/1
 .. _variant streams: https://tools.ietf.org/html/rfc8216#section-6.2.4
 .. _example here: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.5
-.. _#EXT-X-STREAM-INF: https://tools.ietf.org/html/rfc8216#section-4.3.4.2
 .. _issue 4: https://github.com/globocom/m3u8/issues/4
 .. _I-frame playlists: https://tools.ietf.org/html/rfc8216#section-4.3.4.3
 .. _Apple's documentation: https://developer.apple.com/library/ios/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-I_FRAME_PLAYLIST
 .. _Alternative audio: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.7
-.. _#EXT-X-MEDIA: https://tools.ietf.org/html/rfc8216#section-4.3.4.1
 .. _VOD: https://developer.apple.com/library/mac/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-TNTAG2
 .. _EVENT: https://developer.apple.com/library/mac/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-EVENT_PLAYLIST
