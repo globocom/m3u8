@@ -228,6 +228,7 @@ All contribution is welcome, but we will merge a pull request if, and only if, i
 
 -  has tests
 -  follows the code conventions
+-  read and follows our `code of conduct`_
 
 If you plan to implement a new feature or something that will take more
 than a few minutes, please open an issue to make sure we don't work on
@@ -263,3 +264,4 @@ the same thing.
 .. _Alternative audio: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.7
 .. _VOD: https://developer.apple.com/library/mac/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-TNTAG2
 .. _EVENT: https://developer.apple.com/library/mac/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-EVENT_PLAYLIST
+.. _code of conduct: https://github.com/DavidMoura07/m3u8/blob/codeofconduct/CODE_OF_CONDUCT.md
