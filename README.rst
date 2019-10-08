@@ -228,7 +228,7 @@ All contribution is welcome, but we will merge a pull request if, and only if, i
 
 -  has tests
 -  follows the code conventions
--  read and follows our `code of conduct`_
+-  follows our `code of conduct`_
 
 If you plan to implement a new feature or something that will take more
 than a few minutes, please open an issue to make sure we don't work on
