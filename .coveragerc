@@ -1,0 +1,2 @@
+[report]
+omit = LICENSE,MANIFEST.in,README.rst,CODE_OF_CONDUCT.md
