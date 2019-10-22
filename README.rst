@@ -7,7 +7,6 @@
 .. image:: https://badge.fury.io/py/m3u8.svg
     :target: https://badge.fury.io/py/m3u8
 
-
 m3u8
 ====
 
@@ -19,7 +18,7 @@ Documentation
 The basic usage is to create a playlist object from uri, file path or
 directly from a string:
 
-::
+.. code-block:: python
 
     import m3u8
 
@@ -28,7 +27,7 @@ directly from a string:
     print m3u8_obj.target_duration
 
     # if you already have the content as string, use
-
+    
     m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ... ')
 
 Supported tags
@@ -85,7 +84,7 @@ or more keys afterwards.
 
 To traverse the list of keys available:
 
-::
+.. code-block:: python
 
     import m3u8
 
@@ -107,7 +106,7 @@ retrieve the list of segments encrypted with one key via ``by_key`` method in th
 
 Example of getting the segments with no encryption:
 
-::
+.. code-block:: python
 
     import m3u8
 
@@ -121,7 +120,7 @@ Example of getting the segments with no encryption:
 With this method, is now possible also to change the key from some of the segments programatically:
 
 
-::
+.. code-block:: python
 
     import m3u8
 
@@ -143,7 +142,7 @@ A playlist can have a list to other playlist files, this is used to
 represent multiple bitrates videos, and it's called `variant streams`_.
 See an `example here`_.
 
-::
+.. code-block:: python
 
     variant_m3u8 = m3u8.loads('#EXTM3U8 ... contains a variant stream ...')
     variant_m3u8.is_variant    # in this case will be True
@@ -175,7 +174,7 @@ to specify where the I-frames are in a video. See `Apple's documentation`_ on
 this for more information. These I-frame playlists can be accessed in a similar
 way to regular playlists.
 
-::
+.. code-block:: python
 
     variant_m3u8 = m3u8.loads('#EXTM3U ... contains a variant stream ...')
 
@@ -201,7 +200,7 @@ Quoting the documentation::
 This library ignores all the non standard tags by default. If you want them to be collected while loading the file content,
 you need to pass a function to the `load/loads` functions, following the example below:
 
-::
+.. code-block:: python
 
     import m3u8
 
@@ -217,7 +216,7 @@ you need to pass a function to the `load/loads` functions, following the example
 Running Tests
 =============
 
-::
+.. code-block:: bash
 
     $ ./runtests
 
