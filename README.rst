@@ -226,12 +226,11 @@ Contributing
 All contribution is welcome, but we will merge a pull request if, and only if, it
 
 -  has tests
--  follows the code conventions
+-  follows the code conventions. Follow CONTRIBUTING.md for more information.
 
 If you plan to implement a new feature or something that will take more
 than a few minutes, please open an issue to make sure we don't work on
 the same thing.
-
 .. _m3u8: https://tools.ietf.org/html/rfc8216
 .. _#EXT-X-VERSION: https://tools.ietf.org/html/rfc8216#section-4.3.1.2
 .. _#EXTINF: https://tools.ietf.org/html/rfc8216#section-4.3.2.1
