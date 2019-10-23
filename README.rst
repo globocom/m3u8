@@ -7,10 +7,10 @@
 .. image:: https://badge.fury.io/py/m3u8.svg
     :target: https://badge.fury.io/py/m3u8
 
-m3u8
+`m3u8`_
 ====
 
-Python `m3u8`_ parser.
+Python m3u8 parser.
 
 Documentation
 =============
