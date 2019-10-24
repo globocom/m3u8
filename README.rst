@@ -223,15 +223,9 @@ Running Tests
 Contributing
 ============
 
-All contribution is welcome, but we will merge a pull request if, and only if, it
+Check out the `contributing`_ guide for more details.
 
--  has tests
--  follows the code conventions
-
-If you plan to implement a new feature or something that will take more
-than a few minutes, please open an issue to make sure we don't work on
-the same thing.
-
+.. _contributing: https://github.com/globocom/m3u8/blob/master/CONTRIBUTING.md
 .. _m3u8: https://tools.ietf.org/html/rfc8216
 .. _#EXT-X-VERSION: https://tools.ietf.org/html/rfc8216#section-4.3.1.2
 .. _#EXTINF: https://tools.ietf.org/html/rfc8216#section-4.3.2.1
