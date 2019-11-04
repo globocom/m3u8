@@ -4,6 +4,7 @@
 # license that can be found in the LICENSE file.
 
 import sys
+import ssl
 import os
 import posixpath
 
