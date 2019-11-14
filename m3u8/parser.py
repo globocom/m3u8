@@ -54,7 +54,8 @@ def parse(content, strict=False, custom_tags_parser=None):
         'rendition_reports': [],
         'skip': {},
         'part_inf': {},
-        'session_data': []
+        'session_data': [],
+        'session_keys': [],
     }
 
     state = {
@@ -172,6 +173,9 @@ def parse(content, strict=False, custom_tags_parser=None):
 
         elif line.startswith(protocol.ext_x_session_data):
             _parse_session_data(line, data, state)
+
+        elif line.startswith(protocol.ext_x_session_key):
+            _parse_session_key(line, data, state)
 
         # Comments and whitespace
         elif line.startswith('#'):
@@ -415,6 +419,14 @@ def _parse_session_data(line, data, state):
     quoted = remove_quotes_parser('data_id', 'value', 'uri', 'language')
     session_data = _parse_attribute_list(protocol.ext_x_session_data, line, quoted)
     data['session_data'].append(session_data)
+
+def _parse_session_key(line, data, state):
+    params = ATTRIBUTELISTPATTERN.split(line.replace(protocol.ext_x_session_key + ':', ''))[1::2]
+    key = {}
+    for param in params:
+        name, value = param.split('=', 1)
+        key[normalize_attribute(name)] = remove_quotes(value)
+    data['session_keys'].append(key)
 
 def string_to_lines(string):
     return string.strip().splitlines()

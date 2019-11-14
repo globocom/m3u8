@@ -196,6 +196,48 @@ def test_key_attribute_without_initialization_vector():
     assert None == obj.keys[0].iv
 
 
+def test_session_keys_on_clear_playlist():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
+
+    assert len(obj.session_keys) == 0
+
+def test_session_keys_on_simple_encrypted_playlist():
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_SESSION_ENCRYPTED_SEGMENTS)
+
+    assert len(obj.session_keys) == 1
+    assert obj.session_keys[0].uri == "https://priv.example.com/key.php?r=52"
+
+
+def test_session_key_attribute():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
+    data = {'session_keys': [{'method': 'AES-128',
+                    'uri': '/key',
+                    'iv': 'foobar'}]}
+    mock_parser_data(obj, data)
+
+    assert 'SessionKey' == obj.session_keys[0].__class__.__name__
+    assert 'AES-128' == obj.session_keys[0].method
+    assert '/key' == obj.session_keys[0].uri
+    assert 'foobar' == obj.session_keys[0].iv
+
+
+def test_session_key_attribute_on_none():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
+    mock_parser_data(obj, {})
+
+    assert len(obj.session_keys) == 0
+
+
+def test_session_key_attribute_without_initialization_vector():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
+    mock_parser_data(obj, {'session_keys': [{'method': 'AES-128',
+                                   'uri': '/key'}]})
+
+    assert 'AES-128' == obj.session_keys[0].method
+    assert '/key' == obj.session_keys[0].uri
+    assert None == obj.session_keys[0].iv
+
+
 def test_segments_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'segments': [{'uri': '/foo/bar-1.ts',
@@ -723,6 +765,21 @@ def test_should_normalize_segments_and_key_urls_if_base_path_passed_to_construct
 
     assert obj.dumps().strip() == expected
 
+def test_should_normalize_session_key_urls_if_base_path_passed_to_constructor():
+    base_path = 'http://videoserver.com/hls/live'
+
+    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_SESSION_ENCRYPTED_SEGMENTS_AND_IV, base_path)
+
+    assert obj.base_path == base_path
+
+    expected = playlists.PLAYLIST_WITH_SESSION_ENCRYPTED_SEGMENTS_AND_IV_SORTED \
+        .replace(', IV', ',IV') \
+        .replace('../../../../hls', base_path) \
+        .replace('/hls-key', base_path) \
+        .strip()
+
+    assert obj.dumps().strip() == expected
+
 
 def test_should_normalize_variant_streams_urls_if_base_path_passed_to_constructor():
     base_path = 'http://videoserver.com/hls/live'
@@ -861,6 +918,15 @@ def test_m3u8_should_propagate_base_uri_to_key():
     assert '../key.bin' == obj.keys[0].uri
     assert '/any/key.bin' == obj.keys[0].absolute_uri
 
+def test_m3u8_should_propagate_base_uri_to_session_key():
+    with open(playlists.RELATIVE_PLAYLIST_FILENAME) as f:
+        content = f.read()
+    obj = m3u8.M3U8(content, base_uri='/any/path')
+    assert '../key.bin' == obj.session_keys[0].uri
+    assert '/any/key.bin' == obj.session_keys[0].absolute_uri
+    obj.base_uri = '/any/where/'
+    assert '../key.bin' == obj.session_keys[0].uri
+    assert '/any/key.bin' == obj.session_keys[0].absolute_uri
 
 def test_base_path_with_optional_uri_should_do_nothing():
     media = Media(type='AUDIO', group_id='audio-group', name='English')

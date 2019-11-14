@@ -86,6 +86,21 @@ http://media.example.com/fileSequence52-2.ts
 http://media.example.com/fileSequence52-3.ts
 '''
 
+PLAYLIST_WITH_SESSION_ENCRYPTED_SEGMENTS = '''
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:7794
+#EXT-X-TARGETDURATION:15
+
+#EXT-X-SESSION-KEY:METHOD=AES-128,URI="https://priv.example.com/key.php?r=52"
+
+#EXTINF:15,
+http://media.example.com/fileSequence52-1.ts
+#EXTINF:15,
+http://media.example.com/fileSequence52-2.ts
+#EXTINF:15,
+http://media.example.com/fileSequence52-3.ts
+'''
+
 VARIANT_PLAYLIST = '''
 #EXTM3U
 #EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=1280000
@@ -248,6 +263,27 @@ PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV = '''
 ../../../../hls/streamNum82405.ts
 '''
 
+PLAYLIST_WITH_SESSION_ENCRYPTED_SEGMENTS_AND_IV = '''
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:82400
+#EXT-X-ALLOW-CACHE:NO
+#EXT-X-VERSION:2
+#EXT-X-SESSION-KEY:METHOD=AES-128,URI="/hls-key/key.bin", IV=0X10ef8f758ca555115584bb5b3c687f52
+#EXT-X-TARGETDURATION:8
+#EXTINF:8,
+../../../../hls/streamNum82400.ts
+#EXTINF:8,
+../../../../hls/streamNum82401.ts
+#EXTINF:8,
+../../../../hls/streamNum82402.ts
+#EXTINF:8,
+../../../../hls/streamNum82403.ts
+#EXTINF:8,
+../../../../hls/streamNum82404.ts
+#EXTINF:8,
+../../../../hls/streamNum82405.ts
+'''
+
 PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_SORTED = '''
 #EXTM3U
 #EXT-X-MEDIA-SEQUENCE:82400
@@ -255,6 +291,27 @@ PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_SORTED = '''
 #EXT-X-VERSION:2
 #EXT-X-TARGETDURATION:8
 #EXT-X-KEY:METHOD=AES-128,URI="/hls-key/key.bin", IV=0X10ef8f758ca555115584bb5b3c687f52
+#EXTINF:8,
+../../../../hls/streamNum82400.ts
+#EXTINF:8,
+../../../../hls/streamNum82401.ts
+#EXTINF:8,
+../../../../hls/streamNum82402.ts
+#EXTINF:8,
+../../../../hls/streamNum82403.ts
+#EXTINF:8,
+../../../../hls/streamNum82404.ts
+#EXTINF:8,
+../../../../hls/streamNum82405.ts
+'''
+
+PLAYLIST_WITH_SESSION_ENCRYPTED_SEGMENTS_AND_IV_SORTED = '''
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:82400
+#EXT-X-ALLOW-CACHE:NO
+#EXT-X-VERSION:2
+#EXT-X-TARGETDURATION:8
+#EXT-X-SESSION-KEY:METHOD=AES-128,URI="/hls-key/key.bin", IV=0X10ef8f758ca555115584bb5b3c687f52
 #EXTINF:8,
 ../../../../hls/streamNum82400.ts
 #EXTINF:8,

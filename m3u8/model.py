@@ -7,7 +7,7 @@ import os
 import errno
 import math
 
-from m3u8.protocol import ext_x_start
+from m3u8.protocol import ext_x_start, ext_x_key, ext_x_session_key
 from m3u8.parser import parse, format_date_time
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
 
@@ -53,6 +53,9 @@ class M3U8(object):
 
        4. Multiple keys used during the m3u8 manifest.
        `keys` list will contain the key used for each set of segments.
+
+     `session_keys`
+       Returns the list of `SessionKey` objects used to encrypt multiple segments from m3u8.
 
      `segments`
        a `SegmentList` object, represents the list of `Segment`s from this playlist
@@ -198,6 +201,9 @@ class M3U8(object):
                              for session_data in self.data.get('session_data', [])
                              if 'data_id' in session_data ])
 
+        self.session_keys = [ SessionKey(base_uri=self.base_uri, **params) if params else None
+                      for params in self.data.get('session_keys', []) ]
+
     def __unicode__(self):
         return self.dumps()
 
@@ -214,6 +220,9 @@ class M3U8(object):
         for key in self.keys:
             if key:
                 key.base_uri = new_base_uri
+        for key in self.session_keys:
+            if key:
+                key.base_uri = new_base_uri
 
     @property
     def base_path(self):
@@ -228,6 +237,9 @@ class M3U8(object):
         if self._base_path is None:
             return
         for key in self.keys:
+            if key:
+                key.base_path = self._base_path
+        for key in self.session_keys:
             if key:
                 key.base_path = self._base_path
         self.media.base_path = self._base_path
@@ -300,6 +312,9 @@ class M3U8(object):
             output.append(str(self.skip))
         if self.session_data:
             output.append(str(self.session_data))
+
+        for key in self.session_keys:
+            output.append(str(key))
 
         output.append(str(self.segments))
 
@@ -554,6 +569,8 @@ class Key(BasePathMixin):
 
     '''
 
+    tag = ext_x_key
+
     def __init__(self, method, base_uri, uri=None, iv=None, keyformat=None, keyformatversions=None):
         self.method = method
         self.uri = uri
@@ -575,7 +592,7 @@ class Key(BasePathMixin):
         if self.keyformatversions:
             output.append('KEYFORMATVERSIONS="%s"' % self.keyformatversions)
 
-        return '#EXT-X-KEY:' + ','.join(output)
+        return self.tag + ':' + ','.join(output)
 
     def __eq__(self, other):
         if not other:
@@ -590,6 +607,8 @@ class Key(BasePathMixin):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+class SessionKey(Key):
+    tag = ext_x_session_key
 
 class Playlist(BasePathMixin):
     '''

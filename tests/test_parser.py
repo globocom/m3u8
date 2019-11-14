@@ -91,6 +91,23 @@ def test_should_handle_key_method_none_and_no_uri_attr():
     assert "0X10ef8f758ca555115584bb5b3c687f52" == third_segment_key['iv']
     assert "NONE" == data['segments'][6]['key']['method']
 
+def test_should_parse_playlist_with_session_encrypted_segments_from_string():
+    data = m3u8.parse(playlists.PLAYLIST_WITH_SESSION_ENCRYPTED_SEGMENTS)
+    assert 7794 == data['media_sequence']
+    assert 15 == data['targetduration']
+    assert 'AES-128' == data['session_keys'][0]['method']
+    assert 'https://priv.example.com/key.php?r=52' == data['session_keys'][0]['uri']
+    assert ['http://media.example.com/fileSequence52-1.ts',
+            'http://media.example.com/fileSequence52-2.ts',
+            'http://media.example.com/fileSequence52-3.ts'] == [c['uri'] for c in data['segments']]
+    assert [15, 15, 15] == [c['duration'] for c in data['segments']]
+
+def test_should_load_playlist_with_session_iv_from_string():
+    data = m3u8.parse(playlists.PLAYLIST_WITH_SESSION_ENCRYPTED_SEGMENTS_AND_IV)
+    assert "/hls-key/key.bin" == data['session_keys'][0]['uri']
+    assert "AES-128" == data['session_keys'][0]['method']
+    assert "0X10ef8f758ca555115584bb5b3c687f52" == data['session_keys'][0]['iv']
+
 def test_should_parse_quoted_title_from_playlist():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_QUOTED_TITLE)
     assert 1 == len(data['segments'])
