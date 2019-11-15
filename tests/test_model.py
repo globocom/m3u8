@@ -124,12 +124,42 @@ def test_segment_cue_out_attribute():
     assert segments[2].cue_out == True
     assert segments[3].cue_out == False
 
-def test_segment_cue_out_dumps():
+def test_segment_cue_out_start_attribute():
+    obj = m3u8.M3U8(playlists.CUE_OUT_WITH_DURATION_PLAYLIST)
+
+    assert obj.segments[0].cue_out_start == True
+
+def test_segment_cue_in_attribute():
+    obj = m3u8.M3U8(playlists.CUE_OUT_WITH_DURATION_PLAYLIST)
+
+    assert obj.segments[2].cue_in == True
+
+def test_segment_cue_out_cont_dumps():
     obj = m3u8.M3U8(playlists.CUE_OUT_PLAYLIST)
 
     result = obj.dumps()
-    expected = '#EXT-X-CUE-OUT'
+    expected = '#EXT-X-CUE-OUT-CONT\n'
+    assert expected in result
 
+def test_segment_cue_out_start_dumps():
+    obj = m3u8.M3U8(playlists.CUE_OUT_WITH_DURATION_PLAYLIST)
+
+    result = obj.dumps()
+    expected = '#EXT-X-CUE-OUT:11.52\n'
+    assert expected in result
+
+def test_segment_cue_out_start_no_duration_dumps():
+    obj = m3u8.M3U8(playlists.CUE_OUT_NO_DURATION_PLAYLIST)
+
+    result = obj.dumps()
+    expected = '#EXT-X-CUE-OUT\n'
+    assert expected in result
+
+def test_segment_cue_out_in_dumps():
+    obj = m3u8.M3U8(playlists.CUE_OUT_NO_DURATION_PLAYLIST)
+
+    result = obj.dumps()
+    expected = '#EXT-X-CUE-IN\n'
     assert expected in result
 
 def test_segment_elemental_scte35_attribute():
@@ -151,6 +181,11 @@ def test_segment_unknown_scte35_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_INVALID_PLAYLIST)
     assert obj.segments[0].scte35 == None
     assert obj.segments[0].scte35_duration == None
+
+def test_segment_cue_out_no_duration():
+    obj = m3u8.M3U8(playlists.CUE_OUT_NO_DURATION_PLAYLIST)
+    assert obj.segments[0].cue_out_start == True
+    assert obj.segments[2].cue_in == True
 
 def test_keys_on_clear_playlist():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)

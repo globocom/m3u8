@@ -278,6 +278,11 @@ def test_should_parse_envivio_cue_playlist():
     assert '/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A==' == data['segments'][4]['scte35']
     assert '/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A==' == data['segments'][5]['scte35']
 
+def test_should_parse_no_duration_cue_playlist():
+    data = m3u8.parse(playlists.CUE_OUT_NO_DURATION_PLAYLIST)
+    assert data['segments'][0]['cue_out_start']
+    assert data['segments'][2]['cue_in']
+
 def test_parse_simple_playlist_messy():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_MESSY)
     assert 5220 == data['targetduration']

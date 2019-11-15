@@ -373,8 +373,17 @@ class Segment(BasePathMixin):
       Returns a boolean indicating if a EXT-X-DISCONTINUITY tag exists
       http://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.4.11
 
+    `cue_out_start`
+      Returns a boolean indicating if a EXT-X-CUE-OUT tag exists
+
     `cue_out`
       Returns a boolean indicating if a EXT-X-CUE-OUT-CONT tag exists
+      Note: for backwards compatibility, this will be True when cue_out_start
+            is True, even though this tag did not exist in the input, and
+            EXT-X-CUE-OUT-CONT will not exist in the output
+
+    `cue_in`
+      Returns a boolean indicating if a EXT-X-CUE-IN tag exists
 
     `scte35`
       Base64 encoded SCTE35 metadata if available
@@ -399,8 +408,8 @@ class Segment(BasePathMixin):
     '''
 
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
-                 duration=None, title=None, byterange=None, cue_out=False,
-                 discontinuity=False, key=None, scte35=None, scte35_duration=None,
+                 duration=None, title=None, byterange=None, cue_out=False, cue_out_start=False,
+                 cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
                  keyobject=None, parts=None):
         self.uri = uri
         self.duration = duration
@@ -410,7 +419,9 @@ class Segment(BasePathMixin):
         self.program_date_time = program_date_time
         self.current_program_date_time = current_program_date_time
         self.discontinuity = discontinuity
+        self.cue_out_start = cue_out_start
         self.cue_out = cue_out
+        self.cue_in = cue_in
         self.scte35 = scte35
         self.scte35_duration = scte35_duration
         self.key = keyobject
@@ -439,8 +450,14 @@ class Segment(BasePathMixin):
         if self.program_date_time:
             output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' %
                           format_date_time(self.program_date_time))
-        if self.cue_out:
+
+        if self.cue_out_start:
+            output.append('#EXT-X-CUE-OUT{}\n'.format(
+                (':' + self.scte35_duration) if self.scte35_duration else ''))
+        elif self.cue_out:
             output.append('#EXT-X-CUE-OUT-CONT\n')
+        if self.cue_in:
+            output.append('#EXT-X-CUE-IN\n')
 
         if self.parts:
             output.append(str(self.parts))
