@@ -318,6 +318,14 @@ def test_should_parse_segment_map_uri_with_byterange():
     assert data['segment_map']['uri'] == "main.mp4"
 
 
+def test_should_parse_multiple_map_attributes():
+    data = m3u8.parse(playlists.MULTIPLE_MAP_URI_PLAYLIST)
+
+    assert data['segments'][0]['init_section']['uri'] == 'init1.mp4'
+    assert data['segments'][1]['init_section']['uri'] == 'init1.mp4'
+    assert data['segments'][2]['init_section']['uri'] == 'init3.mp4'
+
+
 def test_should_parse_empty_uri_with_base_path():
     data = m3u8.M3U8(
             playlists.MEDIA_WITHOUT_URI_PLAYLIST,

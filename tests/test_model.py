@@ -665,6 +665,24 @@ def test_dump_should_include_map_attributes():
 
     assert 'EXT-X-MAP:URI="main.mp4",BYTERANGE="812@0"' in obj.dumps().strip()
 
+
+def test_multiple_map_attributes():
+    obj = m3u8.M3U8(playlists.MULTIPLE_MAP_URI_PLAYLIST)
+
+    assert obj.segments[0].init_section.uri == 'init1.mp4'
+    assert obj.segments[1].init_section.uri == 'init1.mp4'
+    assert obj.segments[2].init_section.uri == 'init3.mp4'
+
+
+def test_dump_should_include_multiple_map_attributes():
+    obj = m3u8.M3U8(playlists.MULTIPLE_MAP_URI_PLAYLIST)
+
+    output = obj.dump('/tmp/d.m3u8')
+    output = obj.dumps().strip()
+    assert output.count('#EXT-X-MAP:URI="init1.mp4"') == 1
+    assert output.count('#EXT-X-MAP:URI="init3.mp4"') == 1
+
+
 def test_dump_should_work_for_playlists_using_byteranges():
     obj = m3u8.M3U8(playlists.PLAYLIST_USING_BYTERANGES)
 
