@@ -649,7 +649,6 @@ class InitializationSection(BasePathMixin):
 
     `base_uri`
       uri the segment comes from in URI hierarchy. ex.: http://example.com/path/to
-
     '''
 
     tag = ext_x_map
@@ -665,7 +664,7 @@ class InitializationSection(BasePathMixin):
             output.append('URI=' + quoted(self.uri))
         if self.byterange:
             output.append('BYTERANGE=' + self.byterange)
-        return self.tag + ':' + ','.join(output)
+        return "{tag}:{attributes}".format(tag=self.tag, attributes=",".join(output))
 
     def __eq__(self, other):
         if not other:
