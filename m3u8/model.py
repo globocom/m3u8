@@ -12,6 +12,10 @@ from m3u8.parser import parse, format_date_time
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
 
 
+class MalformedPlaylistError(Exception):
+    pass
+
+
 class M3U8(object):
     '''
     Represents a single M3U8 playlist. Should be instantiated with
@@ -443,7 +447,9 @@ class Segment(BasePathMixin):
                 output.append('\n')
 
         if last_segment and self.init_section != last_segment.init_section:
-            assert self.init_section, "init section can't be None if previous is not None"
+            if not self.init_section:
+                raise MalformedPlaylistError(
+                    "init section can't be None if previous is not None")
             output.append(str(self.init_section))
             output.append('\n')
         else:
