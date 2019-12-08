@@ -62,6 +62,7 @@ def parse(content, strict=False, custom_tags_parser=None):
         'expect_segment': False,
         'expect_playlist': False,
         'current_key': None,
+        'current_segment_map': None,
     }
 
     lineno = 0
@@ -148,6 +149,8 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_map):
             quoted_parser = remove_quotes_parser('uri')
             segment_map_info = _parse_attribute_list(protocol.ext_x_map, line, quoted_parser)
+            state['current_segment_map'] = segment_map_info
+            # left for backward compatibility
             data['segment_map'] = segment_map_info
 
         elif line.startswith(protocol.ext_x_start):
@@ -252,6 +255,8 @@ def _parse_ts_chunk(line, data, state):
         # For unencrypted segments, the initial key would be None
         if None not in data['keys']:
             data['keys'].append(None)
+    if state.get('current_segment_map'):
+        segment['init_section'] = state['current_segment_map']
     data['segments'].append(segment)
 
 

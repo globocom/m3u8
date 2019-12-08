@@ -7,9 +7,13 @@ import os
 import errno
 import math
 
-from m3u8.protocol import ext_x_start, ext_x_key, ext_x_session_key
+from m3u8.protocol import ext_x_start, ext_x_key, ext_x_session_key, ext_x_map
 from m3u8.parser import parse, format_date_time
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
+
+
+class MalformedPlaylistError(Exception):
+    pass
 
 
 class M3U8(object):
@@ -291,13 +295,6 @@ class M3U8(object):
             output.append(str(self.start))
         if self.is_i_frames_only:
             output.append('#EXT-X-I-FRAMES-ONLY')
-        if self.segment_map:
-            map_output = []
-            if self.segment_map.get('uri'):
-                map_output.append('URI=' + quoted(self.segment_map['uri']))
-            if self.segment_map.get('byterange'):
-                map_output.append('BYTERANGE=' + self.segment_map['byterange'])
-            output.append('#EXT-X-MAP:' + ','.join(map_output))
         if self.server_control:
             output.append(str(self.server_control))
         if self.is_variant:
@@ -410,7 +407,7 @@ class Segment(BasePathMixin):
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, byterange=None, cue_out=False, cue_out_start=False,
                  cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
-                 keyobject=None, parts=None):
+                 keyobject=None, parts=None, init_section=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -426,6 +423,10 @@ class Segment(BasePathMixin):
         self.scte35_duration = scte35_duration
         self.key = keyobject
         self.parts = PartialSegmentList( [ PartialSegment(base_uri=self.base_uri, **partial) for partial in parts ] if parts else [] )
+        if init_section is not None:
+            self.init_section = InitializationSection(self.base_uri, **init_section)
+        else:
+            self.init_section = None
 
         # Key(base_uri=base_uri, **key) if key else None
 
@@ -443,6 +444,17 @@ class Segment(BasePathMixin):
             # The key must be checked anyway now for the first segment
             if self.key and last_segment is None:
                 output.append(str(self.key))
+                output.append('\n')
+
+        if last_segment and self.init_section != last_segment.init_section:
+            if not self.init_section:
+                raise MalformedPlaylistError(
+                    "init section can't be None if previous is not None")
+            output.append(str(self.init_section))
+            output.append('\n')
+        else:
+            if self.init_section and last_segment is None:
+                output.append(str(self.init_section))
                 output.append('\n')
 
         if self.discontinuity:
@@ -620,6 +632,46 @@ class Key(BasePathMixin):
             self.base_uri == other.base_uri and \
             self.keyformat == other.keyformat and \
             self.keyformatversions == other.keyformatversions
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+class InitializationSection(BasePathMixin):
+    '''
+    Used to obtain Media Initialization Section required to
+    parse the applicable Media Segments (EXT-X-MAP)
+
+    `uri`
+      is a string. ex:: "https://priv.example.com/key.php?r=52"
+
+    `byterange`
+      value of BYTERANGE attribute
+
+    `base_uri`
+      uri the segment comes from in URI hierarchy. ex.: http://example.com/path/to
+    '''
+
+    tag = ext_x_map
+
+    def __init__(self, base_uri, uri, byterange=None):
+        self.base_uri = base_uri
+        self.uri = uri
+        self.byterange = byterange
+
+    def __str__(self):
+        output = []
+        if self.uri:
+            output.append('URI=' + quoted(self.uri))
+        if self.byterange:
+            output.append('BYTERANGE=' + self.byterange)
+        return "{tag}:{attributes}".format(tag=self.tag, attributes=",".join(output))
+
+    def __eq__(self, other):
+        if not other:
+            return False
+        return self.uri == other.uri and \
+            self.byterange == other.byterange and \
+            self.base_uri == other.base_uri
 
     def __ne__(self, other):
         return not self.__eq__(other)
