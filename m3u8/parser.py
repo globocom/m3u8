@@ -320,7 +320,7 @@ def _parse_simple_parameter_raw_value(line, cast_to=str, normalize=False):
     param, value = line.split(':', 1)
     param = normalize_attribute(param.replace('#EXT-X-', ''))
     if normalize:
-        value = normalize_attribute(value)
+        value = value.strip().lower()
     return param, cast_to(value)
 
 
