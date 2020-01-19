@@ -414,3 +414,8 @@ def test_low_latency_playlist():
     assert data['rendition_reports'][0]['uri'] == "../1M/waitForMSN.php"
     assert data['rendition_reports'][0]['last_msn'] == 273
     assert data['rendition_reports'][0]['last_part'] == 3
+
+
+def test_negative_media_sequence():
+    data = m3u8.parse(playlists.PLAYLIST_WITH_NEGATIVE_MEDIA_SEQUENCE)
+    assert data['media_sequence'] == -2680

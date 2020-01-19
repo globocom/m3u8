@@ -1071,7 +1071,6 @@ def find_key(keydata, keylist):
 def denormalize_attribute(attribute):
     return attribute.replace('_', '-').upper()
 
-
 def quoted(string):
     return '"%s"' % string
 
