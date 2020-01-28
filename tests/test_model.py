@@ -11,11 +11,11 @@ import os
 import pytest
 import sys
 
-from m3u8.protocol import ext_x_start, ext_x_part
+from m3u8.protocol import ext_x_start, ext_x_part, ext_x_preload_hint
 
 import m3u8
 import playlists
-from m3u8.model import Segment, Key, Media, MediaList, RenditionReport, PartialSegment, denormalize_attribute, find_key, SessionData
+from m3u8.model import Segment, Key, Media, MediaList, RenditionReport, PartialSegment, denormalize_attribute, find_key, SessionData, PreloadHint
 
 
 class UTC(datetime.tzinfo):
@@ -1089,10 +1089,14 @@ def test_find_key_throws_when_no_match():
 
 def test_ll_playlist():
     obj = m3u8.M3U8(playlists.LOW_LATENCY_DELTA_UPDATE_PLAYLIST)
+    obj.base_path = 'http://localhost/test_base_path'
+    obj.base_uri = 'http://localhost/test_base_uri'
+
     assert len(obj.rendition_reports) == 2
     assert len(obj.segments[2].parts) == 12
-    print(obj.dumps())
-    assert (ext_x_part + ':DURATION=0.33334,URI="filePart271.0.ts"') in obj.dumps()
+    assert (ext_x_part + ':DURATION=0.33334,URI="http://localhost/test_base_path/filePart271.0.ts"') in obj.dumps()
+    assert (ext_x_preload_hint + ':TYPE=PART,URI="http://localhost/test_base_path/filePart273.4.ts"') in obj.dumps()
+    assert obj.preload_hint.base_uri == 'http://localhost/test_base_uri'
 
 def test_add_rendition_report_to_playlist():
     obj = m3u8.M3U8()
@@ -1221,6 +1225,19 @@ def test_partial_segment_base_path_update():
 
     assert obj.segments[2].parts[0].uri == 'http://localhost/base_path/filePart271.0.ts'
     assert obj.segments[2].parts[0].base_uri == 'http://localhost/base_uri'
+
+def test_add_preload_hint():
+    obj = PreloadHint(
+        'PART',
+        '',
+        'filePart273.4.ts',
+        0
+    )
+
+    result = obj.dumps()
+    expected = '#EXT-X-PRELOAD-HINT:TYPE=PART,URI="filePart273.4.ts",BYTERANGE-START=0'
+
+    assert result == expected
 
 # custom asserts
 

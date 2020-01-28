@@ -415,6 +415,13 @@ def test_low_latency_playlist():
     assert data['rendition_reports'][0]['last_msn'] == 273
     assert data['rendition_reports'][0]['last_part'] == 3
 
+def test_low_latency_with_preload_and_byteranges_playlist():
+    data = m3u8.parse(playlists.LOW_LATENCY_WITH_PRELOAD_AND_BYTERANGES_PLAYLIST)
+    assert data['segments'][1]['parts'][2]['byterange'] == "18000@43000"
+    assert data['preload_hint']['type'] == 'PART'
+    assert data['preload_hint']['uri'] == 'fs271.mp4'
+    assert data['preload_hint']['byterange_start'] == 61000
+    assert data['preload_hint']['byterange_length'] == 20000
 
 def test_negative_media_sequence():
     data = m3u8.parse(playlists.PLAYLIST_WITH_NEGATIVE_MEDIA_SEQUENCE)
