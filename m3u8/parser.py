@@ -367,7 +367,7 @@ def _cueout_simple(line):
     # this needs to be called after _cueout_elemental
     # as it would capture those cues incompletely
     param, value = line.split(':', 1)
-    res = re.match('^(\d+(?:\.\d)?\d*)$', value)
+    res = re.match(r'^(\d+(?:\.\d)?\d*)$', value)
     if res:
         return (None, res.group(1))
 
