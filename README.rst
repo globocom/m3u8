@@ -68,7 +68,7 @@ Encryption keys
 ---------------
 
 The segments may be or not encrypted. The ``keys`` attribute list will
-be an list  with all the different keys as described with `#EXT-X-KEY`_:
+be a list  with all the different keys as described with `#EXT-X-KEY`_:
 
 Each key has the next properties:
 
@@ -116,7 +116,7 @@ Example of getting the segments with no encryption:
     segm = m3u8_obj.segments.by_key( m3u8_obj.keys[-1] )
 
 
-With this method, is now possible also to change the key from some of the segments programatically:
+With this method, is now possible also to change the key from some of the segments programmatically:
 
 
 .. code-block:: python
