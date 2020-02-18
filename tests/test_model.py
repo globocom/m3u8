@@ -1099,15 +1099,17 @@ def test_add_rendition_report_to_playlist():
 
     obj.add_rendition_report(
         RenditionReport(
-            base_uri='',
+            base_uri=None,
             uri='../1M/waitForMSN.php',
             last_msn=273,
             last_part=0
         )
     )
 
+    obj.base_path = 'http://localhost/test'
+
     result = obj.dumps()
-    expected = '#EXT-X-RENDITION-REPORT:URI="../1M/waitForMSN.php",LAST-MSN=273,LAST-PART=0'
+    expected = '#EXT-X-RENDITION-REPORT:URI="http://localhost/test/waitForMSN.php",LAST-MSN=273,LAST-PART=0'
 
     assert expected in result
 
@@ -1119,7 +1121,7 @@ def test_add_part_to_segment():
 
     obj.add_part(
         PartialSegment(
-            '',
+            None,
             'filePart271.0.ts',
             0.33334
         )
@@ -1187,6 +1189,38 @@ def test_endswith_newline():
     manifest = obj.dumps()
 
     assert manifest.endswith('#EXT-X-ENDLIST\n')
+
+def test_init_section_base_path_update():
+    obj = m3u8.M3U8(playlists.MULTIPLE_MAP_URI_PLAYLIST)
+
+    assert obj.segments[0].init_section.uri == 'init1.mp4'
+
+    obj.base_path = 'http://localhost/base_path'
+    obj.base_uri = 'http://localhost/base_uri'
+
+    assert obj.segments[0].init_section.uri == 'http://localhost/base_path/init1.mp4'
+    assert obj.segments[0].init_section.base_uri == 'http://localhost/base_uri'
+
+def test_iframe_playlists_base_path_update():
+    obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS)
+
+    assert obj.iframe_playlists[0].uri == 'video-800k-iframes.m3u8'
+    assert obj.iframe_playlists[0].base_uri == None
+
+    obj.base_path = 'http://localhost/base_path'
+    obj.base_uri = 'http://localhost/base_uri'
+
+    assert obj.iframe_playlists[0].uri == 'http://localhost/base_path/video-800k-iframes.m3u8'
+    assert obj.iframe_playlists[0].base_uri == 'http://localhost/base_uri'
+
+def test_partial_segment_base_path_update():
+    obj = m3u8.M3U8(playlists.LOW_LATENCY_DELTA_UPDATE_PLAYLIST)
+
+    obj.base_path = 'http://localhost/base_path'
+    obj.base_uri = 'http://localhost/base_uri'
+
+    assert obj.segments[2].parts[0].uri == 'http://localhost/base_path/filePart271.0.ts'
+    assert obj.segments[2].parts[0].base_uri == 'http://localhost/base_uri'
 
 # custom asserts
 

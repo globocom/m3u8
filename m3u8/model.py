@@ -220,7 +220,9 @@ class M3U8(object):
         self._base_uri = new_base_uri
         self.media.base_uri = new_base_uri
         self.playlists.base_uri = new_base_uri
+        self.iframe_playlists.base_uri = new_base_uri
         self.segments.base_uri = new_base_uri
+        self.rendition_reports.base_uri = new_base_uri
         for key in self.keys:
             if key:
                 key.base_uri = new_base_uri
@@ -249,6 +251,8 @@ class M3U8(object):
         self.media.base_path = self._base_path
         self.segments.base_path = self._base_path
         self.playlists.base_path = self._base_path
+        self.iframe_playlists.base_path = self._base_path
+        self.rendition_reports.base_path = self._base_path
 
 
     def add_playlist(self, playlist):
@@ -411,7 +415,7 @@ class Segment(BasePathMixin):
         self.uri = uri
         self.duration = duration
         self.title = title
-        self.base_uri = base_uri
+        self._base_uri = base_uri
         self.byterange = byterange
         self.program_date_time = program_date_time
         self.current_program_date_time = current_program_date_time
@@ -422,9 +426,9 @@ class Segment(BasePathMixin):
         self.scte35 = scte35
         self.scte35_duration = scte35_duration
         self.key = keyobject
-        self.parts = PartialSegmentList( [ PartialSegment(base_uri=self.base_uri, **partial) for partial in parts ] if parts else [] )
+        self.parts = PartialSegmentList( [ PartialSegment(base_uri=self._base_uri, **partial) for partial in parts ] if parts else [] )
         if init_section is not None:
-            self.init_section = InitializationSection(self.base_uri, **init_section)
+            self.init_section = InitializationSection(self._base_uri, **init_section)
         else:
             self.init_section = None
 
@@ -492,6 +496,27 @@ class Segment(BasePathMixin):
     def __str__(self):
         return self.dumps(None)
 
+    @property
+    def base_path(self):
+        return super(Segment, self).base_path
+
+    @base_path.setter
+    def base_path(self, newbase_path):
+        super(Segment, self.__class__).base_path.fset(self, newbase_path)
+        self.parts.base_path = newbase_path
+        if self.init_section is not None:
+            self.init_section.base_path = newbase_path
+
+    @property
+    def base_uri(self):
+        return self._base_uri
+
+    @base_uri.setter
+    def base_uri(self, newbase_uri):
+        self._base_uri = newbase_uri
+        self.parts.base_uri = newbase_uri
+        if self.init_section is not None:
+            self.init_section.base_uri = newbase_uri
 
 class SegmentList(list, GroupedBasePathMixin):
 
