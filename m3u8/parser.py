@@ -181,6 +181,9 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_session_key):
             _parse_session_key(line, data, state)
 
+        elif line.startswith(protocol.ext_x_preload_hint):
+            _parse_preload_hint(line, data, state)
+
         # Comments and whitespace
         elif line.startswith('#'):
             if callable(custom_tags_parser):
@@ -453,6 +456,16 @@ def _parse_session_key(line, data, state):
         name, value = param.split('=', 1)
         key[normalize_attribute(name)] = remove_quotes(value)
     data['session_keys'].append(key)
+
+def _parse_preload_hint(line, data, state):
+    attribute_parser = remove_quotes_parser('uri')
+    attribute_parser['type'] = str
+    attribute_parser['byterange_start'] = int
+    attribute_parser['byterange_length'] = int
+
+    data['preload_hint'] = _parse_attribute_list(
+        protocol.ext_x_preload_hint, line, attribute_parser
+    )
 
 def string_to_lines(string):
     return string.strip().splitlines()

@@ -208,6 +208,9 @@ class M3U8(object):
         self.session_keys = [ SessionKey(base_uri=self.base_uri, **params) if params else None
                       for params in self.data.get('session_keys', []) ]
 
+        preload_hint = self.data.get('preload_hint', None)
+        self.preload_hint = preload_hint and PreloadHint(base_uri=self.base_uri, **preload_hint)
+
     def __unicode__(self):
         return self.dumps()
 
@@ -229,6 +232,8 @@ class M3U8(object):
         for key in self.session_keys:
             if key:
                 key.base_uri = new_base_uri
+        if self.preload_hint:
+            self.preload_hint.base_uri = new_base_uri
 
     @property
     def base_path(self):
@@ -253,6 +258,8 @@ class M3U8(object):
         self.playlists.base_path = self._base_path
         self.iframe_playlists.base_path = self._base_path
         self.rendition_reports.base_path = self._base_path
+        if self.preload_hint:
+            self.preload_hint.base_path = self._base_path
 
 
     def add_playlist(self, playlist):
@@ -318,6 +325,9 @@ class M3U8(object):
             output.append(str(key))
 
         output.append(str(self.segments))
+
+        if self.preload_hint:
+            output.append(str(self.preload_hint))
 
         if self.rendition_reports:
             output.append(str(self.rendition_reports))
@@ -1057,6 +1067,35 @@ class PartInformation(object):
 
     def __str__(self):
         return self.dumps()
+
+class PreloadHint(BasePathMixin):
+    def __init__(self, type, base_uri, uri, byterange_start=None, byterange_length=None):
+        self.hint_type = type
+        self.base_uri = base_uri
+        self.uri = uri
+        self.byterange_start = byterange_start
+        self.byterange_length = byterange_length
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    def dumps(self):
+        hint = []
+        hint.append('TYPE=' + self.hint_type)
+        hint.append('URI=' + quoted(self.uri))
+
+        for attr in ['byterange_start', 'byterange_length']:
+            if self[attr] is not None:
+                hint.append('%s=%s' % (
+                    denormalize_attribute(attr),
+                    int_or_float_to_string(self[attr])
+                ))
+
+        return ('#EXT-X-PRELOAD-HINT:' + ','.join(hint))
+
+    def __str__(self):
+        return self.dumps()
+
 
 class SessionData(object):
     def __init__(self, data_id, value=None, uri=None, language=None):
