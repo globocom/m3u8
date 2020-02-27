@@ -116,6 +116,7 @@ def test_presence_of_base_uri_if_provided_when_loading_from_string():
         content = f.read()
     obj = m3u8.loads(content, uri='http://media.example.com/path/playlist.m3u8')
     assert obj.base_uri == 'http://media.example.com/path/'
+    assert obj.absolute_uri == 'http://media.example.com/path/playlist.m3u8'
 
 
 def test_raise_timeout_exception_if_timeout_happens_when_loading_from_uri():

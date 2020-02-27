@@ -142,7 +142,8 @@ class M3U8(object):
         ('discontinuity_sequence', 'discontinuity_sequence')
     )
 
-    def __init__(self, content=None, base_path=None, base_uri=None, strict=False, custom_tags_parser=None):
+    def __init__(self, content=None, base_path=None, base_uri=None, strict=False, custom_tags_parser=None,
+                 absolute_uri=None):
         if content is not None:
             self.data = parse(content, strict, custom_tags_parser)
         else:
@@ -151,6 +152,7 @@ class M3U8(object):
         if self._base_uri:
             if not self._base_uri.endswith('/'):
                 self._base_uri += '/'
+        self.absolute_uri = absolute_uri
 
         self._initialize_attributes()
         self.base_path = base_path

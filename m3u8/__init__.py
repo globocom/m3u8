@@ -31,6 +31,7 @@ __all__ = ('M3U8', 'Segment', 'SegmentList', 'PartialSegment',
             'RenditionReportList', 'ServerControl', 'Skip', 'PartInformation',
             'PreloadHint', 'loads', 'load', 'parse', 'ParseError')
 
+
 def loads(content, uri=None, custom_tags_parser=None):
     '''
     Given a string with a m3u8 content, returns a M3U8 object.
@@ -42,7 +43,7 @@ def loads(content, uri=None, custom_tags_parser=None):
         return M3U8(content, custom_tags_parser=custom_tags_parser)
     else:
         base_uri = _parsed_url(uri)
-        return M3U8(content, base_uri=base_uri, custom_tags_parser=custom_tags_parser)
+        return M3U8(content, base_uri=base_uri, custom_tags_parser=custom_tags_parser, absolute_uri=uri)
 
 
 def load(uri, timeout=None, headers={}, custom_tags_parser=None, verify_ssl=True):
@@ -71,7 +72,7 @@ def _load_from_uri(uri, timeout=None, headers={}, custom_tags_parser=None, verif
         content = _read_python2x(resource)
     else:
         content = _read_python3x(resource)
-    return M3U8(content, base_uri=base_uri, custom_tags_parser=custom_tags_parser)
+    return M3U8(content, base_uri=base_uri, custom_tags_parser=custom_tags_parser, absolute_uri=uri)
 
 
 def _parsed_url(url):
@@ -82,6 +83,7 @@ def _parsed_url(url):
 
 
 def _read_python2x(resource):
+
     return resource.read().strip()
 
 
