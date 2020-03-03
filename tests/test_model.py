@@ -15,7 +15,7 @@ from m3u8.protocol import ext_x_start, ext_x_part, ext_x_preload_hint
 
 import m3u8
 import playlists
-from m3u8.model import Segment, Key, Media, MediaList, RenditionReport, PartialSegment, denormalize_attribute, find_key, SessionData, PreloadHint
+from m3u8.model import Segment, Key, Media, MediaList, RenditionReport, PartialSegment, denormalize_attribute, find_key, SessionData, PreloadHint, DateRange
 
 
 class UTC(datetime.tzinfo):
@@ -1238,6 +1238,54 @@ def test_add_preload_hint():
     expected = '#EXT-X-PRELOAD-HINT:TYPE=PART,URI="filePart273.4.ts",BYTERANGE-START=0'
 
     assert result == expected
+
+def test_add_daterange():
+    obj = DateRange(
+        id='testid123',
+        start_date='2020-03-09T17:19:00Z',
+        planned_duration=60,
+        x_test_client_attr='"test-attr"'
+    )
+
+    result = obj.dumps()
+    expected = '#EXT-X-DATERANGE:ID="testid123",START-DATE="2020-03-09T17:19:00Z",PLANNED-DURATION=60,X-TEST-CLIENT-ATTR="test-attr"'
+
+    assert result == expected
+
+def test_daterange_simple():
+    obj = m3u8.M3U8(playlists.DATERANGE_SIMPLE_PLAYLIST)
+
+    expected = '#EXT-X-DATERANGE:ID="ad3",START-DATE="2016-06-13T11:15:00Z",DURATION=20,X-AD-URL="http://ads.example.com/beacon3",X-AD-ID="1234"'
+    result = obj.dumps()
+
+    assert expected in result
+
+def test_daterange_scte_out_and_in():
+    obj = m3u8.M3U8(playlists.DATERANGE_SCTE35_OUT_AND_IN_PLAYLIST)
+
+    result = obj.dumps()
+
+    daterange_out = '#EXT-X-DATERANGE:ID="splice-6FFFFFF0",START-DATE="2014-03-05T11:15:00Z",PLANNED-DURATION=59.993,SCTE35-OUT=0xFC002F0000000000FF000014056FFFFFF000E011622DCAFF000052636200000000000A0008029896F50000008700000000'
+    daterange_in = '#EXT-X-DATERANGE:ID="splice-6FFFFFF0",DURATION=59.993,SCTE35-IN=0xFC002A0000000000FF00000F056FFFFFF000401162802E6100000000000A0008029896F50000008700000000'
+
+    assert daterange_out in result
+    assert daterange_in in result
+
+def test_daterange_enddate_sctecmd():
+    obj = m3u8.M3U8(playlists.DATERANGE_ENDDATE_SCTECMD_PLAYLIST)
+
+    result = obj.dumps()
+    expected = '#EXT-X-DATERANGE:ID="test_id",START-DATE="2020-03-11T10:51:00Z",CLASS="test_class",END-DATE="2020-03-11T10:52:00Z",DURATION=60,SCTE35-CMD=0xFCINVALIDSECTION'
+
+    assert expected in result
+
+def test_daterange_in_parts():
+    obj = m3u8.M3U8(playlists.DATERANGE_IN_PART_PLAYLIST)
+
+    result = obj.dumps()
+    expected = '#EXT-X-DATERANGE:ID="test_id",START-DATE="2020-03-10T07:48:02Z",CLASS="test_class",END-ON-NEXT=YES'
+
+    assert expected in result
 
 # custom asserts
 

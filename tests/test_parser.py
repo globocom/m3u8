@@ -426,3 +426,31 @@ def test_low_latency_with_preload_and_byteranges_playlist():
 def test_negative_media_sequence():
     data = m3u8.parse(playlists.PLAYLIST_WITH_NEGATIVE_MEDIA_SEQUENCE)
     assert data['media_sequence'] == -2680
+
+def test_daterange_simple():
+    data = m3u8.parse(playlists.DATERANGE_SIMPLE_PLAYLIST)
+
+    assert data['segments'][0]['dateranges'][0]['id'] == 'ad3'
+    assert data['segments'][0]['dateranges'][0]['start_date'] == "2016-06-13T11:15:00Z"
+    assert data['segments'][0]['dateranges'][0]['duration'] == 20
+    assert data['segments'][0]['dateranges'][0]['x_ad_id'] == '"1234"'
+    assert data['segments'][0]['dateranges'][0]['x_ad_url'] == '"http://ads.example.com/beacon3"'
+
+def test_date_range_with_scte_out_and_in():
+    data = m3u8.parse(playlists.DATERANGE_SCTE35_OUT_AND_IN_PLAYLIST)
+
+    assert data['segments'][0]['dateranges'][0]['id'] == 'splice-6FFFFFF0'
+    assert data['segments'][0]['dateranges'][0]['planned_duration'] == 59.993
+    assert data['segments'][0]['dateranges'][0]['scte35_out'] =='0xFC002F0000000000FF000014056FFFFFF000E011622DCAFF000052636200000000000A0008029896F50000008700000000'
+
+    assert data['segments'][6]['dateranges'][0]['id'] == 'splice-6FFFFFF0'
+    assert data['segments'][6]['dateranges'][0]['duration'] == 59.993
+    assert data['segments'][6]['dateranges'][0]['scte35_in'] == '0xFC002A0000000000FF00000F056FFFFFF000401162802E6100000000000A0008029896F50000008700000000'
+
+def test_date_range_in_parts():
+    data = m3u8.parse(playlists.DATERANGE_IN_PART_PLAYLIST)
+
+    assert data['segments'][0]['parts'][2]['dateranges'][0]['id'] == 'test_id'
+    assert data['segments'][0]['parts'][2]['dateranges'][0]['start_date'] == '2020-03-10T07:48:02Z'
+    assert data['segments'][0]['parts'][2]['dateranges'][0]['class'] == 'test_class'
+    assert data['segments'][0]['parts'][2]['dateranges'][0]['end_on_next'] == 'YES'

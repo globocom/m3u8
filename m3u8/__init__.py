@@ -20,7 +20,8 @@ from m3u8.model import (M3U8, Segment, SegmentList, PartialSegment,
                         PartialSegmentList, Key, Playlist, IFramePlaylist,
                         Media, MediaList, PlaylistList, Start,
                         RenditionReport, RenditionReportList, ServerControl,
-                        Skip, PartInformation, PreloadHint)
+                        Skip, PartInformation, PreloadHint, DateRange,
+                        DateRangeList)
 from m3u8.parser import parse, is_url, ParseError
 
 PYTHON_MAJOR_VERSION = sys.version_info
@@ -29,7 +30,8 @@ __all__ = ('M3U8', 'Segment', 'SegmentList', 'PartialSegment',
             'PartialSegmentList', 'Key', 'Playlist', 'IFramePlaylist',
             'Media', 'MediaList', 'PlaylistList', 'Start', 'RenditionReport',
             'RenditionReportList', 'ServerControl', 'Skip', 'PartInformation',
-            'PreloadHint', 'loads', 'load', 'parse', 'ParseError')
+            'PreloadHint' 'DateRange', 'DateRangeList', 'loads', 'load',
+            'parse', 'ParseError')
 
 def loads(content, uri=None, custom_tags_parser=None):
     '''
