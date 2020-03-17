@@ -1142,7 +1142,7 @@ class DateRangeList(TagList):
 
 class DateRange(object):
     def __init__(self, **kwargs):
-        self.id = kwargs.get('id')
+        self.id = kwargs['id']
         self.start_date = kwargs.get('start_date')
         self.class_ = kwargs.get('class')
         self.end_date = kwargs.get('end_date')
@@ -1158,6 +1158,10 @@ class DateRange(object):
         daterange = []
         daterange.append('ID=' + quoted(self.id))
 
+        # whilst START-DATE is technically REQUIRED by the spec, this is
+        # contradicted by an example in the same document (see
+        # https://tools.ietf.org/html/rfc8216#section-8.10), and also by
+        # real-world implementations, so we make it optional here
         if (self.start_date):
             daterange.append('START-DATE=' + quoted(self.start_date))
         if (self.class_):
@@ -1179,9 +1183,9 @@ class DateRange(object):
 
         for attr, value in self.x_client_attrs:
             daterange.append('%s=%s' % (
-                    denormalize_attribute(attr),
-                    value
-                ))
+                denormalize_attribute(attr),
+                value
+            ))
 
         return '#EXT-X-DATERANGE:' + ','.join(daterange)
 
