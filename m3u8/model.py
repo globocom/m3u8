@@ -416,12 +416,15 @@ class Segment(BasePathMixin):
 
     `parts`
       partial segments that make up this segment
+
+    `dateranges`
+      any dateranges that should  preceed the segment
     '''
 
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, byterange=None, cue_out=False, cue_out_start=False,
                  cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
-                 keyobject=None, parts=None, init_section=None):
+                 keyobject=None, parts=None, init_section=None, dateranges=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -441,6 +444,7 @@ class Segment(BasePathMixin):
             self.init_section = InitializationSection(self._base_uri, **init_section)
         else:
             self.init_section = None
+        self.dateranges = DateRangeList( [ DateRange(**daterange) for daterange in dateranges ] if dateranges else [] )
 
         # Key(base_uri=base_uri, **key) if key else None
 
@@ -476,6 +480,10 @@ class Segment(BasePathMixin):
         if self.program_date_time:
             output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' %
                           format_date_time(self.program_date_time))
+
+        if len(self.dateranges):
+            output.append(str(self.dateranges))
+            output.append('\n')
 
         if self.cue_out_start:
             output.append('#EXT-X-CUE-OUT{}\n'.format(
@@ -576,11 +584,14 @@ class PartialSegment(BasePathMixin):
 
     `gap`
       the Partial Segment is not available
+
+    `dateranges`
+      any dateranges that should preceed the partial segment
     '''
 
     def __init__(self, base_uri, uri, duration, program_date_time=None,
                  current_program_date_time=None, byterange=None,
-                 independent=None, gap=None):
+                 independent=None, gap=None, dateranges=None):
         self.base_uri = base_uri
         self.uri = uri
         self.duration = duration
@@ -589,11 +600,18 @@ class PartialSegment(BasePathMixin):
         self.byterange = byterange
         self.independent = independent
         self.gap = gap
+        self.dateranges = DateRangeList( [ DateRange(**daterange) for daterange in dateranges ] if dateranges else [] )
 
     def dumps(self, last_segment):
-        output = ['#EXT-X-PART:DURATION=%s,URI="%s"' % (
+        output = []
+
+        if len(self.dateranges):
+            output.append(str(self.dateranges))
+            output.append('\n')
+
+        output.append('#EXT-X-PART:DURATION=%s,URI="%s"' % (
             int_or_float_to_string(self.duration), self.uri
-        )]
+        ))
 
         if self.independent:
             output.append(',INDEPENDENT=%s' % self.independent)
@@ -1115,6 +1133,61 @@ class SessionData(object):
             session_data_out.append('LANGUAGE=' + quoted(self.language))
 
         return '#EXT-X-SESSION-DATA:' + ','.join(session_data_out)
+
+    def __str__(self):
+        return self.dumps()
+
+class DateRangeList(TagList):
+    pass
+
+class DateRange(object):
+    def __init__(self, **kwargs):
+        self.id = kwargs['id']
+        self.start_date = kwargs.get('start_date')
+        self.class_ = kwargs.get('class')
+        self.end_date = kwargs.get('end_date')
+        self.duration = kwargs.get('duration')
+        self.planned_duration = kwargs.get('planned_duration')
+        self.scte35_cmd = kwargs.get('scte35_cmd')
+        self.scte35_out = kwargs.get('scte35_out')
+        self.scte35_in = kwargs.get('scte35_in')
+        self.end_on_next = kwargs.get('end_on_next')
+        self.x_client_attrs = [ (attr, kwargs.get(attr)) for attr in kwargs if attr.startswith('x_') ]
+
+    def dumps(self):
+        daterange = []
+        daterange.append('ID=' + quoted(self.id))
+
+        # whilst START-DATE is technically REQUIRED by the spec, this is
+        # contradicted by an example in the same document (see
+        # https://tools.ietf.org/html/rfc8216#section-8.10), and also by
+        # real-world implementations, so we make it optional here
+        if (self.start_date):
+            daterange.append('START-DATE=' + quoted(self.start_date))
+        if (self.class_):
+            daterange.append('CLASS=' + quoted(self.class_))
+        if (self.end_date):
+            daterange.append('END-DATE=' + quoted(self.end_date))
+        if (self.duration):
+            daterange.append('DURATION=' + int_or_float_to_string(self.duration))
+        if (self.planned_duration):
+            daterange.append('PLANNED-DURATION=' + int_or_float_to_string(self.planned_duration))
+        if (self.scte35_cmd):
+            daterange.append('SCTE35-CMD=' + self.scte35_cmd)
+        if (self.scte35_out):
+            daterange.append('SCTE35-OUT=' + self.scte35_out)
+        if (self.scte35_in):
+            daterange.append('SCTE35-IN=' + self.scte35_in)
+        if (self.end_on_next):
+            daterange.append('END-ON-NEXT=' + self.end_on_next)
+
+        for attr, value in self.x_client_attrs:
+            daterange.append('%s=%s' % (
+                denormalize_attribute(attr),
+                value
+            ))
+
+        return '#EXT-X-DATERANGE:' + ','.join(daterange)
 
     def __str__(self):
         return self.dumps()
