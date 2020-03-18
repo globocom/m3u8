@@ -649,17 +649,22 @@ class Key(BasePathMixin):
     `iv`
       initialization vector. a string representing a hexadecimal number. ex.: 0X12A
 
+    `cmsha1hash`
+      A hexadecimal-integer that contains the message digest that results from applying SHA-1 to the tag's AAXS DRM metadata. 
+      This attribute SHALL be present when the stream makes use of license rotation.
+
     '''
 
     tag = ext_x_key
 
-    def __init__(self, method, base_uri, uri=None, iv=None, keyformat=None, keyformatversions=None):
+    def __init__(self, method, base_uri, uri=None, iv=None, keyformat=None, keyformatversions=None, cmsha1hash=None):
         self.method = method
         self.uri = uri
         self.iv = iv
         self.keyformat = keyformat
         self.keyformatversions = keyformatversions
         self.base_uri = base_uri
+        self.cmsha1hash = cmsha1hash
 
     def __str__(self):
         output = [
@@ -673,6 +678,8 @@ class Key(BasePathMixin):
             output.append('KEYFORMAT="%s"' % self.keyformat)
         if self.keyformatversions:
             output.append('KEYFORMATVERSIONS="%s"' % self.keyformatversions)
+        if self.cmsha1hash:
+            output.append('CMSha1Hash="%s"' % self.cmsha1hash)
 
         return self.tag + ':' + ','.join(output)
 
@@ -684,7 +691,8 @@ class Key(BasePathMixin):
             self.iv == other.iv and \
             self.base_uri == other.base_uri and \
             self.keyformat == other.keyformat and \
-            self.keyformatversions == other.keyformatversions
+            self.keyformatversions == other.keyformatversions and \
+            self.cmsha1hash == other.cmsha1hash
 
     def __ne__(self, other):
         return not self.__eq__(other)

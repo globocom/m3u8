@@ -205,13 +205,15 @@ def test_key_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     data = {'keys': [{'method': 'AES-128',
                     'uri': '/key',
-                    'iv': 'foobar'}]}
+                    'iv': 'foobar',
+                    'cmsha1hash': '0X10ef8f758ca555115584bb5b3c687f52'}]}
     mock_parser_data(obj, data)
 
     assert 'Key' == obj.keys[0].__class__.__name__
     assert 'AES-128' == obj.keys[0].method
     assert '/key' == obj.keys[0].uri
     assert 'foobar' == obj.keys[0].iv
+    assert '0X10ef8f758ca555115584bb5b3c687f52' == obj.keys[0].cmsha1hash
 
 
 def test_key_attribute_on_none():
