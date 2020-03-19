@@ -653,13 +653,14 @@ class Key(BasePathMixin):
 
     tag = ext_x_key
 
-    def __init__(self, method, base_uri, uri=None, iv=None, keyformat=None, keyformatversions=None):
+    def __init__(self, method, base_uri, uri=None, iv=None, keyformat=None, keyformatversions=None, **kwargs):
         self.method = method
         self.uri = uri
         self.iv = iv
         self.keyformat = keyformat
         self.keyformatversions = keyformatversions
         self.base_uri = base_uri
+        self._extra_params = kwargs
 
     def __str__(self):
         output = [
