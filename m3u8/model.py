@@ -419,12 +419,15 @@ class Segment(BasePathMixin):
 
     `dateranges`
       any dateranges that should  preceed the segment
+
+    `gap_tag`
+      GAP tag indicates that a Media Segment is missing
     '''
 
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, byterange=None, cue_out=False, cue_out_start=False,
                  cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
-                 keyobject=None, parts=None, init_section=None, dateranges=None):
+                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -445,6 +448,7 @@ class Segment(BasePathMixin):
         else:
             self.init_section = None
         self.dateranges = DateRangeList( [ DateRange(**daterange) for daterange in dateranges ] if dateranges else [] )
+        self.gap_tag = gap_tag
 
         # Key(base_uri=base_uri, **key) if key else None
 
@@ -506,6 +510,9 @@ class Segment(BasePathMixin):
 
             if self.byterange:
                 output.append('#EXT-X-BYTERANGE:%s\n' % self.byterange)
+
+            if self.gap_tag:
+                output.append('#EXT-X-GAP\n')
 
             output.append(self.uri)
 
@@ -583,15 +590,21 @@ class PartialSegment(BasePathMixin):
       the Partial Segment contains an independent frame
 
     `gap`
-      the Partial Segment is not available
+      GAP attribute indicates the Partial Segment is not available
 
     `dateranges`
       any dateranges that should preceed the partial segment
+
+    `gap_tag`
+      GAP tag indicates one or more of the parent Media Segment's Partial
+      Segments have a GAP=YES attribute. This tag should appear immediately
+      after the first EXT-X-PART tag in the Parent Segment with a GAP=YES
+      attribute.
     '''
 
     def __init__(self, base_uri, uri, duration, program_date_time=None,
                  current_program_date_time=None, byterange=None,
-                 independent=None, gap=None, dateranges=None):
+                 independent=None, gap=None, dateranges=None, gap_tag=None):
         self.base_uri = base_uri
         self.uri = uri
         self.duration = duration
@@ -601,6 +614,7 @@ class PartialSegment(BasePathMixin):
         self.independent = independent
         self.gap = gap
         self.dateranges = DateRangeList( [ DateRange(**daterange) for daterange in dateranges ] if dateranges else [] )
+        self.gap_tag = gap_tag
 
     def dumps(self, last_segment):
         output = []
@@ -608,6 +622,9 @@ class PartialSegment(BasePathMixin):
         if len(self.dateranges):
             output.append(str(self.dateranges))
             output.append('\n')
+
+        if self.gap_tag:
+            output.append('#EXT-X-GAP\n')
 
         output.append('#EXT-X-PART:DURATION=%s,URI="%s"' % (
             int_or_float_to_string(self.duration), self.uri

@@ -1287,6 +1287,34 @@ def test_daterange_in_parts():
 
     assert expected in result
 
+def test_add_gap():
+    obj = m3u8.Segment(
+        uri='fileSequence271.ts',
+        duration=4,
+        gap_tag=True
+    )
+
+    result = str(obj)
+    expected = '#EXTINF:4,\n#EXT-X-GAP\nfileSequence271.ts'
+
+    assert result == expected
+
+def test_gap():
+    obj = m3u8.M3U8(playlists.GAP_PLAYLIST)
+
+    result = obj.dumps().strip()
+    expected = playlists.GAP_PLAYLIST.strip()
+
+    assert result == expected
+
+def test_gap_in_parts():
+    obj = m3u8.M3U8(playlists.GAP_IN_PARTS_PLAYLIST)
+
+    result = obj.dumps().strip()
+    expected = playlists.GAP_IN_PARTS_PLAYLIST.strip()
+
+    assert result == expected
+
 # custom asserts
 
 

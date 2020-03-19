@@ -187,6 +187,9 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_daterange):
             _parse_daterange(line, data, state)
 
+        elif line.startswith(protocol.ext_x_gap):
+            state['gap'] = True
+
         # Comments and whitespace
         elif line.startswith('#'):
             if callable(custom_tags_parser):
@@ -264,6 +267,7 @@ def _parse_ts_chunk(line, data, state):
     if state.get('current_segment_map'):
         segment['init_section'] = state['current_segment_map']
     segment['dateranges'] = state.pop('dateranges', None)
+    segment['gap_tag'] = state.pop('gap', None)
     data['segments'].append(segment)
 
 
@@ -434,6 +438,7 @@ def _parse_part(line, data, state):
         state['current_program_date_time'] += datetime.timedelta(seconds=part['duration'])
 
     part['dateranges'] = state.pop('dateranges', None)
+    part['gap_tag'] = state.pop('gap', None)
 
     if 'segment' not in state:
         state['segment'] = {}
