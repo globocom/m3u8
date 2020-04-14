@@ -86,6 +86,18 @@ http://media.example.com/fileSequence52-2.ts
 http://media.example.com/fileSequence52-3.ts
 '''
 
+PLAYLIST_WITH_CUSTOM_MEDIA_HEADER = '''#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-TARGETDURATION:6
+#EXT-X-MEDIA-SEQUENCE:1
+#EXT-X-MEDIA-READY:7f659f6f09bce196d7
+#EXT-X-KEY:METHOD=AES-128,URI="[KEY]",IV=[IV]
+#EXTINF:6.0,
+https://cdn.example.com/vod/hash:XXX/file.mp4/media-1.ts
+#EXTINF:6.28,
+https://cdn.example.com/vod/hash:XXX/file.mp4/media-2.ts
+'''
+
 PLAYLIST_WITH_SESSION_ENCRYPTED_SEGMENTS = '''
 #EXTM3U
 #EXT-X-MEDIA-SEQUENCE:7794

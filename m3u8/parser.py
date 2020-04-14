@@ -271,6 +271,9 @@ def _parse_attribute_list(prefix, line, atribute_parser):
     params = ATTRIBUTELISTPATTERN.split(line.replace(prefix + ':', ''))[1::2]
 
     attributes = {}
+    if not line.startswith(prefix+':') :
+        return attributes
+
     for param in params:
         name, value = param.split('=', 1)
         name = normalize_attribute(name)
