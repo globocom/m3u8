@@ -64,6 +64,7 @@ Supported tags
 * #EXT-X-SKIP
 * `#EXT-X-SESSION-DATA`_
 * `#EXT-X-DATERANGE`_
+* `#EXT-X-GAP`_
 
 Encryption keys
 ---------------
@@ -254,6 +255,7 @@ the same thing.
 .. _#EXT-X-INDEPENDENT-SEGMENTS: https://tools.ietf.org/html/rfc8216#section-4.3.5.1
 .. _#EXT-X-START: https://tools.ietf.org/html/rfc8216#section-4.3.5.2
 .. _#EXT-X-DATERANGE: https://tools.ietf.org/html/rfc8216#section-4.3.2.7
+.. _#EXT-X-GAP: https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-05#section-4.4.2.7
 .. _issue 1: https://github.com/globocom/m3u8/issues/1
 .. _variant streams: https://tools.ietf.org/html/rfc8216#section-6.2.4
 .. _example here: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.5

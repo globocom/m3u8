@@ -454,3 +454,23 @@ def test_date_range_in_parts():
     assert data['segments'][0]['parts'][2]['dateranges'][0]['start_date'] == '2020-03-10T07:48:02Z'
     assert data['segments'][0]['parts'][2]['dateranges'][0]['class'] == 'test_class'
     assert data['segments'][0]['parts'][2]['dateranges'][0]['end_on_next'] == 'YES'
+
+def test_gap():
+    data = m3u8.parse(playlists.GAP_PLAYLIST)
+
+    assert data['segments'][0]['gap_tag'] is None
+    assert data['segments'][1]['gap_tag'] == True
+    assert data['segments'][2]['gap_tag'] == True
+    assert data['segments'][3]['gap_tag'] is None
+
+def test_gap_in_parts():
+    data = m3u8.parse(playlists.GAP_IN_PARTS_PLAYLIST)
+
+    print(data['segments'][0]['parts'])
+
+    assert data['segments'][0]['parts'][0]['gap_tag'] is None
+    assert data['segments'][0]['parts'][0].get('gap', None) is None
+    assert data['segments'][0]['parts'][1]['gap_tag'] is None
+    assert data['segments'][0]['parts'][1]['gap'] == 'YES'
+    assert data['segments'][0]['parts'][2]['gap_tag'] == True
+    assert data['segments'][0]['parts'][2].get('gap', None) is None

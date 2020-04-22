@@ -988,4 +988,29 @@ DATERANGE_IN_PART_PLAYLIST = '''
 #EXT-X-PART:DURATION=1,URI="filePart271.c.ts"
 '''
 
+GAP_PLAYLIST = '''
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:14
+#EXT-X-VERSION:7
+#EXT-X-TARGETDURATION:10
+#EXTINF:9.84317,
+fileSequence14.ts
+#EXTINF:8.75875,
+#EXT-X-GAP
+missing-Sequence15.ts
+#EXTINF:9.88487,
+#EXT-X-GAP
+missing-Sequence16.ts
+#EXTINF:9.09242,
+fileSequence17.ts
+'''
+
+GAP_IN_PARTS_PLAYLIST = '''
+#EXTM3U
+#EXT-X-PART:DURATION=1,URI="filePart271.a.ts"
+#EXT-X-PART:DURATION=1,URI="filePart271.b.ts",GAP=YES
+#EXT-X-GAP
+#EXT-X-PART:DURATION=1,URI="filePart271.c.ts"
+'''
+
 del abspath, dirname, join
