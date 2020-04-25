@@ -1199,7 +1199,8 @@ class DateRange(object):
         if (self.end_on_next):
             daterange.append('END-ON-NEXT=' + self.end_on_next)
 
-        for attr, value in self.x_client_attrs:
+        # client attributes sorted alphabetically output order is predictable
+        for attr, value in sorted(self.x_client_attrs):
             daterange.append('%s=%s' % (
                 denormalize_attribute(attr),
                 value

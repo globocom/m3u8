@@ -1255,7 +1255,9 @@ def test_add_daterange():
 def test_daterange_simple():
     obj = m3u8.M3U8(playlists.DATERANGE_SIMPLE_PLAYLIST)
 
-    expected = '#EXT-X-DATERANGE:ID="ad3",START-DATE="2016-06-13T11:15:00Z",DURATION=20,X-AD-URL="http://ads.example.com/beacon3",X-AD-ID="1234"'
+    # note that x-<client-attribute>s are explicitly alphabetically ordered
+    # when dumped for predictability, so line below is different from input
+    expected = '#EXT-X-DATERANGE:ID="ad3",START-DATE="2016-06-13T11:15:00Z",DURATION=20,X-AD-ID="1234",X-AD-URL="http://ads.example.com/beacon3"'
     result = obj.dumps()
 
     assert expected in result
