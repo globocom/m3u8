@@ -15,20 +15,39 @@ Python `m3u8`_ parser.
 Documentation
 =============
 
-The basic usage is to create a playlist object from uri, file path or
-directly from a string:
+Loading a playlist
+------------------
+
+To load a playlist into an object from uri, file path or directly from string, use the `load/loads` functions:
 
 .. code-block:: python
 
     import m3u8
 
-    m3u8_obj = m3u8.load('http://videoserver.com/playlist.m3u8')  # this could also be an absolute filename
-    print m3u8_obj.segments
-    print m3u8_obj.target_duration
+    playlist = m3u8.load('http://videoserver.com/playlist.m3u8')  # this could also be an absolute filename
+    print(playlist.segments)
+    print(playlist.target_duration)
 
     # if you already have the content as string, use
     
-    m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ... ')
+    playlist = m3u8.loads('#EXTM3U8 ... etc ... ')
+
+Dumping a playlist
+------------------
+
+To dump a playlist from an object to the console or a file, use the `dump/dumps` functions:
+
+.. code-block:: python
+
+    import m3u8
+
+    playlist = m3u8.load('http://videoserver.com/playlist.m3u8')
+    print(playlist.dumps())
+
+    # if you want to write a file from its content
+    
+    playlist.dump('playlist.m3u8')
+
 
 Supported tags
 ==============
