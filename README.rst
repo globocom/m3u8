@@ -84,6 +84,8 @@ Supported tags
 * `#EXT-X-SESSION-DATA`_
 * `#EXT-X-DATERANGE`_
 * `#EXT-X-GAP`_
+* `#EXTTV`
+* extra tags
 
 Encryption keys
 ---------------
@@ -231,6 +233,17 @@ you need to pass a function to the `load/loads` functions, following the example
 
     m3u8_obj = m3u8.load('http://videoserver.com/playlist.m3u8', custom_tags_parser=get_movie)
     print(m3u8_obj.data['movie'])  #  million dollar baby
+
+Alternately, if you don't want to bother during parsing, all custom tags will be collected in the ``extra_tags`` field on
+the Segment. This makes the list ignore, but respect custom tags. Therefore, doing the following will produce the same
+list (custom tags **will not** get stripped):
+
+.. code-block:: python
+
+   import m3u8
+
+   m3u = m3u8.load('list.m3u')
+   print(m3u.dumps())
 
 
 Running Tests

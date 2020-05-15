@@ -1013,4 +1013,42 @@ GAP_IN_PARTS_PLAYLIST = '''
 #EXT-X-PART:DURATION=1,URI="filePart271.c.ts"
 '''
 
+CUSTOM_TAGS_PLAYLIST = '''
+#EXTM3U
+#EXT-CUSTOM-DATA-1: Hello
+#EXT-CUSTOM-DATA-2: Dolly
+#EXTINF:0,1 - IP TV 1
+udp://@232.1.1.1:9999
+#EXT-CUSTOM-DATA-1: A beautiful
+#EXT-CUSTOM-DATA-2: world
+#EXTINF:0,2 - IP TV 2
+udp://@232.1.1.2:9999
+'''
+
+EXTTV_PLAYLIST = '''
+#EXTM3U
+#EXTINF:0, 114 - HBO (HD) *
+#EXTTV:Fibre,HBO;eng;HBOAdriaHD.svn;HBO_HD.png
+udp://@232.2.105.5:5002
+#EXTINF:0, 115 - ESP Int'l *
+#EXTTV:Fibre,Sports;eng;Eurosport1.svn;Eurosport.png
+udp://@232.2.2.25:5002
+#EXTINF:0, 116 - HBO Comedy (HD) *
+#EXTTV:Fibre,HBO;eng
+udp://@232.2.105.6:5002
+#EXTINF:0, 117 - ESP2 NE Intl *
+#EXTTV:Fibre,Sports;;Eurosport2.svn;Eurosport_2_NE.png
+udp://@232.2.2.26:5002
+#EXTINF:0, 118 - Cinemax (HD) *
+#EXTTV:Movies;eng;Cinemax1.svn;Cinemax.png
+udp://@232.2.105.7:5002
+'''
+
+EXTTV_INVALID_PLAYLIST = '''
+#EXTM3U
+#EXTINF:0, 114 - HBO (HD) *
+#EXTTV:Fibre,HBO
+udp://@232.2.105.5:5002
+'''
+
 del abspath, dirname, join
