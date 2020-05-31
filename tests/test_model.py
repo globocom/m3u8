@@ -645,6 +645,14 @@ def test_dump_should_not_ignore_zero_duration():
     assert "EXTINF:5220" in obj.dumps().strip()
 
 
+def test_dump_should_use_decimal_floating_point_for_very_short_durations():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_VERY_SHORT_DURATION)
+
+    assert "EXTINF:5220" in obj.dumps().strip()
+    assert "EXTINF:5218.5" in obj.dumps().strip()
+    assert "EXTINF:0.000011" in obj.dumps().strip()
+
+
 def test_dump_should_include_segment_level_program_date_time():
     obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_PROGRAM_DATE_TIME)
     # Tag being expected is in the segment level, not the global one
