@@ -232,6 +232,47 @@ you need to pass a function to the `load/loads` functions, following the example
     m3u8_obj = m3u8.load('http://videoserver.com/playlist.m3u8', custom_tags_parser=get_movie)
     print(m3u8_obj.data['movie'])  #  million dollar baby
 
+Using different HTTP clients
+----------------------------
+
+If you don't want to use urllib to download playlists, having more control on how objects are fetched over the internet,
+you can use your own client. `requests` is a well known Python HTTP library and it can be used with `m3u8`:
+
+.. code-block:: python
+
+    import m3u8
+    import requests
+
+    class RequestsClient():
+        def download(self, uri, timeout=None, headers={}, verify_ssl=True):
+            o = requests.get(uri, timeout=timeout, headers=headers)
+            return o.text, o.url
+
+    playlist = m3u8.load('http://videoserver.com/playlist.m3u8', http_client=RequestsClient())
+    print(playlist.dumps())
+
+The advantage of using a custom HTTP client is to refine SSL verification, proxies, performance, flexibility, etc.
+
+Playlists behind proxies
+------------------------
+
+In case you need to use a proxy but can't use a system wide proxy (HTTP/HTTPS proxy environment variables), you can pass your
+HTTP/HTTPS proxies as a dict to the load function.
+
+.. code-block:: python
+
+    import m3u8
+
+    proxies = {
+        'http': 'http://10.10.1.10:3128',
+        'https': 'http://10.10.1.10:1080',
+    }
+
+    http_client = m3u8.httpclient.DefaultHTTPClient(proxies)
+    playlist = m3u8.load('http://videoserver.com/playlist.m3u8', http_client=http_client)  # this could also be an absolute filename
+    print(playlist.dumps())
+
+It works with the default client only. Custom HTTP clients must implement this feature.
 
 Running Tests
 =============
