@@ -36,8 +36,9 @@ class DefaultHTTPClient:
         self.proxies = proxies
 
     def download(self, uri, timeout=None, headers={}, verify_ssl=True):
+        proxy_handler = urllib.request.ProxyHandler(self.proxies)
         https_handler = HTTPSHandler(verify_ssl=verify_ssl)
-        opener = urllib.request.build_opener(https_handler)
+        opener = urllib.request.build_opener(proxy_handler, https_handler)
         opener.addheaders = headers.items()
         resource = opener.open(uri, timeout=timeout)
         base_uri = _parsed_url(resource.geturl())
