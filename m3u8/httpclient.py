@@ -1,17 +1,9 @@
 import posixpath
 import ssl
 import sys
-
-try:
-    import urllib
-    from urllib.error import HTTPError
-    from urllib.parse import urlparse, urljoin
-except ImportError:  # Python 2.x
-    from urllib2 import urlopen, Request, HTTPError
-    from urlparse import urlparse, urljoin
-
-
-PYTHON_MAJOR_VERSION = sys.version_info
+import urllib
+from urllib.error import HTTPError
+from urllib.parse import urlparse, urljoin
 
 
 def _parsed_url(url):
@@ -19,15 +11,6 @@ def _parsed_url(url):
     prefix = parsed_url.scheme + '://' + parsed_url.netloc
     base_path = posixpath.normpath(parsed_url.path + '/..')
     return urljoin(prefix, base_path)
-
-def _read_python2x(resource):
-    return resource.read().strip()
-
-
-def _read_python3x(resource):
-    return resource.read().decode(
-        resource.headers.get_content_charset(failobj="utf-8")
-    )
 
 
 class DefaultHTTPClient:
@@ -42,10 +25,9 @@ class DefaultHTTPClient:
         opener.addheaders = headers.items()
         resource = opener.open(uri, timeout=timeout)
         base_uri = _parsed_url(resource.geturl())
-        if PYTHON_MAJOR_VERSION < (3,):
-            content = _read_python2x(resource)
-        else:
-            content = _read_python3x(resource)
+        content = resource.read().decode(
+            resource.headers.get_content_charset(failobj="utf-8")
+        )
         return content, base_uri
 
 
