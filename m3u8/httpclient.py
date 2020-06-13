@@ -4,6 +4,7 @@ import sys
 import urllib
 from urllib.error import HTTPError
 from urllib.parse import urlparse, urljoin
+import urllib.request
 
 
 def _parsed_url(url):
