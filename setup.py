@@ -21,5 +21,5 @@ setup(
     url="https://github.com/globocom/m3u8",
     description="Python m3u8 parser",
     long_description=long_description,
-    python_requires='>=2.7'
+    python_requires='>=3.5'
 )

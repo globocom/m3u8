@@ -51,8 +51,6 @@ def load(uri, timeout=None, headers={}, custom_tags_parser=None, verify_ssl=True
     '''
     Retrieves the content from a given URI and returns a M3U8 object.
     Raises ValueError if invalid content or IOError if request fails.
-    Raises socket.timeout(python 2.7+) or urllib2.URLError(python 2.6) if
-    timeout happens when loading from uri
     '''
     if is_url(uri):
         return _load_from_uri(uri, timeout, headers, custom_tags_parser, verify_ssl)
@@ -69,10 +67,9 @@ def _load_from_uri(uri, timeout=None, headers={}, custom_tags_parser=None, verif
         context = ssl._create_unverified_context()
     resource = urlopen(request, timeout=timeout, context=context)
     base_uri = _parsed_url(resource.geturl())
-    if PYTHON_MAJOR_VERSION < (3,):
-        content = _read_python2x(resource)
-    else:
-        content = _read_python3x(resource)
+    content = resource.read().decode(
+        resource.headers.get_content_charset(failobj="utf-8")
+    )
     return M3U8(content, base_uri=base_uri, custom_tags_parser=custom_tags_parser)
 
 
@@ -81,16 +78,6 @@ def _parsed_url(url):
     prefix = parsed_url.scheme + '://' + parsed_url.netloc
     base_path = posixpath.normpath(parsed_url.path + '/..')
     return urljoin(prefix, base_path)
-
-
-def _read_python2x(resource):
-    return resource.read().strip()
-
-
-def _read_python3x(resource):
-    return resource.read().decode(
-        resource.headers.get_content_charset(failobj="utf-8")
-    )
 
 
 def _load_from_file(uri, custom_tags_parser=None):
