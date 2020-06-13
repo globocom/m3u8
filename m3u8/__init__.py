@@ -6,14 +6,6 @@
 import sys
 import os
 
-try:
-    from urllib.request import urlopen, Request
-    from urllib.error import HTTPError
-    from urllib.parse import urlparse, urljoin
-except ImportError:  # Python 2.x
-    from urllib2 import urlopen, Request, HTTPError
-    from urlparse import urlparse, urljoin
-
 from m3u8.httpclient import DefaultHTTPClient, _parsed_url
 from m3u8.model import (M3U8, Segment, SegmentList, PartialSegment,
                         PartialSegmentList, Key, Playlist, IFramePlaylist,
