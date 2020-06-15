@@ -915,6 +915,12 @@ class StreamInfo(object):
             stream_inf.append('FRAME-RATE=%.5g' % self.frame_rate)
         if self.codecs is not None:
             stream_inf.append('CODECS=' + quoted(self.codecs))
+        if self.audio is not None:
+            stream_inf.append('AUDIO=' + quoted(self.audio))
+        if self.video is not None:
+            stream_inf.append('VIDEO=' + quoted(self.video))
+        if self.subtitles is not None:
+            stream_inf.append('SUBTITLES=' + quoted(self.subtitles))
         return ",".join(stream_inf)
 
 
