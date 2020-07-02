@@ -427,7 +427,7 @@ class Segment(BasePathMixin):
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, byterange=None, cue_out=False, cue_out_start=False,
                  cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
-                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None):
+                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None, additional_props=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -449,6 +449,7 @@ class Segment(BasePathMixin):
             self.init_section = None
         self.dateranges = DateRangeList( [ DateRange(**daterange) for daterange in dateranges ] if dateranges else [] )
         self.gap_tag = gap_tag
+        self.additional_props = additional_props
 
         # Key(base_uri=base_uri, **key) if key else None
 
@@ -457,7 +458,6 @@ class Segment(BasePathMixin):
 
     def dumps(self, last_segment):
         output = []
-
 
         if last_segment and self.key != last_segment.key:
             output.append(str(self.key))
@@ -503,7 +503,15 @@ class Segment(BasePathMixin):
 
         if self.uri:
             if self.duration is not None:
-                output.append('#EXTINF:%s,' % number_to_string(self.duration))
+                props_dumped = ''
+                if self.additional_props:
+                    props_dumped = ' '.join(
+                        '{0}="{1}"'.format(key, value)
+                        for key, value in self.additional_props.items()
+                    )
+                    props_dumped = " {0}".format(props_dumped)
+
+                output.append('#EXTINF:%s%s,' % (number_to_string(self.duration), props_dumped))
                 if self.title:
                     output.append(self.title)
                 output.append('\n')

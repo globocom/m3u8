@@ -1325,6 +1325,15 @@ def test_gap_in_parts():
 
     assert result == expected
 
+
+def test_iptv_playlist():
+    obj = m3u8.M3U8(playlists.SIMPLE_IPTV_PLAYLIST_EXTINF_WITH_ADDITIONAL_PROPS)
+
+    result = obj.dumps().strip()
+    expected = playlists.SIMPLE_IPTV_PLAYLIST_EXTINF_WITH_ADDITIONAL_PROPS.strip()
+
+    assert result == expected
+
 # custom asserts
 
 

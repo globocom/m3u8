@@ -606,6 +606,15 @@ http://media.example.com/entire.ts
 #EXT-X-ENDLIST
 '''
 
+# Playlist with EXTINF record contains additional props (widely used for IPTV)
+SIMPLE_IPTV_PLAYLIST_EXTINF_WITH_ADDITIONAL_PROPS = '''
+#EXTM3U
+#EXTINF:-1 tvg-id="first" group-title="Common" catchup-days="7" catchup-type="flussonic" tvg-logo="http://ip.tv/icon/9195.png",First channel
+http://ip.tv/9195/mpegts/
+#EXTINF:-1 group-title="News",Second News Channel
+http://ip.tv/2/mpegts/
+'''
+
 DISCONTINUITY_PLAYLIST_WITH_PROGRAM_DATE_TIME = '''
 #EXTM3U
 #EXT-X-MEDIA-SEQUENCE:50116

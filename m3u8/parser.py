@@ -229,17 +229,29 @@ def _parse_key(line):
 def _parse_extinf(line, data, state, lineno, strict):
     chunks = line.replace(protocol.extinf + ':', '').split(',', 1)
     if len(chunks) == 2:
-        duration, title = chunks
+        duration_and_props, title = chunks
     elif len(chunks) == 1:
         if strict:
             raise ParseError(lineno, line)
         else:
-            duration = chunks[0]
+            duration_and_props = chunks[0]
             title = ''
+
+    additional_props = {}
+    chunks = duration_and_props.split(' ', 1)
+    if len(chunks) == 2:
+        duration, raw_props = chunks
+        matched_props = re.finditer(r'([\w\-]+)="([^"]*)"', raw_props)
+        for match in matched_props:
+            additional_props[match.group(1)] = match.group(2)
+    else:
+        duration = duration_and_props
+
     if 'segment' not in state:
         state['segment'] = {}
     state['segment']['duration'] = float(duration)
     state['segment']['title'] = title
+    state['segment']['additional_props'] = additional_props
 
 
 def _parse_ts_chunk(line, data, state):

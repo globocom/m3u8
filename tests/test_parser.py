@@ -308,6 +308,20 @@ def test_commaless_extinf_strict():
     assert str(e.value) == 'Syntax error in manifest on line 3: #EXTINF:5220'
 
 
+def test_extinf_with_additional_props():
+    data = m3u8.parse(playlists.SIMPLE_IPTV_PLAYLIST_EXTINF_WITH_ADDITIONAL_PROPS)
+    assert ['First channel', 'Second News Channel'] == [c['title'] for c in data['segments']]
+    assert data['segments'][0]['uri'] == 'http://ip.tv/9195/mpegts/'
+    assert data['segments'][0]['additional_props']['tvg-id'] == 'first'
+    assert data['segments'][0]['additional_props']['group-title'] == 'Common'
+    assert data['segments'][0]['additional_props']['tvg-logo'] == 'http://ip.tv/icon/9195.png'
+    assert data['segments'][0]['additional_props']['catchup-days'] == '7'
+    assert data['segments'][0]['additional_props']['catchup-type'] == 'flussonic'
+
+    assert data['segments'][1]['uri'] == 'http://ip.tv/2/mpegts/'
+    assert data['segments'][1]['additional_props']['group-title'] == 'News'
+
+
 def test_should_parse_segment_map_uri():
     data = m3u8.parse(playlists.MAP_URI_PLAYLIST)
     assert data['segment_map']['uri'] == "fileSequence0.mp4"
