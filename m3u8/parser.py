@@ -2,11 +2,11 @@
 # Copyright 2014 Globo.com Player authors. All rights reserved.
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
-
 import iso8601
 import datetime
 import itertools
 import re
+from collections import OrderedDict
 from m3u8 import protocol
 
 '''
@@ -237,7 +237,7 @@ def _parse_extinf(line, data, state, lineno, strict):
             duration_and_props = chunks[0]
             title = ''
 
-    additional_props = {}
+    additional_props = OrderedDict()
     chunks = duration_and_props.split(' ', 1)
     if len(chunks) == 2:
         duration, raw_props = chunks
