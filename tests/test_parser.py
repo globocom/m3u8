@@ -341,7 +341,7 @@ def test_should_parse_audio_channels():
             playlists.MEDIA_WITHOUT_URI_PLAYLIST,
             base_path='base_path', base_uri='base_uri')
     media = data.media[0]
-    assert media.channels == "6"
+    assert media.channels == "2"
 
 
 def test_should_parse_start_with_negative_time_offset():
