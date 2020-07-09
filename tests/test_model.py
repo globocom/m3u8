@@ -1049,11 +1049,7 @@ def test_should_dump_frame_rate():
 
 def test_should_round_frame_rate():
     obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_ROUNDABLE_FRAME_RATE)
-    expected = '''
-#EXTM3U
-#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,FRAME-RATE=12.543,CODECS="mp4a.40.5,avc1.42801e"
-http://example.com/audio-only.m3u8
-'''
+    expected = playlists.VARIANT_PLAYLIST_WITH_ROUNDED_FRAME_RATE.strip()
 
     assert expected == obj.dumps().strip()
 
