@@ -336,6 +336,12 @@ def test_should_parse_empty_uri_with_base_path():
     assert 'base_uri/' == media.base_uri
 
 
+def test_should_parse_audio_channels():
+    data = m3u8.parse(playlists.MEDIA_WITHOUT_URI_PLAYLIST)
+    media = data.media[0]
+    assert media.channels == "6"
+
+
 def test_should_parse_start_with_negative_time_offset():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_START_NEGATIVE_OFFSET)
     assert data['start']['time_offset'] == -2.0
