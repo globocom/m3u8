@@ -337,7 +337,9 @@ def test_should_parse_empty_uri_with_base_path():
 
 
 def test_should_parse_audio_channels():
-    data = m3u8.parse(playlists.MEDIA_WITHOUT_URI_PLAYLIST)
+    data = m3u8.M3U8(
+            playlists.MEDIA_WITHOUT_URI_PLAYLIST,
+            base_path='base_path', base_uri='base_uri')
     media = data.media[0]
     assert media.channels == "6"
 
