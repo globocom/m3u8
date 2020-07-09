@@ -936,6 +936,7 @@ class Media(BasePathMixin):
     `forced`
     `instream_id`
     `characteristics`
+    `channels`
       attributes in the EXT-MEDIA tag
 
     `base_uri`
@@ -944,7 +945,7 @@ class Media(BasePathMixin):
 
     def __init__(self, uri=None, type=None, group_id=None, language=None,
                  name=None, default=None, autoselect=None, forced=None,
-                 characteristics=None, assoc_language=None,
+                 characteristics=None, channels=None, assoc_language=None,
                  instream_id=None, base_uri=None, **extras):
         self.base_uri = base_uri
         self.uri = uri
@@ -958,6 +959,7 @@ class Media(BasePathMixin):
         self.assoc_language = assoc_language
         self.instream_id = instream_id
         self.characteristics = characteristics
+        self.channels = channels
         self.extras = extras
 
     def dumps(self):
@@ -985,6 +987,8 @@ class Media(BasePathMixin):
             media_out.append('INSTREAM-ID=' + quoted(self.instream_id))
         if self.characteristics:
             media_out.append('CHARACTERISTICS=' + quoted(self.characteristics))
+        if self.channels:
+            media_out.append('CHANNELS=' + quoted(self.channels))
 
         return ('#EXT-X-MEDIA:' + ','.join(media_out))
 
