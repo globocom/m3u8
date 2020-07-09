@@ -912,7 +912,7 @@ class StreamInfo(object):
                       0]) + 'x' + str(self.resolution[1])
             stream_inf.append('RESOLUTION=' + res)
         if self.frame_rate is not None:
-            stream_inf.append('FRAME-RATE=%.5g' % self.frame_rate)
+            stream_inf.append('FRAME-RATE=%.3g' % self.frame_rate)
         if self.codecs is not None:
             stream_inf.append('CODECS=' + quoted(self.codecs))
         return ",".join(stream_inf)
