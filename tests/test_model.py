@@ -1047,6 +1047,16 @@ def test_should_dump_frame_rate():
 
     assert expected == obj.dumps().strip()
 
+def test_should_round_frame_rate():
+    obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_ROUNDABLE_FRAME_RATE)
+    expected = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,FRAME-RATE=12.543,CODECS="mp4a.40.5,avc1.42801e"
+http://example.com/audio-only.m3u8
+'''
+
+    assert expected == obj.dumps().strip()
+
 @pytest.mark.skipif(sys.version_info >= (3,), reason="unicode not available in v3")
 def test_m3u8_unicode_method():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
