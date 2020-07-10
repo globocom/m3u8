@@ -124,6 +124,10 @@ def parse(content, strict=False, custom_tags_parser=None):
             _parse_extinf(line, data, state, lineno, strict)
             state['expect_segment'] = True
 
+        elif line.startswith(protocol.extgrp):
+            _parse_extgrp(line, state)
+            state['expect_segment'] = True
+
         elif line.startswith(protocol.ext_x_stream_inf):
             state['expect_playlist'] = True
             _parse_stream_inf(line, data, state)
@@ -252,6 +256,13 @@ def _parse_extinf(line, data, state, lineno, strict):
     state['segment']['duration'] = float(duration)
     state['segment']['title'] = title
     state['segment']['additional_props'] = additional_props
+
+
+def _parse_extgrp(line, state):
+    _, value = _parse_simple_parameter_raw_value(line, str)
+    if 'segment' not in state:
+        state['segment'] = {}
+    state['segment']['grp'] = value
 
 
 def _parse_ts_chunk(line, data, state):

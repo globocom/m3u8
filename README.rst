@@ -64,6 +64,7 @@ Supported tags
 * #EXT-X-ALLOW-CACHE
 * `#EXT-X-ENDLIST`_
 * `#EXTINF`_
+* #EXTGRP
 * `#EXT-X-I-FRAMES-ONLY`_
 * `#EXT-X-BYTERANGE`_
 * `#EXT-X-I-FRAME-STREAM-INF`_

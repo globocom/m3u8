@@ -610,8 +610,10 @@ http://media.example.com/entire.ts
 SIMPLE_IPTV_PLAYLIST_EXTINF_WITH_ADDITIONAL_PROPS = '''
 #EXTM3U
 #EXTINF:-1 tvg-id="first" group-title="Common" catchup-days="7" catchup-type="flussonic" tvg-logo="http://ip.tv/icon/9195.png",First channel
+#EXTGRP:Common
 http://ip.tv/9195/mpegts/
 #EXTINF:-1 group-title="News",Second News Channel
+#EXTGRP:News
 http://ip.tv/2/mpegts/
 '''
 
