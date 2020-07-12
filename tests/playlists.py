@@ -925,6 +925,18 @@ http://example.com/hi.m3u8
 http://example.com/audio-only.m3u8
 '''
 
+VARIANT_PLAYLIST_WITH_ROUNDABLE_FRAME_RATE = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,FRAME-RATE=12.54321,CODECS="mp4a.40.5,avc1.42801e"
+http://example.com/audio-only.m3u8
+'''
+
+VARIANT_PLAYLIST_WITH_ROUNDED_FRAME_RATE = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,FRAME-RATE=12.543,CODECS="mp4a.40.5,avc1.42801e"
+http://example.com/audio-only.m3u8
+'''
+
 SESSION_DATA_PLAYLIST = '''#EXTM3U
 #EXT-X-VERSION:4
 #EXT-X-SESSION-DATA:DATA-ID="com.example.value",VALUE="example",LANGUAGE="en"

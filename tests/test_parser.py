@@ -408,6 +408,11 @@ def test_master_playlist_with_frame_rate():
     assert 60 == playlists_list[2]['stream_info']['frame_rate']
     assert 12.5 == playlists_list[3]['stream_info']['frame_rate']
 
+def test_master_playlist_with_unrounded_frame_rate():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_ROUNDABLE_FRAME_RATE)
+    playlists_list = list(data['playlists'])
+    assert 12.54321 == playlists_list[0]['stream_info']['frame_rate']
+
 def test_low_latency_playlist():
     data = m3u8.parse(playlists.LOW_LATENCY_DELTA_UPDATE_PLAYLIST)
     assert data['server_control']['can_block_reload'] == 'YES'
