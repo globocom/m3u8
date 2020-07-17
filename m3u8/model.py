@@ -787,7 +787,8 @@ class Playlist(BasePathMixin):
             program_id=stream_info.get('program_id'),
             resolution=resolution_pair,
             codecs=stream_info.get('codecs'),
-            frame_rate=stream_info.get('frame_rate')
+            frame_rate=stream_info.get('frame_rate'),
+            video_range=stream_info.get('video_range')
         )
         self.media = []
         for media_type in ('audio', 'video', 'subtitles'):
@@ -848,7 +849,8 @@ class IFramePlaylist(BasePathMixin):
             program_id=iframe_stream_info.get('program_id'),
             resolution=resolution_pair,
             codecs=iframe_stream_info.get('codecs'),
-            frame_rate=None
+            frame_rate=None,
+            video_range=None
         )
 
     def __str__(self):
@@ -883,6 +885,7 @@ class StreamInfo(object):
     video = None
     subtitles = None
     frame_rate = None
+    video_range = None
 
     def __init__(self, **kwargs):
         self.bandwidth = kwargs.get("bandwidth")
@@ -895,6 +898,7 @@ class StreamInfo(object):
         self.video = kwargs.get("video")
         self.subtitles = kwargs.get("subtitles")
         self.frame_rate = kwargs.get("frame_rate")
+        self.video_range = kwargs.get("video_range")
 
     def __str__(self):
         stream_inf = []
@@ -915,6 +919,8 @@ class StreamInfo(object):
             stream_inf.append('FRAME-RATE=%g' % decimal.Decimal(self.frame_rate).quantize(decimal.Decimal('1.000')))
         if self.codecs is not None:
             stream_inf.append('CODECS=' + quoted(self.codecs))
+        if self.video_range is not None:
+            stream_inf.append('VIDEO-RANGE=%s' % self.video_range)
         return ",".join(stream_inf)
 
 
