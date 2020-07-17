@@ -7,7 +7,7 @@ import os
 import errno
 import math
 
-from m3u8.protocol import ext_x_start, ext_x_key, ext_x_session_key, ext_x_map, extgrp
+from m3u8.protocol import ext_x_start, ext_x_key, ext_x_session_key, ext_x_map, extgrp, extvlcopt
 from m3u8.parser import parse, format_date_time
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
 
@@ -427,7 +427,7 @@ class Segment(BasePathMixin):
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, byterange=None, cue_out=False, cue_out_start=False,
                  cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
-                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None, grp=None,
+                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None, grp=None, vlcopt=None,
                  additional_props=None):
         self.uri = uri
         self.duration = duration
@@ -451,6 +451,7 @@ class Segment(BasePathMixin):
         self.dateranges = DateRangeList( [ DateRange(**daterange) for daterange in dateranges ] if dateranges else [] )
         self.gap_tag = gap_tag
         self.grp = grp
+        self.vlcopt = vlcopt
         self.additional_props = additional_props
 
         # Key(base_uri=base_uri, **key) if key else None
@@ -526,6 +527,10 @@ class Segment(BasePathMixin):
 
             if self.grp:
                 output.append("{}:{}\n".format(extgrp, self.grp))
+
+            if self.vlcopt:
+                for item in self.vlcopt:
+                    output.append("{}:{}\n".format(extvlcopt, item))
 
             output.append(self.uri)
 

@@ -128,6 +128,10 @@ def parse(content, strict=False, custom_tags_parser=None):
             _parse_extgrp(line, state)
             state['expect_segment'] = True
 
+        elif line.startswith(protocol.extvlcopt):
+            _parse_extvlcopt(line, state)
+            state['expect_segment'] = True
+
         elif line.startswith(protocol.ext_x_stream_inf):
             state['expect_playlist'] = True
             _parse_stream_inf(line, data, state)
@@ -263,6 +267,15 @@ def _parse_extgrp(line, state):
     if 'segment' not in state:
         state['segment'] = {}
     state['segment']['grp'] = value
+
+
+def _parse_extvlcopt(line, state):
+    _, value = _parse_simple_parameter_raw_value(line, str)
+    if 'segment' not in state:
+        state['segment'] = {}
+    if not isinstance(state['segment'].get('vlcopt', None), list):
+        state['segment']['vlcopt'] = []
+    state['segment']['vlcopt'].append(value)
 
 
 def _parse_ts_chunk(line, data, state):

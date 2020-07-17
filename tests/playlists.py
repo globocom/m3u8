@@ -614,6 +614,8 @@ SIMPLE_IPTV_PLAYLIST_EXTINF_WITH_ADDITIONAL_PROPS = '''
 http://ip.tv/9195/mpegts/
 #EXTINF:-1 group-title="News",Second News Channel
 #EXTGRP:News
+#EXTVLCOPT:param1=value1
+#EXTVLCOPT:param2=value2
 http://ip.tv/2/mpegts/
 '''
 

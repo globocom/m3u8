@@ -15,7 +15,6 @@ ext_x_version = '#EXT-X-VERSION'
 ext_x_allow_cache = '#EXT-X-ALLOW-CACHE'
 ext_x_endlist = '#EXT-X-ENDLIST'
 extinf = '#EXTINF'
-extgrp = '#EXTGRP'
 ext_i_frames_only = '#EXT-X-I-FRAMES-ONLY'
 ext_x_byterange = '#EXT-X-BYTERANGE'
 ext_x_i_frame_stream_inf = '#EXT-X-I-FRAME-STREAM-INF'
@@ -38,3 +37,6 @@ ext_x_session_key = '#EXT-X-SESSION-KEY'
 ext_x_preload_hint = '#EXT-X-PRELOAD-HINT'
 ext_x_daterange = "#EXT-X-DATERANGE"
 ext_x_gap = "#EXT-X-GAP"
+
+extgrp = '#EXTGRP'
+extvlcopt = '#EXTVLCOPT'

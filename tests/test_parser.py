@@ -322,6 +322,7 @@ def test_extinf_with_additional_props():
     assert data['segments'][1]['uri'] == 'http://ip.tv/2/mpegts/'
     assert data['segments'][1]['grp'] == 'News'
     assert data['segments'][1]['additional_props']['group-title'] == 'News'
+    assert data['segments'][1]['vlcopt'] == ['param1=value1', 'param2=value2']
 
 
 def test_should_parse_segment_map_uri():
