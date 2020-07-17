@@ -153,6 +153,14 @@ http://example.com/hi.m3u8
 http://example.com/audio-only.m3u8
 '''
 
+VARIANT_PLAYLIST_WITH_VIDEO_RANGE = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=SDR"
+http://example.com/sdr.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=PQ"
+http://example.com/hdr.m3u8
+'''
+
 VARIANT_PLAYLIST_WITH_BANDWIDTH_FLOAT = '''
 #EXTM3U
 #EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=1280000.0
