@@ -173,6 +173,12 @@ def test_should_parse_variant_playlist_with_average_bandwidth():
     assert 65000 == playlists_list[3]['stream_info']['bandwidth']
     assert 63005 == playlists_list[3]['stream_info']['average_bandwidth']
 
+def test_should_parse_variant_playlist_with_video_range():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_VIDEO_RANGE)
+    playlists_list = list(data['playlists'])
+    assert 'SDR' == playlists_list[0]['stream_info']['video_range']
+    assert 'PQ' == playlists_list[1]['stream_info']['video_range']
+
 # This is actually not according to specification but as for example Twitch.tv
 # is producing master playlists that have bandwidth as floats (issue 72)
 # this tests that this situation does not break the parser and will just

@@ -127,6 +127,39 @@ http://example.com/high.m3u8
 """
     assert expected_content == variant_m3u8.dumps()
 
+
+def test_variant_playlist_with_video_range():
+    variant_m3u8 = m3u8.M3U8()
+
+    sdr_playlist = m3u8.Playlist(
+        'http://example.com/sdr.m3u8',
+        stream_info={'bandwidth': 1280000,
+                     'video_range': 'SDR',
+                     'program_id': 1},
+        media=[],
+        base_uri=None
+    )
+    hdr_playlist = m3u8.Playlist(
+        'http://example.com/hdr.m3u8',
+        stream_info={'bandwidth': 3000000,
+                     'video_range': 'PQ',
+                     'program_id': 1},
+       media=[],
+       base_uri=None
+    )
+
+    variant_m3u8.add_playlist(sdr_playlist)
+    variant_m3u8.add_playlist(hdr_playlist)
+
+    expected_content = """\
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1280000,VIDEO-RANGE=SDR
+http://example.com/sdr.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=3000000,VIDEO-RANGE=PQ
+http://example.com/hdr.m3u8
+"""
+    assert expected_content == variant_m3u8.dumps()
+
 def test_variant_playlist_with_multiple_media():
     variant_m3u8 = m3u8.loads(playlists.MULTI_MEDIA_PLAYLIST)
     assert variant_m3u8.dumps() == playlists.MULTI_MEDIA_PLAYLIST
