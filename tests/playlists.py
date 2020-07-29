@@ -25,6 +25,18 @@ http://media.example.com/entire2.ts
 #EXT-X-ENDLIST
 '''
 
+SIMPLE_PLAYLIST_WITH_VERY_SHORT_DURATION = '''
+#EXTM3U
+#EXT-X-TARGETDURATION:5220
+#EXTINF:5220,
+http://media.example.com/entire1.ts
+#EXTINF:5218.5,
+http://media.example.com/entire2.ts
+#EXTINF:0.000011,
+http://media.example.com/entire3.ts
+#EXT-X-ENDLIST
+'''
+
 SIMPLE_PLAYLIST_WITH_START_NEGATIVE_OFFSET = '''
 #EXTM3U
 #EXT-X-TARGETDURATION:5220
@@ -139,6 +151,14 @@ http://example.com/mid.m3u8
 http://example.com/hi.m3u8
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,AVERAGE-BANDWIDTH=63005,CODECS="mp4a.40.5,avc1.42801e"
 http://example.com/audio-only.m3u8
+'''
+
+VARIANT_PLAYLIST_WITH_VIDEO_RANGE = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=SDR"
+http://example.com/sdr.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=PQ"
+http://example.com/hdr.m3u8
 '''
 
 VARIANT_PLAYLIST_WITH_BANDWIDTH_FLOAT = '''
@@ -910,6 +930,18 @@ http://example.com/mid.m3u8
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=7680000,FRAME-RATE=60
 http://example.com/hi.m3u8
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,FRAME-RATE=12.5,CODECS="mp4a.40.5,avc1.42801e"
+http://example.com/audio-only.m3u8
+'''
+
+VARIANT_PLAYLIST_WITH_ROUNDABLE_FRAME_RATE = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,FRAME-RATE=12.54321,CODECS="mp4a.40.5,avc1.42801e"
+http://example.com/audio-only.m3u8
+'''
+
+VARIANT_PLAYLIST_WITH_ROUNDED_FRAME_RATE = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=65000,FRAME-RATE=12.543,CODECS="mp4a.40.5,avc1.42801e"
 http://example.com/audio-only.m3u8
 '''
 

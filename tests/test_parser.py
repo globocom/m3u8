@@ -173,6 +173,12 @@ def test_should_parse_variant_playlist_with_average_bandwidth():
     assert 65000 == playlists_list[3]['stream_info']['bandwidth']
     assert 63005 == playlists_list[3]['stream_info']['average_bandwidth']
 
+def test_should_parse_variant_playlist_with_video_range():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_VIDEO_RANGE)
+    playlists_list = list(data['playlists'])
+    assert 'SDR' == playlists_list[0]['stream_info']['video_range']
+    assert 'PQ' == playlists_list[1]['stream_info']['video_range']
+
 # This is actually not according to specification but as for example Twitch.tv
 # is producing master playlists that have bandwidth as floats (issue 72)
 # this tests that this situation does not break the parser and will just
@@ -336,6 +342,14 @@ def test_should_parse_empty_uri_with_base_path():
     assert 'base_uri/' == media.base_uri
 
 
+def test_should_parse_audio_channels():
+    data = m3u8.M3U8(
+            playlists.MEDIA_WITHOUT_URI_PLAYLIST,
+            base_path='base_path', base_uri='base_uri')
+    media = data.media[0]
+    assert media.channels == "2"
+
+
 def test_should_parse_start_with_negative_time_offset():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_START_NEGATIVE_OFFSET)
     assert data['start']['time_offset'] == -2.0
@@ -399,6 +413,11 @@ def test_master_playlist_with_frame_rate():
     assert 50 == playlists_list[1]['stream_info']['frame_rate']
     assert 60 == playlists_list[2]['stream_info']['frame_rate']
     assert 12.5 == playlists_list[3]['stream_info']['frame_rate']
+
+def test_master_playlist_with_unrounded_frame_rate():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_ROUNDABLE_FRAME_RATE)
+    playlists_list = list(data['playlists'])
+    assert 12.54321 == playlists_list[0]['stream_info']['frame_rate']
 
 def test_low_latency_playlist():
     data = m3u8.parse(playlists.LOW_LATENCY_DELTA_UPDATE_PLAYLIST)

@@ -2,7 +2,7 @@
 # Copyright 2014 Globo.com Player authors. All rights reserved.
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
-
+import decimal
 import os
 import errno
 import math
@@ -292,14 +292,14 @@ class M3U8(object):
             output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
         if self.discontinuity_sequence:
             output.append('#EXT-X-DISCONTINUITY-SEQUENCE:{}'.format(
-                int_or_float_to_string(self.discontinuity_sequence)))
+                number_to_string(self.discontinuity_sequence)))
         if self.allow_cache:
             output.append('#EXT-X-ALLOW-CACHE:' + self.allow_cache.upper())
         if self.version:
             output.append('#EXT-X-VERSION:' + str(self.version))
         if self.target_duration:
             output.append('#EXT-X-TARGETDURATION:' +
-                          int_or_float_to_string(self.target_duration))
+                          number_to_string(self.target_duration))
         if not (self.playlist_type is None or self.playlist_type == ''):
             output.append('#EXT-X-PLAYLIST-TYPE:%s' % str(self.playlist_type).upper())
         if self.start:
@@ -515,9 +515,9 @@ class Segment(BasePathMixin):
                     output.append('\n')
 
             if self.duration is not None:
-                output.append('#EXTINF:%s,' % int_or_float_to_string(self.duration))
+                output.append('#EXTINF:%s,' % number_to_string(self.duration))
                 if self.channel_number:
-                    output.append('%s - ' % int_or_float_to_string(self.channel_number))
+                    output.append('%s - ' % number_to_string(self.channel_number))
                 if self.title:
                     output.append(self.title)
                 output.append('\n')
@@ -653,7 +653,7 @@ class PartialSegment(BasePathMixin):
             output.append('#EXT-X-GAP\n')
 
         output.append('#EXT-X-PART:DURATION=%s,URI="%s"' % (
-            int_or_float_to_string(self.duration), self.uri
+            number_to_string(self.duration), self.uri
         ))
 
         if self.independent:
@@ -813,7 +813,8 @@ class Playlist(BasePathMixin):
             program_id=stream_info.get('program_id'),
             resolution=resolution_pair,
             codecs=stream_info.get('codecs'),
-            frame_rate=stream_info.get('frame_rate')
+            frame_rate=stream_info.get('frame_rate'),
+            video_range=stream_info.get('video_range')
         )
         self.media = []
         for media_type in ('audio', 'video', 'subtitles'):
@@ -874,7 +875,8 @@ class IFramePlaylist(BasePathMixin):
             program_id=iframe_stream_info.get('program_id'),
             resolution=resolution_pair,
             codecs=iframe_stream_info.get('codecs'),
-            frame_rate=None
+            frame_rate=None,
+            video_range=None
         )
 
     def __str__(self):
@@ -909,6 +911,7 @@ class StreamInfo(object):
     video = None
     subtitles = None
     frame_rate = None
+    video_range = None
 
     def __init__(self, **kwargs):
         self.bandwidth = kwargs.get("bandwidth")
@@ -921,6 +924,7 @@ class StreamInfo(object):
         self.video = kwargs.get("video")
         self.subtitles = kwargs.get("subtitles")
         self.frame_rate = kwargs.get("frame_rate")
+        self.video_range = kwargs.get("video_range")
 
     def __str__(self):
         stream_inf = []
@@ -938,9 +942,11 @@ class StreamInfo(object):
                       0]) + 'x' + str(self.resolution[1])
             stream_inf.append('RESOLUTION=' + res)
         if self.frame_rate is not None:
-            stream_inf.append('FRAME-RATE=%.5g' % self.frame_rate)
+            stream_inf.append('FRAME-RATE=%g' % decimal.Decimal(self.frame_rate).quantize(decimal.Decimal('1.000')))
         if self.codecs is not None:
             stream_inf.append('CODECS=' + quoted(self.codecs))
+        if self.video_range is not None:
+            stream_inf.append('VIDEO-RANGE=%s' % self.video_range)
         return ",".join(stream_inf)
 
 
@@ -962,6 +968,7 @@ class Media(BasePathMixin):
     `forced`
     `instream_id`
     `characteristics`
+    `channels`
       attributes in the EXT-MEDIA tag
 
     `base_uri`
@@ -970,7 +977,7 @@ class Media(BasePathMixin):
 
     def __init__(self, uri=None, type=None, group_id=None, language=None,
                  name=None, default=None, autoselect=None, forced=None,
-                 characteristics=None, assoc_language=None,
+                 characteristics=None, channels=None, assoc_language=None,
                  instream_id=None, base_uri=None, **extras):
         self.base_uri = base_uri
         self.uri = uri
@@ -984,6 +991,7 @@ class Media(BasePathMixin):
         self.assoc_language = assoc_language
         self.instream_id = instream_id
         self.characteristics = characteristics
+        self.channels = channels
         self.extras = extras
 
     def dumps(self):
@@ -1011,6 +1019,8 @@ class Media(BasePathMixin):
             media_out.append('INSTREAM-ID=' + quoted(self.instream_id))
         if self.characteristics:
             media_out.append('CHARACTERISTICS=' + quoted(self.characteristics))
+        if self.channels:
+            media_out.append('CHANNELS=' + quoted(self.channels))
 
         return ('#EXT-X-MEDIA:' + ','.join(media_out))
 
@@ -1065,9 +1075,9 @@ class RenditionReport(BasePathMixin):
     def dumps(self):
         report = []
         report.append('URI=' + quoted(self.uri))
-        report.append('LAST-MSN=' + int_or_float_to_string(self.last_msn))
+        report.append('LAST-MSN=' + number_to_string(self.last_msn))
         if self.last_part is not None:
-            report.append('LAST-PART=' + int_or_float_to_string(
+            report.append('LAST-PART=' + number_to_string(
                 self.last_part))
 
         return ('#EXT-X-RENDITION-REPORT:' + ','.join(report))
@@ -1100,7 +1110,7 @@ class ServerControl(object):
             if self[attr]:
                 ctrl.append('%s=%s' % (
                     denormalize_attribute(attr),
-                    int_or_float_to_string(self[attr])
+                    number_to_string(self[attr])
                 ))
 
         return '#EXT-X-SERVER-CONTROL:' + ','.join(ctrl)
@@ -1113,7 +1123,7 @@ class Skip(object):
         self.skipped_segments = skipped_segments
 
     def dumps(self):
-        return '#EXT-X-SKIP:SKIPPED-SEGMENTS=%s' % int_or_float_to_string(
+        return '#EXT-X-SKIP:SKIPPED-SEGMENTS=%s' % number_to_string(
             self.skipped_segments)
 
     def __str__(self):
@@ -1124,7 +1134,7 @@ class PartInformation(object):
         self.part_target = part_target
 
     def dumps(self):
-        return '#EXT-X-PART-INF:PART-TARGET=%s' % int_or_float_to_string(
+        return '#EXT-X-PART-INF:PART-TARGET=%s' % number_to_string(
             self.part_target)
 
     def __str__(self):
@@ -1150,7 +1160,7 @@ class PreloadHint(BasePathMixin):
             if self[attr] is not None:
                 hint.append('%s=%s' % (
                     denormalize_attribute(attr),
-                    int_or_float_to_string(self[attr])
+                    number_to_string(self[attr])
                 ))
 
         return ('#EXT-X-PRELOAD-HINT:' + ','.join(hint))
@@ -1213,9 +1223,9 @@ class DateRange(object):
         if (self.end_date):
             daterange.append('END-DATE=' + quoted(self.end_date))
         if (self.duration):
-            daterange.append('DURATION=' + int_or_float_to_string(self.duration))
+            daterange.append('DURATION=' + number_to_string(self.duration))
         if (self.planned_duration):
-            daterange.append('PLANNED-DURATION=' + int_or_float_to_string(self.planned_duration))
+            daterange.append('PLANNED-DURATION=' + number_to_string(self.planned_duration))
         if (self.scte35_cmd):
             daterange.append('SCTE35-CMD=' + self.scte35_cmd)
         if (self.scte35_out):
@@ -1257,5 +1267,8 @@ def quoted(string):
     return '"%s"' % string
 
 
-def int_or_float_to_string(number):
-    return str(int(number)) if number == math.floor(number) else str(number)
+def number_to_string(number):
+    with decimal.localcontext() as ctx:
+        ctx.prec = 20  # set floating point precision
+        d = decimal.Decimal(str(number))
+        return str(d.quantize(decimal.Decimal(1)) if d == d.to_integral_value() else d.normalize())
