@@ -50,7 +50,7 @@ def load(uri, timeout=None, headers={}, custom_tags_parser=None, http_client=Def
 
 
 def _load_from_file(uri, custom_tags_parser=None):
-    with open(uri) as fileobj:
+    with open(uri, encoding='utf8') as fileobj:
         raw_content = fileobj.read().strip()
     base_uri = os.path.dirname(uri)
     return M3U8(raw_content, base_uri=base_uri, custom_tags_parser=custom_tags_parser)
