@@ -32,7 +32,11 @@ class BasePathMixin(object):
     def base_path(self):
         if self.uri is None:
             return None
-        return os.path.dirname(self.uri)
+        return os.path.dirname(self.get_path_from_uri())
+
+    def get_path_from_uri(self):
+        """Some URIs have a slash in the query string."""
+        return self.uri.split("?")[0]
 
     @base_path.setter
     def base_path(self, newbase_path):
