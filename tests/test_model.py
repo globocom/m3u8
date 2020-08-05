@@ -35,6 +35,13 @@ class UTC(datetime.tzinfo):
 utc = UTC()
 
 
+def test_base_path_playlist_with_slash_in_query_string():
+    playlist = m3u8.M3U8(
+        playlists.PLAYLIST_WITH_SLASH_IN_QUERY_STRING,
+        base_path='http://testvideo.com/foo'
+    )
+    assert playlist.segments[0].uri == 'http://testvideo.com/foo/testvideo-1596635509-4769390994-a0e3087c.ts?hdntl=exp=1596678764~acl=/*~data=hdntl~hmac=12345&'
+
 def test_target_duration_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {'targetduration': '1234567'})
