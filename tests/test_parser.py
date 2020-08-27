@@ -485,8 +485,6 @@ def test_gap():
 def test_gap_in_parts():
     data = m3u8.parse(playlists.GAP_IN_PARTS_PLAYLIST)
 
-    print(data['segments'][0]['parts'])
-
     assert data['segments'][0]['parts'][0]['gap_tag'] is None
     assert data['segments'][0]['parts'][0].get('gap', None) is None
     assert data['segments'][0]['parts'][1]['gap_tag'] is None
