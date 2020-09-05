@@ -149,7 +149,7 @@ With this method, is now possible also to change the key from some of the segmen
     # Create a new Key and replace it
     new_key = m3u8.Key("AES-128", "/encrypted/newkey.bin", None, iv="0xf123ad23f22e441098aa87ee")
     for segment in m3u8_obj.segments.by_key( m3u8_obj.keys[-1] ):
-        segm.key = new_key
+        segment.key = new_key
     # Remember to sync the key from the list as well
     m3u8_obj.keys[-1] = new_key
 
