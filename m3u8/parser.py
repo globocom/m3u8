@@ -396,6 +396,7 @@ def _parse_cueout(line, state, prevline):
     _cueout_state = (_cueout_no_duration(line)
                      or _cueout_elemental(line, state, prevline)
                      or _cueout_envivio(line, state, prevline)
+                     or _cueout_duration(line)
                      or _cueout_simple(line))
     if _cueout_state:
         state['current_cue_out_scte35'] = _cueout_state[0]
