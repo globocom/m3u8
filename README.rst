@@ -12,7 +12,7 @@ m3u8
 
 Python `m3u8`_ parser.
 
-Documentation
+Documentation for Python m3u8 parser.
 =============
 
 Loading a playlist
