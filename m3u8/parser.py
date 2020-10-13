@@ -302,6 +302,7 @@ def _parse_i_frame_stream_inf(line, data):
     atribute_parser = remove_quotes_parser('codecs', 'uri')
     atribute_parser["program_id"] = int
     atribute_parser["bandwidth"] = int
+    atribute_parser["average_bandwidth"] = int
     iframe_stream_info = _parse_attribute_list(protocol.ext_x_i_frame_stream_inf, line, atribute_parser)
     iframe_playlist = {'uri': iframe_stream_info.pop('uri'),
                        'iframe_stream_info': iframe_stream_info}

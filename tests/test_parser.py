@@ -491,3 +491,27 @@ def test_gap_in_parts():
     assert data['segments'][0]['parts'][1]['gap'] == 'YES'
     assert data['segments'][0]['parts'][2]['gap_tag'] == True
     assert data['segments'][0]['parts'][2].get('gap', None) is None
+
+def test_should_parse_variant_playlist_with_iframe_with_average_bandwidth():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_AVERAGE_BANDWIDTH)
+    iframe_playlists = list(data['iframe_playlists'])
+
+    assert True == data['is_variant']
+
+    assert 4 == len(iframe_playlists)
+
+    assert 151288 == iframe_playlists[0]['iframe_stream_info']['bandwidth']
+    # Check for absence of average_bandwidth if not given in the playlist
+    assert 'average_bandwidth' not in iframe_playlists[0]['iframe_stream_info']
+    assert '624x352' == iframe_playlists[0]['iframe_stream_info']['resolution']
+    assert 'avc1.4d001f' == iframe_playlists[0]['iframe_stream_info']['codecs']
+    assert 'video-800k-iframes.m3u8' == iframe_playlists[0]['uri']
+
+    assert 38775 == iframe_playlists[-1]['iframe_stream_info']['bandwidth']
+    assert 'avc1.4d001f' == (
+        iframe_playlists[-1]['iframe_stream_info']['codecs']
+    )
+    assert 'video-150k-iframes.m3u8' == iframe_playlists[-1]['uri']
+    assert 155000 == iframe_playlists[1]['iframe_stream_info']['average_bandwidth']
+    assert 65000 == iframe_playlists[2]['iframe_stream_info']['average_bandwidth']
+    assert 30000 == iframe_playlists[3]['iframe_stream_info']['average_bandwidth']
