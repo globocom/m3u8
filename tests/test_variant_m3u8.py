@@ -163,3 +163,46 @@ http://example.com/hdr.m3u8
 def test_variant_playlist_with_multiple_media():
     variant_m3u8 = m3u8.loads(playlists.MULTI_MEDIA_PLAYLIST)
     assert variant_m3u8.dumps() == playlists.MULTI_MEDIA_PLAYLIST
+
+
+def test_create_a_variant_m3u8_with_iframe_with_average_bandwidth_playlists():
+    variant_m3u8 = m3u8.M3U8()
+
+    subtitles = m3u8.Media('english_sub.m3u8', 'SUBTITLES', 'subs', 'en',
+                           'English', 'YES', 'YES', 'NO', None)
+    variant_m3u8.add_media(subtitles)
+
+    low_playlist = m3u8.Playlist(
+        uri='video-800k.m3u8',
+        stream_info={'bandwidth': 800000,
+                     'average_bandwidth': 555000,
+                     'resolution': '624x352',
+                     'codecs': 'avc1.4d001f, mp4a.40.5',
+                     'subtitles': 'subs'},
+        media=[subtitles],
+        base_uri='http://example.com/'
+    )
+    low_iframe_playlist = m3u8.IFramePlaylist(
+        uri='video-800k-iframes.m3u8',
+        iframe_stream_info={'bandwidth': 151288,
+                            'average_bandwidth': 111000,
+                            'resolution': '624x352',
+                            'codecs': 'avc1.4d001f'},
+        base_uri='http://example.com/'
+    )
+
+    variant_m3u8.add_playlist(low_playlist)
+    variant_m3u8.add_iframe_playlist(low_iframe_playlist)
+
+    expected_content = """\
+#EXTM3U
+#EXT-X-MEDIA:URI="english_sub.m3u8",TYPE=SUBTITLES,GROUP-ID="subs",\
+LANGUAGE="en",NAME="English",DEFAULT=YES,AUTOSELECT=YES,FORCED=NO
+#EXT-X-STREAM-INF:BANDWIDTH=800000,AVERAGE-BANDWIDTH=555000,\
+RESOLUTION=624x352,CODECS="avc1.4d001f, mp4a.40.5",SUBTITLES="subs"
+video-800k.m3u8
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=151288,\
+AVERAGE-BANDWIDTH=111000,RESOLUTION=624x352,CODECS="avc1.4d001f",\
+URI="video-800k-iframes.m3u8"
+"""
+    assert expected_content == variant_m3u8.dumps()

@@ -846,8 +846,8 @@ class IFramePlaylist(BasePathMixin):
     Attributes:
 
     `iframe_stream_info` is a named tuple containing the attributes:
-     `program_id`, `bandwidth`, `codecs` and `resolution` which
-     is a tuple (w, h) of integers
+     `program_id`, `bandwidth`, `average_bandwidth`, `codecs` and
+    `resolution` which is a tuple (w, h) of integers
 
     More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.13
     '''
@@ -865,13 +865,13 @@ class IFramePlaylist(BasePathMixin):
 
         self.iframe_stream_info = StreamInfo(
             bandwidth=iframe_stream_info.get('bandwidth'),
+            average_bandwidth=iframe_stream_info.get('average_bandwidth'),
             video=iframe_stream_info.get('video'),
             # Audio, subtitles, and closed captions should not exist in
             # EXT-X-I-FRAME-STREAM-INF, so just hardcode them to None.
             audio=None,
             subtitles=None,
             closed_captions=None,
-            average_bandwidth=None,
             program_id=iframe_stream_info.get('program_id'),
             resolution=resolution_pair,
             codecs=iframe_stream_info.get('codecs'),
@@ -887,6 +887,9 @@ class IFramePlaylist(BasePathMixin):
         if self.iframe_stream_info.bandwidth:
             iframe_stream_inf.append('BANDWIDTH=%d' %
                                      self.iframe_stream_info.bandwidth)
+        if self.iframe_stream_info.average_bandwidth:
+            iframe_stream_inf.append('AVERAGE-BANDWIDTH=%d' %
+                                     self.iframe_stream_info.average_bandwidth)
         if self.iframe_stream_info.resolution:
             res = (str(self.iframe_stream_info.resolution[0]) + 'x' +
                    str(self.iframe_stream_info.resolution[1]))
