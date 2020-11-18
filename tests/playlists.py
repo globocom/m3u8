@@ -1090,4 +1090,18 @@ video-64k.m3u8
 #EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=38775,AVERAGE_BANDWIDTH=30000,CODECS="avc1.4d001f",URI="video-150k-iframes.m3u8"
 '''
 
+VARIANT_PLAYLIST_WITH_IFRAME_VIDEO_RANGE = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=SDR"
+http://example.com/sdr.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=PQ"
+http://example.com/hdr-pq.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=HLG"
+http://example.com/hdr-hlg.m3u8
+#EXT-X-I-FRAME-STREAM-INF:VIDEO_RANGE=SDR,URI="http://example.com/sdr-iframes.m3u8"
+#EXT-X-I-FRAME-STREAM-INF:VIDEO_RANGE=PQ,URI="http://example.com/hdr-pq-iframes.m3u8"
+#EXT-X-I-FRAME-STREAM-INF:VIDEO_RANGE=HLG,URI="http://example.com/hdr-hlg-iframes.m3u8"
+#EXT-X-I-FRAME-STREAM-INF:URI="http://example.com/unknown-iframes.m3u8"
+'''
+
 del abspath, dirname, join

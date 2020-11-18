@@ -820,7 +820,7 @@ class IFramePlaylist(BasePathMixin):
     Attributes:
 
     `iframe_stream_info` is a named tuple containing the attributes:
-     `program_id`, `bandwidth`, `average_bandwidth`, `codecs` and
+     `program_id`, `bandwidth`, `average_bandwidth`, `codecs`, `video_range` and
     `resolution` which is a tuple (w, h) of integers
 
     More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.13
@@ -849,8 +849,8 @@ class IFramePlaylist(BasePathMixin):
             program_id=iframe_stream_info.get('program_id'),
             resolution=resolution_pair,
             codecs=iframe_stream_info.get('codecs'),
-            frame_rate=None,
-            video_range=None
+            video_range=iframe_stream_info.get('video_range'),
+            frame_rate=None
         )
 
     def __str__(self):
@@ -871,6 +871,9 @@ class IFramePlaylist(BasePathMixin):
         if self.iframe_stream_info.codecs:
             iframe_stream_inf.append('CODECS=' +
                                      quoted(self.iframe_stream_info.codecs))
+        if self.iframe_stream_info.video_range:
+            iframe_stream_inf.append('VIDEO-RANGE=%s' %
+                                     self.iframe_stream_info.video_range)
         if self.uri:
             iframe_stream_inf.append('URI=' + quoted(self.uri))
 
