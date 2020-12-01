@@ -9,3 +9,5 @@ lib/
 local/
 .coverage
 .cache
+.python-version
+.idea/
