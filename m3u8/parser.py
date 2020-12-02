@@ -190,10 +190,15 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_gap):
             state['gap'] = True
 
+        elif line.startswith(protocol.extv):
+            _parse_exttv(line, data, state, lineno, strict)
+
         # Comments and whitespace
         elif line.startswith('#'):
             if callable(custom_tags_parser):
                 custom_tags_parser(line, data, lineno)
+            elif line.startswith('#EXT') and not line.startswith('#EXTM3U'):
+                _parse_extra_tag(line, data, state)
 
         elif line.strip() == '':
             # blank lines are legal
@@ -226,6 +231,9 @@ def _parse_key(line):
     return key
 
 
+CHANNEL_NUMBER = re.compile(r'(?is)^\s*\d+\s+-\s+')
+
+#EXTINF:duration,[channel number - ]channel name
 def _parse_extinf(line, data, state, lineno, strict):
     chunks = line.replace(protocol.extinf + ':', '').split(',', 1)
     if len(chunks) == 2:
@@ -238,9 +246,46 @@ def _parse_extinf(line, data, state, lineno, strict):
             title = ''
     if 'segment' not in state:
         state['segment'] = {}
-    state['segment']['duration'] = float(duration)
-    state['segment']['title'] = title
 
+    state['segment']['duration'] = float(duration)
+    channel_number = CHANNEL_NUMBER.match(title)
+    if channel_number is not None:
+        title = CHANNEL_NUMBER.sub('', title)
+        channel_number = re.split(r'\s+-\s+', channel_number.group(0))[0]
+        channel_number = channel_number.strip()
+        channel_number = int(channel_number)
+        state['segment']['channel_number'] = channel_number
+        state['segment']['title'] = title
+    else:
+        state['segment']['title'] = title
+
+#EXTTV:tag[,tag,tag...];language;XMLTV id[;icon URL]
+def _parse_exttv(line, data, state, lineno, strict):
+    chunks = line.replace(protocol.extv + ':', '').split(';')
+    if len(chunks) < 3 and strict:
+        raise ParseError(lineno, line)
+
+    if 'segment' not in state:
+        state['segment'] = {}
+    segment = state['segment']
+
+    if len(chunks) >= 4: segment['icon_url'] = chunks[3]
+    if len(chunks) >= 3: segment['xmltv_id'] = chunks[2]
+    if len(chunks) >= 2: segment['language'] = chunks[1]
+    if len(chunks) >= 1: segment['tags'] = chunks[0].split(',')
+
+
+
+
+
+
+def _parse_extra_tag(line, data, state):
+    if 'segment' not in state:
+        state['segment'] = {}
+    segment = state['segment']
+    if 'extra_tags' not in segment:
+        segment['extra_tags'] = []
+    segment['extra_tags'].append(line)
 
 def _parse_ts_chunk(line, data, state):
     segment = state.pop('segment')

@@ -492,6 +492,24 @@ def test_gap_in_parts():
     assert data['segments'][0]['parts'][2]['gap_tag'] == True
     assert data['segments'][0]['parts'][2].get('gap', None) is None
 
+def test_custom_tags_playlist():
+    m3u = m3u8.M3U8(playlists.CUSTOM_TAGS_PLAYLIST)
+    assert playlists.CUSTOM_TAGS_PLAYLIST.strip() == m3u.dumps().strip()
+
+def test_exttv_playlist():
+    data = m3u8.parse(playlists.EXTTV_PLAYLIST)
+
+    assert data['segments'][0]['channel_number'] == 114
+    assert data['segments'][0]['tags'] == ['Fibre', 'HBO']
+    assert data['segments'][0]['language'] == 'eng'
+    assert data['segments'][0]['xmltv_id'] == 'HBOAdriaHD.svn'
+    assert data['segments'][0]['icon_url'] == 'HBO_HD.png'
+
+def test_exttv_invalid_playlist():
+    with pytest.raises(ParseError) as catch:
+        m3u8.parse(playlists.EXTTV_INVALID_PLAYLIST, strict=True)
+    assert str(catch.value) == 'Syntax error in manifest on line 3: #EXTTV:Fibre,HBO'
+
 def test_should_parse_variant_playlist_with_iframe_with_average_bandwidth():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_AVERAGE_BANDWIDTH)
     iframe_playlists = list(data['iframe_playlists'])
@@ -515,3 +533,4 @@ def test_should_parse_variant_playlist_with_iframe_with_average_bandwidth():
     assert 155000 == iframe_playlists[1]['iframe_stream_info']['average_bandwidth']
     assert 65000 == iframe_playlists[2]['iframe_stream_info']['average_bandwidth']
     assert 30000 == iframe_playlists[3]['iframe_stream_info']['average_bandwidth']
+

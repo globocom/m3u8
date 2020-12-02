@@ -37,3 +37,4 @@ ext_x_session_key = '#EXT-X-SESSION-KEY'
 ext_x_preload_hint = '#EXT-X-PRELOAD-HINT'
 ext_x_daterange = "#EXT-X-DATERANGE"
 ext_x_gap = "#EXT-X-GAP"
+extv = "#EXTTV"

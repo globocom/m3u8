@@ -427,7 +427,8 @@ class Segment(BasePathMixin):
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, byterange=None, cue_out=False, cue_out_start=False,
                  cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
-                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None):
+                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None,
+                 channel_number=None, extra_tags=None, icon_url=None, xmltv_id=None, language=None, tags=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -441,6 +442,7 @@ class Segment(BasePathMixin):
         self.cue_in = cue_in
         self.scte35 = scte35
         self.scte35_duration = scte35_duration
+        self.channel_number = channel_number
         self.key = keyobject
         self.parts = PartialSegmentList( [ PartialSegment(base_uri=self._base_uri, **partial) for partial in parts ] if parts else [] )
         if init_section is not None:
@@ -449,6 +451,11 @@ class Segment(BasePathMixin):
             self.init_section = None
         self.dateranges = DateRangeList( [ DateRange(**daterange) for daterange in dateranges ] if dateranges else [] )
         self.gap_tag = gap_tag
+        self.extra_tags = extra_tags
+        self.icon_url = icon_url
+        self.xmltv_id = xmltv_id
+        self.language = language
+        self.tags = tags if tags is not None else []
 
         # Key(base_uri=base_uri, **key) if key else None
 
@@ -502,10 +509,29 @@ class Segment(BasePathMixin):
             output.append('\n')
 
         if self.uri:
+            if self.extra_tags:
+                for tag in self.extra_tags:
+                    output.append(tag)
+                    output.append('\n')
+
             if self.duration is not None:
                 output.append('#EXTINF:%s,' % number_to_string(self.duration))
+                if self.channel_number:
+                    output.append('%s - ' % number_to_string(self.channel_number))
                 if self.title:
                     output.append(self.title)
+                output.append('\n')
+
+            if self.icon_url is not None or self.xmltv_id is not None or self.language is not None or len(self.tags) > 0:
+                #EXTTV:tag[,tag,tag...];language;XMLTV id[;icon URL]
+
+                output.append('#EXTTV:%s;%s;%s' % (
+                    ",".join(self.tags),
+                    self.language if self.language is not None else "",
+                    self.xmltv_id if self.xmltv_id is not None else ""
+                ))
+                if self.icon_url is not None:
+                    output.append(';%s' % self.icon_url)
                 output.append('\n')
 
             if self.byterange:
