@@ -206,3 +206,39 @@ AVERAGE-BANDWIDTH=111000,RESOLUTION=624x352,CODECS="avc1.4d001f",\
 URI="video-800k-iframes.m3u8"
 """
     assert expected_content == variant_m3u8.dumps()
+
+
+def test_create_a_variant_m3u8_with_iframe_with_video_range_playlists():
+    variant_m3u8 = m3u8.M3U8()
+
+    for vrange in ['SDR', 'PQ', 'HLG']:
+        playlist = m3u8.Playlist(
+            uri='video-%s.m3u8' % vrange,
+            stream_info={'bandwidth': 3000000,
+                         'video_range': vrange},
+            media=[],
+            base_uri='http://example.com/%s' % vrange
+        )
+        iframe_playlist = m3u8.IFramePlaylist(
+            uri='video-%s-iframes.m3u8' % vrange,
+            iframe_stream_info={'bandwidth': 3000000,
+                                'video_range': vrange},
+            base_uri='http://example.com/%s' % vrange
+        )
+
+        variant_m3u8.add_playlist(playlist)
+        variant_m3u8.add_iframe_playlist(iframe_playlist)
+
+    expected_content = """\
+#EXTM3U
+#EXT-X-STREAM-INF:BANDWIDTH=3000000,VIDEO-RANGE=SDR
+video-SDR.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=3000000,VIDEO-RANGE=PQ
+video-PQ.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=3000000,VIDEO-RANGE=HLG
+video-HLG.m3u8
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,VIDEO-RANGE=SDR,URI="video-SDR-iframes.m3u8"
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,VIDEO-RANGE=PQ,URI="video-PQ-iframes.m3u8"
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,VIDEO-RANGE=HLG,URI="video-HLG-iframes.m3u8"
+"""
+    assert expected_content == variant_m3u8.dumps()

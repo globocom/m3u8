@@ -515,3 +515,20 @@ def test_should_parse_variant_playlist_with_iframe_with_average_bandwidth():
     assert 155000 == iframe_playlists[1]['iframe_stream_info']['average_bandwidth']
     assert 65000 == iframe_playlists[2]['iframe_stream_info']['average_bandwidth']
     assert 30000 == iframe_playlists[3]['iframe_stream_info']['average_bandwidth']
+
+def test_should_parse_variant_playlist_with_iframe_with_video_range():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_VIDEO_RANGE)
+    iframe_playlists = list(data['iframe_playlists'])
+
+    assert True == data['is_variant']
+
+    assert 4 == len(iframe_playlists)
+
+    assert 'http://example.com/sdr-iframes.m3u8' == iframe_playlists[0]['uri']
+    assert 'SDR' == iframe_playlists[0]['iframe_stream_info']['video_range']
+    assert 'http://example.com/hdr-pq-iframes.m3u8' == iframe_playlists[1]['uri']
+    assert 'PQ' == iframe_playlists[1]['iframe_stream_info']['video_range']
+    assert 'http://example.com/hdr-hlg-iframes.m3u8' == iframe_playlists[2]['uri']
+    assert 'HLG' == iframe_playlists[2]['iframe_stream_info']['video_range']
+    assert 'http://example.com/unknown-iframes.m3u8' == iframe_playlists[3]['uri']
+    assert 'video_range' not in iframe_playlists[3]['iframe_stream_info']
