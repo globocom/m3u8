@@ -173,6 +173,12 @@ def test_should_parse_variant_playlist_with_average_bandwidth():
     assert 65000 == playlists_list[3]['stream_info']['bandwidth']
     assert 63005 == playlists_list[3]['stream_info']['average_bandwidth']
 
+def test_should_parse_variant_playlist_with_video_range():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_VIDEO_RANGE)
+    playlists_list = list(data['playlists'])
+    assert 'SDR' == playlists_list[0]['stream_info']['video_range']
+    assert 'PQ' == playlists_list[1]['stream_info']['video_range']
+
 # This is actually not according to specification but as for example Twitch.tv
 # is producing master playlists that have bandwidth as floats (issue 72)
 # this tests that this situation does not break the parser and will just
@@ -353,6 +359,14 @@ def test_should_parse_empty_uri_with_base_path():
     assert 'base_uri/' == media.base_uri
 
 
+def test_should_parse_audio_channels():
+    data = m3u8.M3U8(
+            playlists.MEDIA_WITHOUT_URI_PLAYLIST,
+            base_path='base_path', base_uri='base_uri')
+    media = data.media[0]
+    assert media.channels == "2"
+
+
 def test_should_parse_start_with_negative_time_offset():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_START_NEGATIVE_OFFSET)
     assert data['start']['time_offset'] == -2.0
@@ -416,6 +430,11 @@ def test_master_playlist_with_frame_rate():
     assert 50 == playlists_list[1]['stream_info']['frame_rate']
     assert 60 == playlists_list[2]['stream_info']['frame_rate']
     assert 12.5 == playlists_list[3]['stream_info']['frame_rate']
+
+def test_master_playlist_with_unrounded_frame_rate():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_ROUNDABLE_FRAME_RATE)
+    playlists_list = list(data['playlists'])
+    assert 12.54321 == playlists_list[0]['stream_info']['frame_rate']
 
 def test_low_latency_playlist():
     data = m3u8.parse(playlists.LOW_LATENCY_DELTA_UPDATE_PLAYLIST)
@@ -483,11 +502,50 @@ def test_gap():
 def test_gap_in_parts():
     data = m3u8.parse(playlists.GAP_IN_PARTS_PLAYLIST)
 
-    print(data['segments'][0]['parts'])
-
     assert data['segments'][0]['parts'][0]['gap_tag'] is None
     assert data['segments'][0]['parts'][0].get('gap', None) is None
     assert data['segments'][0]['parts'][1]['gap_tag'] is None
     assert data['segments'][0]['parts'][1]['gap'] == 'YES'
     assert data['segments'][0]['parts'][2]['gap_tag'] == True
     assert data['segments'][0]['parts'][2].get('gap', None) is None
+
+def test_should_parse_variant_playlist_with_iframe_with_average_bandwidth():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_AVERAGE_BANDWIDTH)
+    iframe_playlists = list(data['iframe_playlists'])
+
+    assert True == data['is_variant']
+
+    assert 4 == len(iframe_playlists)
+
+    assert 151288 == iframe_playlists[0]['iframe_stream_info']['bandwidth']
+    # Check for absence of average_bandwidth if not given in the playlist
+    assert 'average_bandwidth' not in iframe_playlists[0]['iframe_stream_info']
+    assert '624x352' == iframe_playlists[0]['iframe_stream_info']['resolution']
+    assert 'avc1.4d001f' == iframe_playlists[0]['iframe_stream_info']['codecs']
+    assert 'video-800k-iframes.m3u8' == iframe_playlists[0]['uri']
+
+    assert 38775 == iframe_playlists[-1]['iframe_stream_info']['bandwidth']
+    assert 'avc1.4d001f' == (
+        iframe_playlists[-1]['iframe_stream_info']['codecs']
+    )
+    assert 'video-150k-iframes.m3u8' == iframe_playlists[-1]['uri']
+    assert 155000 == iframe_playlists[1]['iframe_stream_info']['average_bandwidth']
+    assert 65000 == iframe_playlists[2]['iframe_stream_info']['average_bandwidth']
+    assert 30000 == iframe_playlists[3]['iframe_stream_info']['average_bandwidth']
+
+def test_should_parse_variant_playlist_with_iframe_with_video_range():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_VIDEO_RANGE)
+    iframe_playlists = list(data['iframe_playlists'])
+
+    assert True == data['is_variant']
+
+    assert 4 == len(iframe_playlists)
+
+    assert 'http://example.com/sdr-iframes.m3u8' == iframe_playlists[0]['uri']
+    assert 'SDR' == iframe_playlists[0]['iframe_stream_info']['video_range']
+    assert 'http://example.com/hdr-pq-iframes.m3u8' == iframe_playlists[1]['uri']
+    assert 'PQ' == iframe_playlists[1]['iframe_stream_info']['video_range']
+    assert 'http://example.com/hdr-hlg-iframes.m3u8' == iframe_playlists[2]['uri']
+    assert 'HLG' == iframe_playlists[2]['iframe_stream_info']['video_range']
+    assert 'http://example.com/unknown-iframes.m3u8' == iframe_playlists[3]['uri']
+    assert 'video_range' not in iframe_playlists[3]['iframe_stream_info']

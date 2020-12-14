@@ -805,7 +805,8 @@ class Playlist(BasePathMixin):
             program_id=stream_info.get('program_id'),
             resolution=resolution_pair,
             codecs=stream_info.get('codecs'),
-            frame_rate=stream_info.get('frame_rate')
+            frame_rate=stream_info.get('frame_rate'),
+            video_range=stream_info.get('video_range')
         )
         self.media = []
         for media_type in ('audio', 'video', 'subtitles'):
@@ -837,8 +838,8 @@ class IFramePlaylist(BasePathMixin):
     Attributes:
 
     `iframe_stream_info` is a named tuple containing the attributes:
-     `program_id`, `bandwidth`, `codecs` and `resolution` which
-     is a tuple (w, h) of integers
+     `program_id`, `bandwidth`, `average_bandwidth`, `codecs`, `video_range` and
+    `resolution` which is a tuple (w, h) of integers
 
     More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.13
     '''
@@ -856,16 +857,17 @@ class IFramePlaylist(BasePathMixin):
 
         self.iframe_stream_info = StreamInfo(
             bandwidth=iframe_stream_info.get('bandwidth'),
+            average_bandwidth=iframe_stream_info.get('average_bandwidth'),
             video=iframe_stream_info.get('video'),
             # Audio, subtitles, and closed captions should not exist in
             # EXT-X-I-FRAME-STREAM-INF, so just hardcode them to None.
             audio=None,
             subtitles=None,
             closed_captions=None,
-            average_bandwidth=None,
             program_id=iframe_stream_info.get('program_id'),
             resolution=resolution_pair,
             codecs=iframe_stream_info.get('codecs'),
+            video_range=iframe_stream_info.get('video_range'),
             frame_rate=None
         )
 
@@ -877,6 +879,9 @@ class IFramePlaylist(BasePathMixin):
         if self.iframe_stream_info.bandwidth:
             iframe_stream_inf.append('BANDWIDTH=%d' %
                                      self.iframe_stream_info.bandwidth)
+        if self.iframe_stream_info.average_bandwidth:
+            iframe_stream_inf.append('AVERAGE-BANDWIDTH=%d' %
+                                     self.iframe_stream_info.average_bandwidth)
         if self.iframe_stream_info.resolution:
             res = (str(self.iframe_stream_info.resolution[0]) + 'x' +
                    str(self.iframe_stream_info.resolution[1]))
@@ -884,6 +889,9 @@ class IFramePlaylist(BasePathMixin):
         if self.iframe_stream_info.codecs:
             iframe_stream_inf.append('CODECS=' +
                                      quoted(self.iframe_stream_info.codecs))
+        if self.iframe_stream_info.video_range:
+            iframe_stream_inf.append('VIDEO-RANGE=%s' %
+                                     self.iframe_stream_info.video_range)
         if self.uri:
             iframe_stream_inf.append('URI=' + quoted(self.uri))
 
@@ -901,6 +909,7 @@ class StreamInfo(object):
     video = None
     subtitles = None
     frame_rate = None
+    video_range = None
 
     def __init__(self, **kwargs):
         self.bandwidth = kwargs.get("bandwidth")
@@ -913,6 +922,7 @@ class StreamInfo(object):
         self.video = kwargs.get("video")
         self.subtitles = kwargs.get("subtitles")
         self.frame_rate = kwargs.get("frame_rate")
+        self.video_range = kwargs.get("video_range")
 
     def __str__(self):
         stream_inf = []
@@ -930,9 +940,11 @@ class StreamInfo(object):
                       0]) + 'x' + str(self.resolution[1])
             stream_inf.append('RESOLUTION=' + res)
         if self.frame_rate is not None:
-            stream_inf.append('FRAME-RATE=%.5g' % self.frame_rate)
+            stream_inf.append('FRAME-RATE=%g' % decimal.Decimal(self.frame_rate).quantize(decimal.Decimal('1.000')))
         if self.codecs is not None:
             stream_inf.append('CODECS=' + quoted(self.codecs))
+        if self.video_range is not None:
+            stream_inf.append('VIDEO-RANGE=%s' % self.video_range)
         return ",".join(stream_inf)
 
 
@@ -954,6 +966,7 @@ class Media(BasePathMixin):
     `forced`
     `instream_id`
     `characteristics`
+    `channels`
       attributes in the EXT-MEDIA tag
 
     `base_uri`
@@ -962,7 +975,7 @@ class Media(BasePathMixin):
 
     def __init__(self, uri=None, type=None, group_id=None, language=None,
                  name=None, default=None, autoselect=None, forced=None,
-                 characteristics=None, assoc_language=None,
+                 characteristics=None, channels=None, assoc_language=None,
                  instream_id=None, base_uri=None, **extras):
         self.base_uri = base_uri
         self.uri = uri
@@ -976,6 +989,7 @@ class Media(BasePathMixin):
         self.assoc_language = assoc_language
         self.instream_id = instream_id
         self.characteristics = characteristics
+        self.channels = channels
         self.extras = extras
 
     def dumps(self):
@@ -1003,6 +1017,8 @@ class Media(BasePathMixin):
             media_out.append('INSTREAM-ID=' + quoted(self.instream_id))
         if self.characteristics:
             media_out.append('CHARACTERISTICS=' + quoted(self.characteristics))
+        if self.channels:
+            media_out.append('CHANNELS=' + quoted(self.channels))
 
         return ('#EXT-X-MEDIA:' + ','.join(media_out))
 
