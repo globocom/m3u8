@@ -1073,11 +1073,13 @@ class RenditionReportList(list, GroupedBasePathMixin):
 
 class ServerControl(object):
     def __init__(self, can_skip_until=None, can_block_reload=None,
-                 hold_back=None, part_hold_back=None):
+                 hold_back=None, part_hold_back=None,
+                 can_skip_dateranges=None):
         self.can_skip_until = can_skip_until
         self.can_block_reload = can_block_reload
         self.hold_back = hold_back
         self.part_hold_back = part_hold_back
+        self.can_skip_dateranges = can_skip_dateranges
 
     def __getitem__(self, item):
         return getattr(self, item)
@@ -1086,12 +1088,20 @@ class ServerControl(object):
         ctrl = []
         if self.can_block_reload:
             ctrl.append('CAN-BLOCK-RELOAD=%s' % self.can_block_reload)
-        for attr in ['hold_back', 'part_hold_back', 'can_skip_until']:
+
+        for attr in ['hold_back', 'part_hold_back']:
             if self[attr]:
                 ctrl.append('%s=%s' % (
                     denormalize_attribute(attr),
                     number_to_string(self[attr])
                 ))
+
+        if self.can_skip_until:
+            ctrl.append('CAN-SKIP-UNTIL=%s' % number_to_string(
+                self.can_skip_until))
+            if self.can_skip_dateranges:
+                ctrl.append('CAN-SKIP-DATERANGES=%s' %
+                    self.can_skip_dateranges)
 
         return '#EXT-X-SERVER-CONTROL:' + ','.join(ctrl)
 
@@ -1099,12 +1109,19 @@ class ServerControl(object):
         return self.dumps()
 
 class Skip(object):
-    def __init__(self, skipped_segments=None):
+    def __init__(self, skipped_segments, recently_removed_dateranges=None):
         self.skipped_segments = skipped_segments
+        self.recently_removed_dateranges = recently_removed_dateranges
 
     def dumps(self):
-        return '#EXT-X-SKIP:SKIPPED-SEGMENTS=%s' % number_to_string(
-            self.skipped_segments)
+        skip = []
+        skip.append('SKIPPED-SEGMENTS=%s' % number_to_string(
+            self.skipped_segments))
+        if self.recently_removed_dateranges is not None:
+            skip.append('RECENTLY-REMOVED-DATERANGES=%s' %
+                quoted(self.recently_removed_dateranges))
+
+        return '#EXT-X-SKIP:' + ','.join(skip)
 
     def __str__(self):
         return self.dumps()

@@ -532,3 +532,8 @@ def test_should_parse_variant_playlist_with_iframe_with_video_range():
     assert 'HLG' == iframe_playlists[2]['iframe_stream_info']['video_range']
     assert 'http://example.com/unknown-iframes.m3u8' == iframe_playlists[3]['uri']
     assert 'video_range' not in iframe_playlists[3]['iframe_stream_info']
+
+def test_delta_playlist_daterange_skipping():
+    data = m3u8.parse(playlists.DELTA_UPDATE_SKIP_DATERANGES_PLAYLIST)
+    assert data['skip']['recently_removed_dateranges'] == "1"
+    assert data['server_control']['can_skip_dateranges'] == "YES"
