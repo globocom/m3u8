@@ -295,6 +295,7 @@ def _parse_stream_inf(line, data, state):
     atribute_parser["average_bandwidth"] = int
     atribute_parser["frame_rate"] = float
     atribute_parser["video_range"] = str
+    atribute_parser["hdcp_level"] = str
     state['stream_info'] = _parse_attribute_list(protocol.ext_x_stream_inf, line, atribute_parser)
 
 
@@ -304,6 +305,7 @@ def _parse_i_frame_stream_inf(line, data):
     atribute_parser["bandwidth"] = int
     atribute_parser["average_bandwidth"] = int
     atribute_parser["video_range"] = str
+    atribute_parser["hdcp_level"] = str
     iframe_stream_info = _parse_attribute_list(protocol.ext_x_i_frame_stream_inf, line, atribute_parser)
     iframe_playlist = {'uri': iframe_stream_info.pop('uri'),
                        'iframe_stream_info': iframe_stream_info}

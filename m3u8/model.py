@@ -788,7 +788,8 @@ class Playlist(BasePathMixin):
             resolution=resolution_pair,
             codecs=stream_info.get('codecs'),
             frame_rate=stream_info.get('frame_rate'),
-            video_range=stream_info.get('video_range')
+            video_range=stream_info.get('video_range'),
+            hdcp_level=stream_info.get('hdcp_level')
         )
         self.media = []
         for media_type in ('audio', 'video', 'subtitles'):
@@ -820,8 +821,8 @@ class IFramePlaylist(BasePathMixin):
     Attributes:
 
     `iframe_stream_info` is a named tuple containing the attributes:
-     `program_id`, `bandwidth`, `average_bandwidth`, `codecs`, `video_range` and
-    `resolution` which is a tuple (w, h) of integers
+     `program_id`, `bandwidth`, `average_bandwidth`, `codecs`, `video_range`,
+     `hdcp_level` and `resolution` which is a tuple (w, h) of integers
 
     More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.13
     '''
@@ -850,6 +851,7 @@ class IFramePlaylist(BasePathMixin):
             resolution=resolution_pair,
             codecs=iframe_stream_info.get('codecs'),
             video_range=iframe_stream_info.get('video_range'),
+            hdcp_level=iframe_stream_info.get('hdcp_level'),
             frame_rate=None
         )
 
@@ -874,6 +876,9 @@ class IFramePlaylist(BasePathMixin):
         if self.iframe_stream_info.video_range:
             iframe_stream_inf.append('VIDEO-RANGE=%s' %
                                      self.iframe_stream_info.video_range)
+        if self.iframe_stream_info.hdcp_level:
+            iframe_stream_inf.append('HDCP-LEVEL=%s' %
+                                     self.iframe_stream_info.hdcp_level)
         if self.uri:
             iframe_stream_inf.append('URI=' + quoted(self.uri))
 
@@ -892,6 +897,7 @@ class StreamInfo(object):
     subtitles = None
     frame_rate = None
     video_range = None
+    hdcp_level = None
 
     def __init__(self, **kwargs):
         self.bandwidth = kwargs.get("bandwidth")
@@ -905,6 +911,7 @@ class StreamInfo(object):
         self.subtitles = kwargs.get("subtitles")
         self.frame_rate = kwargs.get("frame_rate")
         self.video_range = kwargs.get("video_range")
+        self.hdcp_level = kwargs.get("hdcp_level")
 
     def __str__(self):
         stream_inf = []
@@ -927,6 +934,8 @@ class StreamInfo(object):
             stream_inf.append('CODECS=' + quoted(self.codecs))
         if self.video_range is not None:
             stream_inf.append('VIDEO-RANGE=%s' % self.video_range)
+        if self.hdcp_level is not None:
+            stream_inf.append('HDCP-LEVEL=%s' % self.hdcp_level)
         return ",".join(stream_inf)
 
 

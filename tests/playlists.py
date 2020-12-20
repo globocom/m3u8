@@ -161,6 +161,16 @@ http://example.com/sdr.m3u8
 http://example.com/hdr.m3u8
 '''
 
+VARIANT_PLAYLIST_WITH_HDCP_LEVEL = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,HDCP-LEVEL=NONE"
+http://example.com/none.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,HDCP-LEVEL=TYPE-0"
+http://example.com/type0.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,HDCP-LEVEL=TYPE-1"
+http://example.com/type1.m3u8
+'''
+
 VARIANT_PLAYLIST_WITH_BANDWIDTH_FLOAT = '''
 #EXTM3U
 #EXT-X-STREAM-INF:PROGRAM-ID=1, BANDWIDTH=1280000.0
@@ -1092,15 +1102,29 @@ video-64k.m3u8
 
 VARIANT_PLAYLIST_WITH_IFRAME_VIDEO_RANGE = '''
 #EXTM3U
-#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=SDR"
+#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=SDR
 http://example.com/sdr.m3u8
-#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=PQ"
+#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=PQ
 http://example.com/hdr-pq.m3u8
-#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=HLG"
+#EXT-X-STREAM-INF:PROGRAM-ID=1,VIDEO-RANGE=HLG
 http://example.com/hdr-hlg.m3u8
 #EXT-X-I-FRAME-STREAM-INF:VIDEO_RANGE=SDR,URI="http://example.com/sdr-iframes.m3u8"
 #EXT-X-I-FRAME-STREAM-INF:VIDEO_RANGE=PQ,URI="http://example.com/hdr-pq-iframes.m3u8"
 #EXT-X-I-FRAME-STREAM-INF:VIDEO_RANGE=HLG,URI="http://example.com/hdr-hlg-iframes.m3u8"
+#EXT-X-I-FRAME-STREAM-INF:URI="http://example.com/unknown-iframes.m3u8"
+'''
+
+VARIANT_PLAYLIST_WITH_IFRAME_HDCP_LEVEL = '''
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,HDCP-LEVEL=NONE
+http://example.com/none.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,HDCP-LEVEL=TYPE-0
+http://example.com/type0.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,HDCP-LEVEL=TYPE-1
+http://example.com/type1.m3u8
+#EXT-X-I-FRAME-STREAM-INF:HDCP-LEVEL=NONE,URI="http://example.com/none-iframes.m3u8"
+#EXT-X-I-FRAME-STREAM-INF:HDCP-LEVEL=TYPE-0,URI="http://example.com/type0-iframes.m3u8"
+#EXT-X-I-FRAME-STREAM-INF:HDCP-LEVEL=TYPE-1,URI="http://example.com/type1-iframes.m3u8"
 #EXT-X-I-FRAME-STREAM-INF:URI="http://example.com/unknown-iframes.m3u8"
 '''
 
