@@ -806,7 +806,8 @@ class Playlist(BasePathMixin):
             resolution=resolution_pair,
             codecs=stream_info.get('codecs'),
             frame_rate=stream_info.get('frame_rate'),
-            video_range=stream_info.get('video_range')
+            video_range=stream_info.get('video_range'),
+            hdcp_level=stream_info.get('hdcp_level')
         )
         self.media = []
         for media_type in ('audio', 'video', 'subtitles'):
@@ -838,8 +839,8 @@ class IFramePlaylist(BasePathMixin):
     Attributes:
 
     `iframe_stream_info` is a named tuple containing the attributes:
-     `program_id`, `bandwidth`, `average_bandwidth`, `codecs`, `video_range` and
-    `resolution` which is a tuple (w, h) of integers
+     `program_id`, `bandwidth`, `average_bandwidth`, `codecs`, `video_range`,
+     `hdcp_level` and `resolution` which is a tuple (w, h) of integers
 
     More info: http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.13
     '''
@@ -868,6 +869,7 @@ class IFramePlaylist(BasePathMixin):
             resolution=resolution_pair,
             codecs=iframe_stream_info.get('codecs'),
             video_range=iframe_stream_info.get('video_range'),
+            hdcp_level=iframe_stream_info.get('hdcp_level'),
             frame_rate=None
         )
 
@@ -892,6 +894,9 @@ class IFramePlaylist(BasePathMixin):
         if self.iframe_stream_info.video_range:
             iframe_stream_inf.append('VIDEO-RANGE=%s' %
                                      self.iframe_stream_info.video_range)
+        if self.iframe_stream_info.hdcp_level:
+            iframe_stream_inf.append('HDCP-LEVEL=%s' %
+                                     self.iframe_stream_info.hdcp_level)
         if self.uri:
             iframe_stream_inf.append('URI=' + quoted(self.uri))
 
@@ -910,6 +915,7 @@ class StreamInfo(object):
     subtitles = None
     frame_rate = None
     video_range = None
+    hdcp_level = None
 
     def __init__(self, **kwargs):
         self.bandwidth = kwargs.get("bandwidth")
@@ -923,6 +929,7 @@ class StreamInfo(object):
         self.subtitles = kwargs.get("subtitles")
         self.frame_rate = kwargs.get("frame_rate")
         self.video_range = kwargs.get("video_range")
+        self.hdcp_level = kwargs.get("hdcp_level")
 
     def __str__(self):
         stream_inf = []
@@ -945,6 +952,8 @@ class StreamInfo(object):
             stream_inf.append('CODECS=' + quoted(self.codecs))
         if self.video_range is not None:
             stream_inf.append('VIDEO-RANGE=%s' % self.video_range)
+        if self.hdcp_level is not None:
+            stream_inf.append('HDCP-LEVEL=%s' % self.hdcp_level)
         return ",".join(stream_inf)
 
 
@@ -1091,11 +1100,13 @@ class RenditionReportList(list, GroupedBasePathMixin):
 
 class ServerControl(object):
     def __init__(self, can_skip_until=None, can_block_reload=None,
-                 hold_back=None, part_hold_back=None):
+                 hold_back=None, part_hold_back=None,
+                 can_skip_dateranges=None):
         self.can_skip_until = can_skip_until
         self.can_block_reload = can_block_reload
         self.hold_back = hold_back
         self.part_hold_back = part_hold_back
+        self.can_skip_dateranges = can_skip_dateranges
 
     def __getitem__(self, item):
         return getattr(self, item)
@@ -1104,12 +1115,20 @@ class ServerControl(object):
         ctrl = []
         if self.can_block_reload:
             ctrl.append('CAN-BLOCK-RELOAD=%s' % self.can_block_reload)
-        for attr in ['hold_back', 'part_hold_back', 'can_skip_until']:
+
+        for attr in ['hold_back', 'part_hold_back']:
             if self[attr]:
                 ctrl.append('%s=%s' % (
                     denormalize_attribute(attr),
                     number_to_string(self[attr])
                 ))
+
+        if self.can_skip_until:
+            ctrl.append('CAN-SKIP-UNTIL=%s' % number_to_string(
+                self.can_skip_until))
+            if self.can_skip_dateranges:
+                ctrl.append('CAN-SKIP-DATERANGES=%s' %
+                    self.can_skip_dateranges)
 
         return '#EXT-X-SERVER-CONTROL:' + ','.join(ctrl)
 
@@ -1117,12 +1136,19 @@ class ServerControl(object):
         return self.dumps()
 
 class Skip(object):
-    def __init__(self, skipped_segments=None):
+    def __init__(self, skipped_segments, recently_removed_dateranges=None):
         self.skipped_segments = skipped_segments
+        self.recently_removed_dateranges = recently_removed_dateranges
 
     def dumps(self):
-        return '#EXT-X-SKIP:SKIPPED-SEGMENTS=%s' % number_to_string(
-            self.skipped_segments)
+        skip = []
+        skip.append('SKIPPED-SEGMENTS=%s' % number_to_string(
+            self.skipped_segments))
+        if self.recently_removed_dateranges is not None:
+            skip.append('RECENTLY-REMOVED-DATERANGES=%s' %
+                quoted(self.recently_removed_dateranges))
+
+        return '#EXT-X-SKIP:' + ','.join(skip)
 
     def __str__(self):
         return self.dumps()

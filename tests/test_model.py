@@ -1338,7 +1338,6 @@ def test_gap_in_parts():
 
     assert result == expected
 
-
 def test_iptv_playlist():
     obj = m3u8.M3U8(playlists.SIMPLE_IPTV_PLAYLIST_EXTINF_WITH_ADDITIONAL_PROPS)
 
@@ -1347,8 +1346,29 @@ def test_iptv_playlist():
 
     assert result == expected
 
-# custom asserts
+def test_skip_dateranges():
+    obj = m3u8.M3U8(playlists.DELTA_UPDATE_SKIP_DATERANGES_PLAYLIST)
 
+    expected_skip_tag = '#EXT-X-SKIP:SKIPPED-SEGMENTS=16,RECENTLY-REMOVED-DATERANGES="1"'
+    expected_server_control_tag = '#EXT-X-SERVER-CONTROL:CAN-SKIP-UNTIL=36,CAN-SKIP-DATERANGES=YES'
+
+    result = obj.dumps().strip()
+
+    assert expected_skip_tag in result
+    assert expected_server_control_tag in result
+
+def test_add_skip():
+    obj = m3u8.Skip(
+        skipped_segments=30,
+        recently_removed_dateranges='1\t2'
+    )
+
+    expected = '#EXT-X-SKIP:SKIPPED-SEGMENTS=30,RECENTLY-REMOVED-DATERANGES="1\t2"'
+    result = obj.dumps().strip()
+
+    assert result == expected
+
+# custom asserts
 
 def assert_file_content(filename, expected):
     with open(filename) as fileobj:

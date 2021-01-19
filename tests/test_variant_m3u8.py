@@ -160,6 +160,49 @@ http://example.com/hdr.m3u8
 """
     assert expected_content == variant_m3u8.dumps()
 
+def test_variant_playlist_with_hdcp_level():
+    variant_m3u8 = m3u8.M3U8()
+
+    none_playlist = m3u8.Playlist(
+        'http://example.com/none.m3u8',
+        stream_info={'bandwidth': 1280000,
+                     'hdcp_level': 'NONE',
+                     'program_id': 1},
+        media=[],
+        base_uri=None
+    )
+    type0_playlist = m3u8.Playlist(
+        'http://example.com/type0.m3u8',
+        stream_info={'bandwidth': 3000000,
+                     'hdcp_level': 'TYPE-0',
+                     'program_id': 1},
+       media=[],
+       base_uri=None
+    )
+    type1_playlist = m3u8.Playlist(
+        'http://example.com/type1.m3u8',
+        stream_info={'bandwidth': 4000000,
+                     'hdcp_level': 'TYPE-1',
+                     'program_id': 1},
+       media=[],
+       base_uri=None
+    )
+
+    variant_m3u8.add_playlist(none_playlist)
+    variant_m3u8.add_playlist(type0_playlist)
+    variant_m3u8.add_playlist(type1_playlist)
+
+    expected_content = """\
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1280000,HDCP-LEVEL=NONE
+http://example.com/none.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=3000000,HDCP-LEVEL=TYPE-0
+http://example.com/type0.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=4000000,HDCP-LEVEL=TYPE-1
+http://example.com/type1.m3u8
+"""
+    assert expected_content == variant_m3u8.dumps()
+
 def test_variant_playlist_with_multiple_media():
     variant_m3u8 = m3u8.loads(playlists.MULTI_MEDIA_PLAYLIST)
     assert variant_m3u8.dumps() == playlists.MULTI_MEDIA_PLAYLIST
@@ -240,5 +283,41 @@ video-HLG.m3u8
 #EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,VIDEO-RANGE=SDR,URI="video-SDR-iframes.m3u8"
 #EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,VIDEO-RANGE=PQ,URI="video-PQ-iframes.m3u8"
 #EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,VIDEO-RANGE=HLG,URI="video-HLG-iframes.m3u8"
+"""
+    assert expected_content == variant_m3u8.dumps()
+
+
+def test_create_a_variant_m3u8_with_iframe_with_hdcp_level_playlists():
+    variant_m3u8 = m3u8.M3U8()
+
+    for hdcplv in ['NONE', 'TYPE-0', 'TYPE-1']:
+        playlist = m3u8.Playlist(
+            uri='video-%s.m3u8' % hdcplv,
+            stream_info={'bandwidth': 3000000,
+                         'hdcp_level': hdcplv},
+            media=[],
+            base_uri='http://example.com/%s' % hdcplv
+        )
+        iframe_playlist = m3u8.IFramePlaylist(
+            uri='video-%s-iframes.m3u8' % hdcplv,
+            iframe_stream_info={'bandwidth': 3000000,
+                                'hdcp_level': hdcplv},
+            base_uri='http://example.com/%s' % hdcplv
+        )
+
+        variant_m3u8.add_playlist(playlist)
+        variant_m3u8.add_iframe_playlist(iframe_playlist)
+
+    expected_content = """\
+#EXTM3U
+#EXT-X-STREAM-INF:BANDWIDTH=3000000,HDCP-LEVEL=NONE
+video-NONE.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=3000000,HDCP-LEVEL=TYPE-0
+video-TYPE-0.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=3000000,HDCP-LEVEL=TYPE-1
+video-TYPE-1.m3u8
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,HDCP-LEVEL=NONE,URI="video-NONE-iframes.m3u8"
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,HDCP-LEVEL=TYPE-0,URI="video-TYPE-0-iframes.m3u8"
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,HDCP-LEVEL=TYPE-1,URI="video-TYPE-1-iframes.m3u8"
 """
     assert expected_content == variant_m3u8.dumps()

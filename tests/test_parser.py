@@ -179,6 +179,13 @@ def test_should_parse_variant_playlist_with_video_range():
     assert 'SDR' == playlists_list[0]['stream_info']['video_range']
     assert 'PQ' == playlists_list[1]['stream_info']['video_range']
 
+def test_should_parse_variant_playlist_with_hdcp_level():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_HDCP_LEVEL)
+    playlists_list = list(data['playlists'])
+    assert 'NONE' == playlists_list[0]['stream_info']['hdcp_level']
+    assert 'TYPE-0' == playlists_list[1]['stream_info']['hdcp_level']
+    assert 'TYPE-1' == playlists_list[2]['stream_info']['hdcp_level']
+
 # This is actually not according to specification but as for example Twitch.tv
 # is producing master playlists that have bandwidth as floats (issue 72)
 # this tests that this situation does not break the parser and will just
@@ -549,3 +556,25 @@ def test_should_parse_variant_playlist_with_iframe_with_video_range():
     assert 'HLG' == iframe_playlists[2]['iframe_stream_info']['video_range']
     assert 'http://example.com/unknown-iframes.m3u8' == iframe_playlists[3]['uri']
     assert 'video_range' not in iframe_playlists[3]['iframe_stream_info']
+
+def test_should_parse_variant_playlist_with_iframe_with_hdcp_level():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_HDCP_LEVEL)
+    iframe_playlists = list(data['iframe_playlists'])
+
+    assert True == data['is_variant']
+
+    assert 4 == len(iframe_playlists)
+
+    assert 'http://example.com/none-iframes.m3u8' == iframe_playlists[0]['uri']
+    assert 'NONE' == iframe_playlists[0]['iframe_stream_info']['hdcp_level']
+    assert 'http://example.com/type0-iframes.m3u8' == iframe_playlists[1]['uri']
+    assert 'TYPE-0' == iframe_playlists[1]['iframe_stream_info']['hdcp_level']
+    assert 'http://example.com/type1-iframes.m3u8' == iframe_playlists[2]['uri']
+    assert 'TYPE-1' == iframe_playlists[2]['iframe_stream_info']['hdcp_level']
+    assert 'http://example.com/unknown-iframes.m3u8' == iframe_playlists[3]['uri']
+    assert 'hdcp_level' not in iframe_playlists[3]['iframe_stream_info']
+
+def test_delta_playlist_daterange_skipping():
+    data = m3u8.parse(playlists.DELTA_UPDATE_SKIP_DATERANGES_PLAYLIST)
+    assert data['skip']['recently_removed_dateranges'] == "1"
+    assert data['server_control']['can_skip_dateranges'] == "YES"
