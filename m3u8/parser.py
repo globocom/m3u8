@@ -246,7 +246,7 @@ def _parse_extinf(line, data, state, lineno, strict):
             title = ''
 
     additional_props = OrderedDict()
-    chunks = duration_and_props.split(' ', 1)
+    chunks = duration_and_props.strip().split(' ', 1)
     if len(chunks) == 2:
         duration, raw_props = chunks
         matched_props = re.finditer(r'([\w\-]+)="([^"]*)"', raw_props)
