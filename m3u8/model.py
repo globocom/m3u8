@@ -12,6 +12,9 @@ from m3u8.parser import parse, format_date_time
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
 
 
+INITIAL = object()
+
+
 class MalformedPlaylistError(Exception):
     pass
 
@@ -151,6 +154,19 @@ class M3U8(object):
         if self._base_uri:
             if not self._base_uri.endswith('/'):
                 self._base_uri += '/'
+
+        # define the interface
+        self.is_variant = INITIAL
+        self.is_endlist = INITIAL
+        self.is_i_frames_only = INITIAL
+        self.target_duration = INITIAL
+        self.media_sequence = INITIAL
+        self.program_date_time = INITIAL
+        self.is_independent_segments = INITIAL
+        self.version = INITIAL
+        self.allow_cache = INITIAL
+        self.playlist_type = INITIAL
+        self.discontinuity_sequence = INITIAL
 
         self._initialize_attributes()
         self.base_path = base_path
