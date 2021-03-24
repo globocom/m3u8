@@ -14,8 +14,8 @@ def _urijoin(base_uri, path):
         if '..' in path:
             # split slashes for normpath
             while '//' in uri:
-                uri.replace('//', '/ /')
-            uri = posixpath.normpath(uri).replace(' ', '')
+                uri = uri.replace('//', '/\0/')
+            uri = posixpath.normpath(uri).replace('\0', '')
         return uri
     else:
         return os.path.normpath(os.path.join(base_uri, path))
