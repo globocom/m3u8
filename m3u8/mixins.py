@@ -2,17 +2,14 @@
 import os
 from m3u8.parser import is_url
 
-try:
-    import urlparse as url_parser
-except ImportError:
-    import urllib.parse as url_parser
-
 
 def _urijoin(base_uri, path):
-    if is_url(base_uri):
-        return url_parser.urljoin(base_uri, path)
+    if path[0] == '/':
+        path = path[1:]
+    if base_uri.startswith('http'):
+        return base_uri + path
     else:
-        return os.path.normpath(os.path.join(base_uri, path.strip('/')))
+        return os.path.normpath(os.path.join(base_uri, path))
 
 
 class BasePathMixin(object):

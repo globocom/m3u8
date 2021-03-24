@@ -3,15 +3,14 @@ import ssl
 import sys
 import urllib
 from urllib.error import HTTPError
-from urllib.parse import urlparse, urljoin
+from urllib.parse import SplitResult, urlsplit
 import urllib.request
 
 
 def _parsed_url(url):
-    parsed_url = urlparse(url)
-    prefix = parsed_url.scheme + '://' + parsed_url.netloc
-    base_path = posixpath.normpath(parsed_url.path + '/..')
-    return urljoin(prefix, base_path)
+    parsed_url = urlsplit(url)
+    base_path = parsed_url.path.rpartition('/')[0] + '/'
+    return SplitResult(parsed_url.scheme, parsed_url.netloc, base_path, '', '').geturl()
 
 
 class DefaultHTTPClient:
