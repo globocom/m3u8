@@ -1,5 +1,6 @@
 
 import os
+import posixpath
 from m3u8.parser import is_url
 
 
@@ -9,7 +10,7 @@ def _urijoin(base_uri, path):
     if base_uri.startswith('http'):
         if base_uri[-1] != '/':
             base_uri += '/'
-        return base_uri + path
+        return posixpath.normpath(base_uri + path)
     else:
         return os.path.normpath(os.path.join(base_uri, path))
 
