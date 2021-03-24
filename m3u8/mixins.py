@@ -7,6 +7,8 @@ def _urijoin(base_uri, path):
     if path[0] == '/':
         path = path[1:]
     if base_uri.startswith('http'):
+        if base_uri[-1] != '/':
+            base_uri += '/'
         return base_uri + path
     else:
         return os.path.normpath(os.path.join(base_uri, path))
