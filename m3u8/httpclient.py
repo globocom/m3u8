@@ -1,4 +1,3 @@
-import posixpath
 import ssl
 import sys
 import urllib

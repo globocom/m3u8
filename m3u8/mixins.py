@@ -10,11 +10,13 @@ def _urijoin(base_uri, path):
     if base_uri.startswith('http'):
         if base_uri[-1] != '/':
             base_uri += '/'
+        uri = base_uri + path
         if '..' in path:
-            # skip scheme split for normpath
-            return base_uri[:8] + posixpath.normpath(base_uri[8:] + path)
-        else:
-            return base_uri + path
+            # split slashes for normpath
+            while '//' in uri:
+                uri.replace('//', '/ /')
+            uri = posixpath.normpath(uri).replace(' ', '')
+        return uri
     else:
         return os.path.normpath(os.path.join(base_uri, path))
 
