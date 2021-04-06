@@ -3,6 +3,7 @@
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
+ext_m3u = '#EXTM3U'
 ext_x_targetduration = '#EXT-X-TARGETDURATION'
 ext_x_media_sequence = '#EXT-X-MEDIA-SEQUENCE'
 ext_x_discontinuity_sequence = '#EXT-X-DISCONTINUITY-SEQUENCE'
