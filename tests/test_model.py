@@ -102,6 +102,29 @@ def test_program_date_time_attribute_with_discontinuity():
     assert segments[6].current_program_date_time == discontinuity_program_date_time + datetime.timedelta(seconds=3)
     assert segments[6].program_date_time is None
 
+def test_ts_map_attribute_with_discontinuity():
+    obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_TIMESTAMP_MAP)
+
+    first_program_date_time = datetime.datetime(2014, 8, 13, 13, 36, 33, tzinfo=utc)
+    discontinuity_program_date_time = datetime.datetime(2014, 8, 13, 13, 36, 55, tzinfo=utc)
+
+    segments = obj.segments
+
+    # first segment has #USP-X-TIMESTAMP-MAP
+    assert segments[0].timestamp_map == {
+            'MPEGTS':186006,
+            'LOCAL':first_program_date_time }
+
+    # second segment does not have #USP-X-TIMESTAMP-MAP
+    assert segments[1].timestamp_map is None
+
+    # segment with EXT-X-DISCONTINUITY also has #USP-X-TIMESTAMP-MAP
+    assert segments[5].timestamp_map == {
+            'MPEGTS':90000,
+            'LOCAL':discontinuity_program_date_time }
+
+    # subsequent segment does not have #USP-X-TIMESTAMP-MAP
+    assert segments[6].timestamp_map is None
 
 def test_program_date_time_attribute_without_discontinuity():
     obj = m3u8.M3U8(playlists.PLAYLIST_WITH_PROGRAM_DATE_TIME_WITHOUT_DISCONTINUITY)
@@ -665,6 +688,10 @@ def test_dump_should_include_segment_level_program_date_time():
     # Tag being expected is in the segment level, not the global one
     assert "#EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:55+00:00" in obj.dumps().strip()
 
+def test_dump_should_include_segment_level_ts_map():
+    obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_TIMESTAMP_MAP)
+    # Tag being expected is in the segment level, not the global one
+    assert "#USP-X-TIMESTAMP-MAP:MPEGTS=90000,LOCAL=2014-08-13T13:36:55+00:00" in obj.dumps().strip()
 
 def test_dump_should_include_segment_level_program_date_time_without_discontinuity():
     obj = m3u8.M3U8(playlists.PLAYLIST_WITH_PROGRAM_DATE_TIME_WITHOUT_DISCONTINUITY)
@@ -817,6 +844,11 @@ def test_should_dump_program_datetime_and_discontinuity():
 
     assert expected == obj.dumps().strip()
 
+def test_should_dump_program_tsmap_and_discontinuity():
+    obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_TIMESTAMP_MAP)
+    expected = playlists.DISCONTINUITY_PLAYLIST_WITH_TIMESTAMP_MAP.strip()
+
+    assert expected == obj.dumps().strip()
 
 def test_should_normalize_segments_and_key_urls_if_base_path_passed_to_constructor():
     base_path = 'http://videoserver.com/hls/live'

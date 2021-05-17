@@ -103,6 +103,10 @@ class M3U8(object):
         Returns the EXT-X-PROGRAM-DATE-TIME as a string
         http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.5
 
+      `timestamp_map`
+        Returns the USP-X-TIMESTAMP-MAP as a dict of the MPEGTS and LOCAL
+        Subtitle sync for webvtt
+
       `version`
         Return the EXT-X-VERSION as is
 
@@ -135,6 +139,7 @@ class M3U8(object):
         ('target_duration',  'targetduration'),
         ('media_sequence',   'media_sequence'),
         ('program_date_time',   'program_date_time'),
+        ('timestamp_map',     'timestamp_map'),
         ('is_independent_segments', 'is_independent_segments'),
         ('version',          'version'),
         ('allow_cache',      'allow_cache'),
@@ -210,6 +215,8 @@ class M3U8(object):
 
         preload_hint = self.data.get('preload_hint', None)
         self.preload_hint = preload_hint and PreloadHint(base_uri=self.base_uri, **preload_hint)
+
+        self.timestamp_map = self.data.get('timestamp-map', None)
 
     def __unicode__(self):
         return self.dumps()
@@ -375,6 +382,10 @@ class Segment(BasePathMixin):
       if EXT-X-PROGRAM-DATE-TIME exists for this segment
       http://tools.ietf.org/html/draft-pantos-http-live-streaming-07#section-3.3.5
 
+    `timestamp_map`
+      Returns the USP-X-TIMESTAMP-MAP as a tuple of the MPEGTS and LOCAL
+      Subtitle sync for webvtt
+
     `current_program_date_time`
       Returns a datetime of this segment, either the value of `program_date_time`
       when EXT-X-PROGRAM-DATE-TIME is set or a calculated value based on previous
@@ -427,7 +438,8 @@ class Segment(BasePathMixin):
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, byterange=None, cue_out=False, cue_out_start=False,
                  cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
-                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None):
+                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None,
+                 timestamp_map=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -435,6 +447,7 @@ class Segment(BasePathMixin):
         self.byterange = byterange
         self.program_date_time = program_date_time
         self.current_program_date_time = current_program_date_time
+        self.timestamp_map = timestamp_map
         self.discontinuity = discontinuity
         self.cue_out_start = cue_out_start
         self.cue_out = cue_out
@@ -484,6 +497,11 @@ class Segment(BasePathMixin):
         if self.program_date_time:
             output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' %
                           format_date_time(self.program_date_time))
+
+        if self.timestamp_map:
+            output.append('#USP-X-TIMESTAMP-MAP:MPEGTS=%s,LOCAL=%s\n' %
+                          (self.timestamp_map['MPEGTS'],
+                           format_date_time(self.timestamp_map['LOCAL'])))
 
         if len(self.dateranges):
             output.append(str(self.dateranges))

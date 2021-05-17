@@ -56,6 +56,7 @@ def parse(content, strict=False, custom_tags_parser=None):
         'part_inf': {},
         'session_data': [],
         'session_keys': [],
+        'timestamp_map': None
     }
 
     state = {
@@ -190,6 +191,9 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_gap):
             state['gap'] = True
 
+        elif line.startswith(protocol.ext_usp_ts_map):
+            _parse_usp_timestamp(line, data, state)
+
         # Comments and whitespace
         elif line.startswith('#'):
             if callable(custom_tags_parser):
@@ -249,6 +253,8 @@ def _parse_ts_chunk(line, data, state):
     if state.get('current_program_date_time'):
         segment['current_program_date_time'] = state['current_program_date_time']
         state['current_program_date_time'] += datetime.timedelta(seconds=segment['duration'])
+    if state.get('timestamp_map'):
+        segment['timestamp_map'] = state.pop('timestamp_map')
     segment['uri'] = line
     segment['cue_in'] = state.pop('cue_in', False)
     segment['cue_out'] = state.pop('cue_out', False)
@@ -511,6 +517,16 @@ def _parse_daterange(line, date, state):
 
     state['dateranges'].append(parsed)
 
+def _parse_usp_timestamp(line, data, state):
+    datas = str(line)[len(protocol.ext_usp_ts_map)+1:]
+    kvs = {k:v
+           for d in datas.split(',')
+           for k,v in [d.split('=')]}
+    kvs['LOCAL'] = cast_date_time(kvs['LOCAL'])
+    kvs['MPEGTS'] = int(kvs['MPEGTS'])
+    if not data.get('timestamp_map'):
+        data['timestamp_map'] = kvs
+    state['timestamp_map'] = kvs
 
 def string_to_lines(string):
     return string.strip().splitlines()
