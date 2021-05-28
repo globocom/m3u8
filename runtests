@@ -12,7 +12,7 @@ function start_server {
 }
 
 function stop_server {
-    ps ax | grep m3u8server.py | grep -v grep | cut -d ' ' -f 1 | xargs kill
+    pkill -9 -f m3u8server.py
     echo "Test server stdout on ${test_server_stdout}"
 }
 
