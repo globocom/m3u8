@@ -541,4 +541,4 @@ def normalize_attribute(attribute):
 
 
 def is_url(uri):
-    return uri.startswith(('https://', 'http://'))
+    return uri.startswith(('https://', 'http://', 's3://'))
