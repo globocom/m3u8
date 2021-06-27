@@ -351,7 +351,10 @@ def _parse_simple_parameter(line, data, cast_to=str):
 
 
 def _parse_cueout_cont(line, state):
-    param, value = line.split(':', 1)
+    elements = line.split(':', 1)
+    if len(elements) != 2:
+        return
+    param, value = elements
     res = re.match('.*Duration=(.*),SCTE35=(.*)$', value)
     if res:
         state['current_cue_out_duration'] = res.group(1)
