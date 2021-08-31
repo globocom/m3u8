@@ -459,7 +459,7 @@ class Segment(BasePathMixin):
         output = []
 
 
-        if last_segment and self.key != last_segment.key:
+        if self.key and last_segment and self.key != last_segment.key:
             output.append(str(self.key))
             output.append('\n')
         else:
