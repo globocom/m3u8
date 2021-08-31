@@ -468,7 +468,7 @@ class Segment(BasePathMixin):
                 output.append(str(self.key))
                 output.append('\n')
 
-        if last_segment and self.init_section != last_segment.init_section:
+        if self.key and last_segment and self.init_section != last_segment.init_section:
             if not self.init_section:
                 raise MalformedPlaylistError(
                     "init section can't be None if previous is not None")
