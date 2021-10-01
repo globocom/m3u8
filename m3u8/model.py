@@ -408,6 +408,9 @@ class Segment(BasePathMixin):
     `base_uri`
       uri the key comes from in URI hierarchy. ex.: http://example.com/path/to
 
+    `bitrate`
+      bitrate attribute from EXT-X-BITRATE parameter
+
     `byterange`
       byterange attribute from EXT-X-BYTERANGE parameter
 
@@ -425,13 +428,14 @@ class Segment(BasePathMixin):
     '''
 
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
-                 duration=None, title=None, byterange=None, cue_out=False, cue_out_start=False,
+                 duration=None, title=None, bitrate=None, byterange=None, cue_out=False, cue_out_start=False,
                  cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
                  keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None):
         self.uri = uri
         self.duration = duration
         self.title = title
         self._base_uri = base_uri
+        self.bitrate = bitrate
         self.byterange = byterange
         self.program_date_time = program_date_time
         self.current_program_date_time = current_program_date_time
@@ -511,6 +515,9 @@ class Segment(BasePathMixin):
             if self.byterange:
                 output.append('#EXT-X-BYTERANGE:%s\n' % self.byterange)
 
+            if self.bitrate:
+                output.append('#EXT-X-BITRATE:%s\n' % self.bitrate)
+
             if self.gap_tag:
                 output.append('#EXT-X-GAP\n')
 
@@ -583,6 +590,9 @@ class PartialSegment(BasePathMixin):
     `duration`
       duration attribute from EXTINF parameter
 
+    `bitrate`
+      bitrate attribute from EXT-X-BITRATE parameter
+
     `byterange`
       byterange attribute from EXT-X-BYTERANGE parameter
 
@@ -603,13 +613,14 @@ class PartialSegment(BasePathMixin):
     '''
 
     def __init__(self, base_uri, uri, duration, program_date_time=None,
-                 current_program_date_time=None, byterange=None,
+                 current_program_date_time=None, bitrate=None, byterange=None,
                  independent=None, gap=None, dateranges=None, gap_tag=None):
         self.base_uri = base_uri
         self.uri = uri
         self.duration = duration
         self.program_date_time = program_date_time
         self.current_program_date_time = current_program_date_time
+        self.bitrate = bitrate
         self.byterange = byterange
         self.independent = independent
         self.gap = gap
@@ -635,6 +646,9 @@ class PartialSegment(BasePathMixin):
 
         if self.byterange:
             output.append(',BYTERANGE=%s' % self.byterange)
+
+        if self.bitrate:
+            output.append(',BITRATE=%s' % self.bitrate)
 
         if self.gap:
             output.append(',GAP=%s' % self.gap)
