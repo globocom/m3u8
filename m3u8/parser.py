@@ -14,7 +14,7 @@ http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.2
 http://stackoverflow.com/questions/2785755/how-to-split-but-ignore-separators-in-quoted-strings-in-python
 '''
 ATTRIBUTELISTPATTERN = re.compile(r'''((?:[^,"']|"[^"]*"|'[^']*')+)''')
-
+URI_PREFIXES = ('https://', 'http://', 's3://', 's3a://', 's3n://')
 
 def cast_date_time(value):
     return iso8601.parse_date(value)
@@ -544,4 +544,4 @@ def normalize_attribute(attribute):
 
 
 def is_url(uri):
-    return uri.startswith(('https://', 'http://', 's3://'))
+    return uri.startswith(URI_PREFIXES)
