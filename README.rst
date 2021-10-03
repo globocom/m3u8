@@ -82,6 +82,7 @@ Supported tags
 * #EXT-X-RENDITION-REPORT
 * #EXT-X-SKIP
 * `#EXT-X-SESSION-DATA`_
+* `#EXT-X-SESSION-KEY`_
 * `#EXT-X-DATERANGE`_
 * `#EXT-X-GAP`_
 
@@ -312,6 +313,7 @@ the same thing.
 .. _#EXT-X-STREAM-INF: https://tools.ietf.org/html/rfc8216#section-4.3.4.2
 .. _#EXT-X-I-FRAME-STREAM-INF: https://tools.ietf.org/html/rfc8216#section-4.3.4.3
 .. _#EXT-X-SESSION-DATA: https://tools.ietf.org/html/rfc8216#section-4.3.4.4
+.. _#EXT-X-SESSION-KEY: https://tools.ietf.org/html/rfc8216#section-4.3.4.5
 .. _#EXT-X-INDEPENDENT-SEGMENTS: https://tools.ietf.org/html/rfc8216#section-4.3.5.1
 .. _#EXT-X-START: https://tools.ietf.org/html/rfc8216#section-4.3.5.2
 .. _#EXT-X-DATERANGE: https://tools.ietf.org/html/rfc8216#section-4.3.2.7
