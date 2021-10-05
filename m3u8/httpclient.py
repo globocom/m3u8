@@ -1,17 +1,10 @@
-import posixpath
 import ssl
-import sys
-import urllib
-from urllib.error import HTTPError
-from urllib.parse import urlparse, urljoin
 import urllib.request
+from m3u8.parser import urljoin
 
 
 def _parsed_url(url):
-    parsed_url = urlparse(url)
-    prefix = parsed_url.scheme + '://' + parsed_url.netloc
-    base_path = posixpath.normpath(parsed_url.path + '/..')
-    return urljoin(prefix, base_path)
+    return urljoin(url, '.')
 
 
 class DefaultHTTPClient:
