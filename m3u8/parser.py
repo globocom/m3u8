@@ -7,6 +7,7 @@ import iso8601
 import datetime
 import itertools
 import re
+from urllib.parse import urljoin as _urljoin
 from m3u8 import protocol
 
 '''
@@ -560,3 +561,13 @@ def normalize_attribute(attribute):
 
 def is_url(uri):
     return uri.startswith(URI_PREFIXES)
+
+
+def urljoin(base, url):
+    base = base.replace('://', '\1')
+    url = url.replace('://', '\1')
+    while '//' in base:
+        base = base.replace('//', '/\0/')
+    while '//' in url:
+        url = url.replace('//', '/\0/')
+    return _urljoin(base.replace('\1', '://'), url.replace('\1', '://')).replace('\0', '')

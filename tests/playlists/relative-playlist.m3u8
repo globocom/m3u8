@@ -14,4 +14,8 @@
 ../../entire3.ts
 #EXTINF:5220,
 entire4.ts
+#EXTINF:5220,
+//entire5.ts
+#EXTINF:5220,
+.//entire6.ts
 #EXT-X-ENDLIST
