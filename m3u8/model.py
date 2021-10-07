@@ -6,6 +6,7 @@ import decimal
 import os
 import errno
 import math
+import functools
 
 from m3u8.protocol import ext_x_start, ext_x_key, ext_x_session_key, ext_x_map
 from m3u8.parser import parse, format_date_time
@@ -186,17 +187,14 @@ class M3U8(object):
                                         )
         self.segment_map = self.data.get('segment_map')
 
-        start = self.data.get('start', None)
-        self.start = start and Start(**start)
-
-        server_control = self.data.get('server_control', None)
-        self.server_control = server_control and ServerControl(**server_control)
-
-        part_inf = self.data.get('part_inf', None)
-        self.part_inf = part_inf and PartInformation(**part_inf)
-
-        skip = self.data.get('skip', None)
-        self.skip = skip and Skip(**skip)
+        for attr, cls in (('start', Start), 
+                          ('server_control', ServerControl), 
+                          ('part_inf', PartInformation), 
+                          ('skip', Skip), 
+                          ('preload_hint', functools.partial(PreloadHint, base_uri=self.base_uri))):
+            # if missing set the attribute to None
+            val = self.data.get(attr, None)
+            setattr(self, attr, val and cls(**val))
 
         self.rendition_reports = RenditionReportList([ RenditionReport(base_uri=self.base_uri, **rendition_report)
                                                   for rendition_report in self.data.get('rendition_reports', []) ])
@@ -207,9 +205,6 @@ class M3U8(object):
 
         self.session_keys = [ SessionKey(base_uri=self.base_uri, **params) if params else None
                       for params in self.data.get('session_keys', []) ]
-
-        preload_hint = self.data.get('preload_hint', None)
-        self.preload_hint = preload_hint and PreloadHint(base_uri=self.base_uri, **preload_hint)
 
     def __unicode__(self):
         return self.dumps()
