@@ -561,3 +561,8 @@ def test_delta_playlist_daterange_skipping():
     data = m3u8.parse(playlists.DELTA_UPDATE_SKIP_DATERANGES_PLAYLIST)
     assert data['skip']['recently_removed_dateranges'] == "1"
     assert data['server_control']['can_skip_dateranges'] == "YES"
+
+def test_bitrate():
+    data = m3u8.parse(playlists.BITRATE_PLAYLIST)
+    assert data['segments'][0]['bitrate'] == '1674'
+    assert data['segments'][1]['bitrate'] == '1625'

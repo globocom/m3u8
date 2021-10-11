@@ -408,6 +408,9 @@ class Segment(BasePathMixin):
     `base_uri`
       uri the key comes from in URI hierarchy. ex.: http://example.com/path/to
 
+    `bitrate`
+      bitrate attribute from EXT-X-BITRATE parameter
+
     `byterange`
       byterange attribute from EXT-X-BYTERANGE parameter
 
@@ -425,13 +428,14 @@ class Segment(BasePathMixin):
     '''
 
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
-                 duration=None, title=None, byterange=None, cue_out=False, cue_out_start=False,
+                 duration=None, title=None, bitrate=None, byterange=None, cue_out=False, cue_out_start=False,
                  cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
                  keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None):
         self.uri = uri
         self.duration = duration
         self.title = title
         self._base_uri = base_uri
+        self.bitrate = bitrate
         self.byterange = byterange
         self.program_date_time = program_date_time
         self.current_program_date_time = current_program_date_time
@@ -510,6 +514,9 @@ class Segment(BasePathMixin):
 
             if self.byterange:
                 output.append('#EXT-X-BYTERANGE:%s\n' % self.byterange)
+
+            if self.bitrate:
+                output.append('#EXT-X-BITRATE:%s\n' % self.bitrate)
 
             if self.gap_tag:
                 output.append('#EXT-X-GAP\n')

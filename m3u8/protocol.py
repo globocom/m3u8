@@ -16,6 +16,7 @@ ext_x_allow_cache = '#EXT-X-ALLOW-CACHE'
 ext_x_endlist = '#EXT-X-ENDLIST'
 extinf = '#EXTINF'
 ext_i_frames_only = '#EXT-X-I-FRAMES-ONLY'
+ext_x_bitrate = "#EXT-X-BITRATE"
 ext_x_byterange = '#EXT-X-BYTERANGE'
 ext_x_i_frame_stream_inf = '#EXT-X-I-FRAME-STREAM-INF'
 ext_x_discontinuity = '#EXT-X-DISCONTINUITY'

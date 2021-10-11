@@ -74,6 +74,9 @@ def parse(content, strict=False, custom_tags_parser=None):
             _parse_byterange(line, state)
             state['expect_segment'] = True
 
+        if line.startswith(protocol.ext_x_bitrate):
+            _parse_bitrate(line, state)
+            
         elif line.startswith(protocol.ext_x_targetduration):
             _parse_simple_parameter(line, data, float)
 
@@ -325,6 +328,10 @@ def _parse_variant_playlist(line, data, state):
 
     data['playlists'].append(playlist)
 
+def _parse_bitrate(line, state):
+    if 'segment' not in state:
+        state['segment'] = {}
+    state['segment']['bitrate'] = line.replace(protocol.ext_x_bitrate + ':', '')
 
 def _parse_byterange(line, state):
     if 'segment' not in state:
