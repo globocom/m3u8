@@ -764,8 +764,8 @@ class Playlist(BasePathMixin):
     Attributes:
 
     `stream_info` is a named tuple containing the attributes: `program_id`,
-    `bandwidth`, `average_bandwidth`, `resolution`, `codecs` and `resolution`
-    which is a a tuple (w, h) of integers
+    `bandwidth`, `average_bandwidth`, `codecs`, `stable_variant_id` and
+    `resolution` which is a a tuple (w, h) of integers
 
     `media` is a list of related Media entries.
 
@@ -796,7 +796,8 @@ class Playlist(BasePathMixin):
             codecs=stream_info.get('codecs'),
             frame_rate=stream_info.get('frame_rate'),
             video_range=stream_info.get('video_range'),
-            hdcp_level=stream_info.get('hdcp_level')
+            hdcp_level=stream_info.get('hdcp_level'),
+            stable_variant_id=stream_info.get('stable_variant_id')
         )
         self.media = []
         for media_type in ('audio', 'video', 'subtitles'):
@@ -905,6 +906,7 @@ class StreamInfo(object):
     frame_rate = None
     video_range = None
     hdcp_level = None
+    stable_variant_id = None
 
     def __init__(self, **kwargs):
         self.bandwidth = kwargs.get("bandwidth")
@@ -919,6 +921,7 @@ class StreamInfo(object):
         self.frame_rate = kwargs.get("frame_rate")
         self.video_range = kwargs.get("video_range")
         self.hdcp_level = kwargs.get("hdcp_level")
+        self.stable_variant_id = kwargs.get("stable_variant_id")
 
     def __str__(self):
         stream_inf = []
@@ -943,6 +946,8 @@ class StreamInfo(object):
             stream_inf.append('VIDEO-RANGE=%s' % self.video_range)
         if self.hdcp_level is not None:
             stream_inf.append('HDCP-LEVEL=%s' % self.hdcp_level)
+        if self.stable_variant_id is not None:
+            stream_inf.append('STABLE-ID-VARIANT=' + quoted(self.stable_variant_id))
         return ",".join(stream_inf)
 
 

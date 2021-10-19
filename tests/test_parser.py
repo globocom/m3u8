@@ -566,3 +566,8 @@ def test_bitrate():
     data = m3u8.parse(playlists.BITRATE_PLAYLIST)
     assert data['segments'][0]['bitrate'] == '1674'
     assert data['segments'][1]['bitrate'] == '1625'
+
+def test_should_parse_variant_playlist_with_stable_variant_id():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_STABLE_VARIANT_ID)
+    playlists_list = list(data['playlists'])
+    assert '6bea21024b2c5ef023a011b8c89327ca4a179734930d4d46ccee4f6a93ee5985' == playlists_list[0]['stream_info']['stable_variant_id']
