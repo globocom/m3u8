@@ -689,10 +689,10 @@ def test_multiple_map_attributes():
     assert obj.segments[2].init_section.uri == 'init3.mp4'
 
 
-def test_dump_should_include_multiple_map_attributes():
+def test_dump_should_include_multiple_map_attributes(tmpdir):
     obj = m3u8.M3U8(playlists.MULTIPLE_MAP_URI_PLAYLIST)
 
-    output = obj.dump('/tmp/d.m3u8')
+    output = obj.dump(str(tmpdir.join('d.m3u8')))
     output = obj.dumps().strip()
     assert output.count('#EXT-X-MAP:URI="init1.mp4"') == 1
     assert output.count('#EXT-X-MAP:URI="init3.mp4"') == 1
