@@ -259,10 +259,9 @@ def _parse_ts_chunk(line, data, state):
     segment['cue_in'] = state.pop('cue_in', False)
     segment['cue_out'] = state.pop('cue_out', False)
     segment['cue_out_start'] = state.pop('cue_out_start', False)
-    if state.get('current_cue_out_scte35'):
-        segment['scte35'] = state['current_cue_out_scte35']
-    if state.get('current_cue_out_duration'):
-        segment['scte35_duration'] = state['current_cue_out_duration']
+    scte_op = state.pop if segment['cue_in'] else state.get
+    segment['scte35'] = scte_op('current_cue_out_scte35', None)
+    segment['scte35_duration'] = scte_op('current_cue_out_duration', None)
     segment['discontinuity'] = state.pop('discontinuity', False)
     if state.get('current_key'):
         segment['key'] = state['current_key']

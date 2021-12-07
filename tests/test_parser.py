@@ -575,3 +575,12 @@ def test_content_steering():
     assert data['playlists'][1]['stream_info']['pathway_id'] == 'CDN-A'
     assert data['playlists'][2]['stream_info']['pathway_id'] == 'CDN-B'
     assert data['playlists'][3]['stream_info']['pathway_id'] == 'CDN-B'
+
+def test_cue_in_pops_scte35_data_and_duration():
+    data = m3u8.parse(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
+    assert data['segments'][9]['cue_in'] == True
+    assert data['segments'][9]['scte35'] == '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg=='
+    assert data['segments'][9]['scte35_duration'] == '50'
+    assert data['segments'][10]['cue_in'] == False
+    assert data['segments'][10]['scte35'] == None
+    assert data['segments'][10]['scte35_duration'] == None
