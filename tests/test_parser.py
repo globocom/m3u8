@@ -566,3 +566,12 @@ def test_bitrate():
     data = m3u8.parse(playlists.BITRATE_PLAYLIST)
     assert data['segments'][0]['bitrate'] == '1674'
     assert data['segments'][1]['bitrate'] == '1625'
+
+def test_cue_in_pops_scte35_data_and_duration():
+    data = m3u8.parse(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
+    assert data['segments'][9]['cue_in'] == True
+    assert data['segments'][9]['scte35'] == '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg=='
+    assert data['segments'][9]['scte35_duration'] == '50'
+    assert data['segments'][10]['cue_in'] == False
+    assert data['segments'][10]['scte35'] == None
+    assert data['segments'][10]['scte35_duration'] == None
