@@ -566,3 +566,12 @@ def test_bitrate():
     data = m3u8.parse(playlists.BITRATE_PLAYLIST)
     assert data['segments'][0]['bitrate'] == '1674'
     assert data['segments'][1]['bitrate'] == '1625'
+
+def test_content_steering():
+    data = m3u8.parse(playlists.CONTENT_STEERING_PLAYLIST)
+    assert data['content_steering']['server_uri'] == '/steering?video=00012'
+    assert data['content_steering']['pathway_id'] == 'CDN-A'
+    assert data['playlists'][0]['stream_info']['pathway_id'] == 'CDN-A'
+    assert data['playlists'][1]['stream_info']['pathway_id'] == 'CDN-A'
+    assert data['playlists'][2]['stream_info']['pathway_id'] == 'CDN-B'
+    assert data['playlists'][3]['stream_info']['pathway_id'] == 'CDN-B'
