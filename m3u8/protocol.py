@@ -38,3 +38,4 @@ ext_x_session_key = '#EXT-X-SESSION-KEY'
 ext_x_preload_hint = '#EXT-X-PRELOAD-HINT'
 ext_x_daterange = "#EXT-X-DATERANGE"
 ext_x_gap = "#EXT-X-GAP"
+ext_x_content_steering = "#EXT-X-CONTENT-STEERING"

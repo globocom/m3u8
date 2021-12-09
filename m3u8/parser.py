@@ -193,6 +193,9 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_gap):
             state['gap'] = True
 
+        elif line.startswith(protocol.ext_x_content_steering):
+            _parse_content_steering(line, data, state)
+
         # Comments and whitespace
         elif line.startswith('#'):
             if callable(custom_tags_parser):
@@ -292,7 +295,7 @@ def _parse_attribute_list(prefix, line, atribute_parser):
 def _parse_stream_inf(line, data, state):
     data['is_variant'] = True
     data['media_sequence'] = None
-    atribute_parser = remove_quotes_parser('codecs', 'audio', 'video', 'subtitles', 'closed_captions')
+    atribute_parser = remove_quotes_parser('codecs', 'audio', 'video', 'subtitles', 'closed_captions', 'pathway_id')
     atribute_parser["program_id"] = int
     atribute_parser["bandwidth"] = lambda x: int(float(x))
     atribute_parser["average_bandwidth"] = int
@@ -303,7 +306,7 @@ def _parse_stream_inf(line, data, state):
 
 
 def _parse_i_frame_stream_inf(line, data):
-    atribute_parser = remove_quotes_parser('codecs', 'uri')
+    atribute_parser = remove_quotes_parser('codecs', 'uri', 'pathway_id')
     atribute_parser["program_id"] = int
     atribute_parser["bandwidth"] = int
     atribute_parser["average_bandwidth"] = int
@@ -521,6 +524,12 @@ def _parse_daterange(line, date, state):
 
     state['dateranges'].append(parsed)
 
+def _parse_content_steering(line, data, state):
+    attribute_parser = remove_quotes_parser('server_uri', 'pathway_id')
+
+    data['content_steering'] = _parse_attribute_list(
+        protocol.ext_x_content_steering, line, attribute_parser
+    )
 
 def string_to_lines(string):
     return string.strip().splitlines()
