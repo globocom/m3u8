@@ -392,7 +392,7 @@ def _cueout_envivio(line, state, prevline):
 def _cueout_duration(line):
     # this needs to be called after _cueout_elemental
     # as it would capture those cues incompletely
-    # This was added seperately rather than modifying "simple"
+    # This was added separately rather than modifying "simple"
     param, value = line.split(':', 1)
     res = re.match(r'DURATION=(.*)', value)
     if res:

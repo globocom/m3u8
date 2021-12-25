@@ -421,7 +421,7 @@ class Segment(BasePathMixin):
       partial segments that make up this segment
 
     `dateranges`
-      any dateranges that should  preceed the segment
+      any dateranges that should  precede the segment
 
     `gap_tag`
       GAP tag indicates that a Media Segment is missing
@@ -600,7 +600,7 @@ class PartialSegment(BasePathMixin):
       GAP attribute indicates the Partial Segment is not available
 
     `dateranges`
-      any dateranges that should preceed the partial segment
+      any dateranges that should precede the partial segment
 
     `gap_tag`
       GAP tag indicates one or more of the parent Media Segment's Partial
