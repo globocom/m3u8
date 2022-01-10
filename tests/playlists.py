@@ -1170,4 +1170,22 @@ test1.ts
 #EXTINF:9.600,
 test2.ts
 '''
+
+CONTENT_STEERING_PLAYLIST = '''
+#EXTM3U
+#EXT-X-CONTENT-STEERING:SERVER-URI="/steering?video=00012",PATHWAY-ID="CDN-A"
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="A",NAME="English",DEFAULT=YES,URI="eng.m3u8",LANGUAGE="en"
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="B",NAME="ENGLISH",DEFAULT=YES,URI="https://b.example.com/content/videos/video12/eng.m3u8",LANGUAGE="en"
+#EXT-X-STREAM-INF:BANDWIDTH=1280000,AUDIO="A",PATHWAY-ID="CDN-A"
+low/video.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=7680000,AUDIO="A",PATHWAY-ID="CDN-A"
+hi/video.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=1280000,AUDIO="B",PATHWAY-ID="CDN-B"
+https://backup.example.com/content/videos/video12/low/video.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=7680000,AUDIO="B",PATHWAY-ID="CDN-B"
+https://backup.example.com/content/videos/video12/hi/video.m3u8
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=193350,CODECS="avc1.4d001f",URI="video-1200k-iframes.m3u8",PATHWAY-ID="CDN-A"
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=193350,CODECS="avc1.4d001f",URI="https://backup.example.com/content/videos/video12/video-1200k-iframes.m3u8",PATHWAY-ID="CDN-B"
+'''
+
 del abspath, dirname, join

@@ -86,6 +86,7 @@ Supported tags
 * `#EXT-X-PRELOAD-HINT`_
 * `#EXT-X-DATERANGE`_
 * `#EXT-X-GAP`_
+* `#EXT-X-CONTENT-STEERING`_
 
 Encryption keys
 ---------------
@@ -320,6 +321,7 @@ the same thing.
 .. _#EXT-X-PRELOAD-HINT: https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis-09#section-4.4.5.3
 .. _#EXT-X-DATERANGE: https://tools.ietf.org/html/rfc8216#section-4.3.2.7
 .. _#EXT-X-GAP: https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-05#section-4.4.2.7
+.. _#EXT-X-CONTENT-STEERING: https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-10#section-4.4.6.6
 .. _issue 1: https://github.com/globocom/m3u8/issues/1
 .. _variant streams: https://tools.ietf.org/html/rfc8216#section-6.2.4
 .. _example here: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.5
