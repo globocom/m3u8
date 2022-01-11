@@ -65,6 +65,7 @@ Supported tags
 * `#EXT-X-ENDLIST`_
 * `#EXTINF`_
 * `#EXT-X-I-FRAMES-ONLY`_
+* `#EXT-X-BITRATE`_
 * `#EXT-X-BYTERANGE`_
 * `#EXT-X-I-FRAME-STREAM-INF`_
 * `#EXT-X-DISCONTINUITY`_
@@ -83,8 +84,10 @@ Supported tags
 * #EXT-X-SKIP
 * `#EXT-X-SESSION-DATA`_
 * `#EXT-X-SESSION-KEY`_
+* `#EXT-X-PRELOAD-HINT`_
 * `#EXT-X-DATERANGE`_
 * `#EXT-X-GAP`_
+* `#EXT-X-CONTENT-STEERING`_
 
 Encryption keys
 ---------------
@@ -297,6 +300,7 @@ the same thing.
 .. _m3u8: https://tools.ietf.org/html/rfc8216
 .. _#EXT-X-VERSION: https://tools.ietf.org/html/rfc8216#section-4.3.1.2
 .. _#EXTINF: https://tools.ietf.org/html/rfc8216#section-4.3.2.1
+.. _#EXT-X-BITRATE: https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.8
 .. _#EXT-X-BYTERANGE: https://tools.ietf.org/html/rfc8216#section-4.3.2.2
 .. _#EXT-X-DISCONTINUITY: https://tools.ietf.org/html/rfc8216#section-4.3.2.3
 .. _#EXT-X-KEY: https://tools.ietf.org/html/rfc8216#section-4.3.2.4
@@ -316,8 +320,10 @@ the same thing.
 .. _#EXT-X-SESSION-KEY: https://tools.ietf.org/html/rfc8216#section-4.3.4.5
 .. _#EXT-X-INDEPENDENT-SEGMENTS: https://tools.ietf.org/html/rfc8216#section-4.3.5.1
 .. _#EXT-X-START: https://tools.ietf.org/html/rfc8216#section-4.3.5.2
+.. _#EXT-X-PRELOAD-HINT: https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis-09#section-4.4.5.3
 .. _#EXT-X-DATERANGE: https://tools.ietf.org/html/rfc8216#section-4.3.2.7
 .. _#EXT-X-GAP: https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-05#section-4.4.2.7
+.. _#EXT-X-CONTENT-STEERING: https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-10#section-4.4.6.6
 .. _issue 1: https://github.com/globocom/m3u8/issues/1
 .. _variant streams: https://tools.ietf.org/html/rfc8216#section-6.2.4
 .. _example here: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.5

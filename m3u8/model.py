@@ -211,6 +211,9 @@ class M3U8(object):
         preload_hint = self.data.get('preload_hint', None)
         self.preload_hint = preload_hint and PreloadHint(base_uri=self.base_uri, **preload_hint)
 
+        content_steering = self.data.get('content_steering', None)
+        self.content_steering = content_steering and ContentSteering(base_uri=self.base_uri, **content_steering)
+
     def __unicode__(self):
         return self.dumps()
 
@@ -234,6 +237,8 @@ class M3U8(object):
                 key.base_uri = new_base_uri
         if self.preload_hint:
             self.preload_hint.base_uri = new_base_uri
+        if self.content_steering:
+            self.content_steering.base_uri = new_base_uri
 
     @property
     def base_path(self):
@@ -260,6 +265,8 @@ class M3U8(object):
         self.rendition_reports.base_path = self._base_path
         if self.preload_hint:
             self.preload_hint.base_path = self._base_path
+        if self.content_steering:
+            self.content_steering.base_path = self._base_path
 
 
     def add_playlist(self, playlist):
@@ -286,6 +293,8 @@ class M3U8(object):
         You could also use unicode(<this obj>) or str(<this obj>)
         '''
         output = ['#EXTM3U']
+        if self.content_steering:
+            output.append(str(self.content_steering))
         if self.is_independent_segments:
             output.append('#EXT-X-INDEPENDENT-SEGMENTS')
         if self.media_sequence:
@@ -408,6 +417,9 @@ class Segment(BasePathMixin):
     `base_uri`
       uri the key comes from in URI hierarchy. ex.: http://example.com/path/to
 
+    `bitrate`
+      bitrate attribute from EXT-X-BITRATE parameter
+
     `byterange`
       byterange attribute from EXT-X-BYTERANGE parameter
 
@@ -418,20 +430,21 @@ class Segment(BasePathMixin):
       partial segments that make up this segment
 
     `dateranges`
-      any dateranges that should  preceed the segment
+      any dateranges that should  precede the segment
 
     `gap_tag`
       GAP tag indicates that a Media Segment is missing
     '''
 
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
-                 duration=None, title=None, byterange=None, cue_out=False, cue_out_start=False,
+                 duration=None, title=None, bitrate=None, byterange=None, cue_out=False, cue_out_start=False,
                  cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
                  keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None):
         self.uri = uri
         self.duration = duration
         self.title = title
         self._base_uri = base_uri
+        self.bitrate = bitrate
         self.byterange = byterange
         self.program_date_time = program_date_time
         self.current_program_date_time = current_program_date_time
@@ -510,6 +523,9 @@ class Segment(BasePathMixin):
 
             if self.byterange:
                 output.append('#EXT-X-BYTERANGE:%s\n' % self.byterange)
+
+            if self.bitrate:
+                output.append('#EXT-X-BITRATE:%s\n' % self.bitrate)
 
             if self.gap_tag:
                 output.append('#EXT-X-GAP\n')
@@ -593,7 +609,7 @@ class PartialSegment(BasePathMixin):
       GAP attribute indicates the Partial Segment is not available
 
     `dateranges`
-      any dateranges that should preceed the partial segment
+      any dateranges that should precede the partial segment
 
     `gap_tag`
       GAP tag indicates one or more of the parent Media Segment's Partial
@@ -789,7 +805,8 @@ class Playlist(BasePathMixin):
             codecs=stream_info.get('codecs'),
             frame_rate=stream_info.get('frame_rate'),
             video_range=stream_info.get('video_range'),
-            hdcp_level=stream_info.get('hdcp_level')
+            hdcp_level=stream_info.get('hdcp_level'),
+            pathway_id=stream_info.get('pathway_id')
         )
         self.media = []
         for media_type in ('audio', 'video', 'subtitles'):
@@ -852,7 +869,8 @@ class IFramePlaylist(BasePathMixin):
             codecs=iframe_stream_info.get('codecs'),
             video_range=iframe_stream_info.get('video_range'),
             hdcp_level=iframe_stream_info.get('hdcp_level'),
-            frame_rate=None
+            frame_rate=None,
+            pathway_id=iframe_stream_info.get('pathway_id')
         )
 
     def __str__(self):
@@ -881,6 +899,10 @@ class IFramePlaylist(BasePathMixin):
                                      self.iframe_stream_info.hdcp_level)
         if self.uri:
             iframe_stream_inf.append('URI=' + quoted(self.uri))
+        if self.iframe_stream_info.pathway_id:
+            iframe_stream_inf.append(
+                'PATHWAY-ID=' + quoted(self.iframe_stream_info.pathway_id)
+            )
 
         return '#EXT-X-I-FRAME-STREAM-INF:' + ','.join(iframe_stream_inf)
 
@@ -898,6 +920,7 @@ class StreamInfo(object):
     frame_rate = None
     video_range = None
     hdcp_level = None
+    pathway_id = None
 
     def __init__(self, **kwargs):
         self.bandwidth = kwargs.get("bandwidth")
@@ -912,6 +935,7 @@ class StreamInfo(object):
         self.frame_rate = kwargs.get("frame_rate")
         self.video_range = kwargs.get("video_range")
         self.hdcp_level = kwargs.get("hdcp_level")
+        self.pathway_id = kwargs.get("pathway_id")
 
     def __str__(self):
         stream_inf = []
@@ -936,6 +960,8 @@ class StreamInfo(object):
             stream_inf.append('VIDEO-RANGE=%s' % self.video_range)
         if self.hdcp_level is not None:
             stream_inf.append('HDCP-LEVEL=%s' % self.hdcp_level)
+        if self.pathway_id is not None:
+            stream_inf.append('PATHWAY-ID=' + quoted(self.pathway_id))
         return ",".join(stream_inf)
 
 
@@ -1249,6 +1275,24 @@ class DateRange(object):
             ))
 
         return '#EXT-X-DATERANGE:' + ','.join(daterange)
+
+    def __str__(self):
+        return self.dumps()
+
+class ContentSteering(BasePathMixin):
+    def __init__(self, base_uri, server_uri, pathway_id = None):
+        self.base_uri = base_uri
+        self.uri = server_uri
+        self.pathway_id = pathway_id
+
+    def dumps(self):
+        steering = []
+        steering.append('SERVER-URI=' + quoted(self.uri))
+
+        if self.pathway_id is not None:
+            steering.append('PATHWAY-ID=' + quoted(self.pathway_id))
+
+        return '#EXT-X-CONTENT-STEERING:' + ','.join(steering)
 
     def __str__(self):
         return self.dumps()

@@ -6,8 +6,10 @@ build/
 bin/
 include/
 lib/
+lib64/
 local/
 .coverage
 .cache
 .python-version
 .idea/
+pyvenv.cfg

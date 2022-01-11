@@ -14,7 +14,7 @@ http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.2
 http://stackoverflow.com/questions/2785755/how-to-split-but-ignore-separators-in-quoted-strings-in-python
 '''
 ATTRIBUTELISTPATTERN = re.compile(r'''((?:[^,"']|"[^"]*"|'[^']*')+)''')
-
+URI_PREFIXES = ('https://', 'http://', 's3://', 's3a://', 's3n://')
 
 def cast_date_time(value):
     return iso8601.parse_date(value)
@@ -74,6 +74,9 @@ def parse(content, strict=False, custom_tags_parser=None):
             _parse_byterange(line, state)
             state['expect_segment'] = True
 
+        if line.startswith(protocol.ext_x_bitrate):
+            _parse_bitrate(line, state)
+            
         elif line.startswith(protocol.ext_x_targetduration):
             _parse_simple_parameter(line, data, float)
 
@@ -190,6 +193,9 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_gap):
             state['gap'] = True
 
+        elif line.startswith(protocol.ext_x_content_steering):
+            _parse_content_steering(line, data, state)
+
         # Comments and whitespace
         elif line.startswith('#'):
             if callable(custom_tags_parser):
@@ -253,10 +259,9 @@ def _parse_ts_chunk(line, data, state):
     segment['cue_in'] = state.pop('cue_in', False)
     segment['cue_out'] = state.pop('cue_out', False)
     segment['cue_out_start'] = state.pop('cue_out_start', False)
-    if state.get('current_cue_out_scte35'):
-        segment['scte35'] = state['current_cue_out_scte35']
-    if state.get('current_cue_out_duration'):
-        segment['scte35_duration'] = state['current_cue_out_duration']
+    scte_op = state.pop if segment['cue_in'] else state.get
+    segment['scte35'] = scte_op('current_cue_out_scte35', None)
+    segment['scte35_duration'] = scte_op('current_cue_out_duration', None)
     segment['discontinuity'] = state.pop('discontinuity', False)
     if state.get('current_key'):
         segment['key'] = state['current_key']
@@ -289,7 +294,7 @@ def _parse_attribute_list(prefix, line, atribute_parser):
 def _parse_stream_inf(line, data, state):
     data['is_variant'] = True
     data['media_sequence'] = None
-    atribute_parser = remove_quotes_parser('codecs', 'audio', 'video', 'subtitles', 'closed_captions')
+    atribute_parser = remove_quotes_parser('codecs', 'audio', 'video', 'subtitles', 'closed_captions', 'pathway_id')
     atribute_parser["program_id"] = int
     atribute_parser["bandwidth"] = lambda x: int(float(x))
     atribute_parser["average_bandwidth"] = int
@@ -300,7 +305,7 @@ def _parse_stream_inf(line, data, state):
 
 
 def _parse_i_frame_stream_inf(line, data):
-    atribute_parser = remove_quotes_parser('codecs', 'uri')
+    atribute_parser = remove_quotes_parser('codecs', 'uri', 'pathway_id')
     atribute_parser["program_id"] = int
     atribute_parser["bandwidth"] = int
     atribute_parser["average_bandwidth"] = int
@@ -325,6 +330,10 @@ def _parse_variant_playlist(line, data, state):
 
     data['playlists'].append(playlist)
 
+def _parse_bitrate(line, state):
+    if 'segment' not in state:
+        state['segment'] = {}
+    state['segment']['bitrate'] = line.replace(protocol.ext_x_bitrate + ':', '')
 
 def _parse_byterange(line, state):
     if 'segment' not in state:
@@ -385,7 +394,7 @@ def _cueout_envivio(line, state, prevline):
 def _cueout_duration(line):
     # this needs to be called after _cueout_elemental
     # as it would capture those cues incompletely
-    # This was added seperately rather than modifying "simple"
+    # This was added separately rather than modifying "simple"
     param, value = line.split(':', 1)
     res = re.match(r'DURATION=(.*)', value)
     if res:
@@ -514,6 +523,12 @@ def _parse_daterange(line, date, state):
 
     state['dateranges'].append(parsed)
 
+def _parse_content_steering(line, data, state):
+    attribute_parser = remove_quotes_parser('server_uri', 'pathway_id')
+
+    data['content_steering'] = _parse_attribute_list(
+        protocol.ext_x_content_steering, line, attribute_parser
+    )
 
 def string_to_lines(string):
     return string.strip().splitlines()
@@ -544,4 +559,4 @@ def normalize_attribute(attribute):
 
 
 def is_url(uri):
-    return uri.startswith(('https://', 'http://', 's3://'))
+    return uri.startswith(URI_PREFIXES)

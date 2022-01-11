@@ -689,10 +689,10 @@ def test_multiple_map_attributes():
     assert obj.segments[2].init_section.uri == 'init3.mp4'
 
 
-def test_dump_should_include_multiple_map_attributes():
+def test_dump_should_include_multiple_map_attributes(tmpdir):
     obj = m3u8.M3U8(playlists.MULTIPLE_MAP_URI_PLAYLIST)
 
-    output = obj.dump('/tmp/d.m3u8')
+    output = obj.dump(str(tmpdir.join('d.m3u8')))
     output = obj.dumps().strip()
     assert output.count('#EXT-X-MAP:URI="init1.mp4"') == 1
     assert output.count('#EXT-X-MAP:URI="init3.mp4"') == 1
@@ -1360,7 +1360,37 @@ def test_add_skip():
 
     assert result == expected
 
+def test_content_steering():
+    obj = m3u8.M3U8(playlists.CONTENT_STEERING_PLAYLIST)
 
+    expected_content_steering_tag = '#EXT-X-CONTENT-STEERING:SERVER-URI="/steering?video=00012",PATHWAY-ID="CDN-A"'
+    result = obj.dumps().strip()
+
+    assert expected_content_steering_tag in result
+
+def test_add_content_steering():
+    obj = m3u8.ContentSteering(
+        '',
+        '/steering?video=00012',
+        'CDN-A'
+    )
+
+    expected = '#EXT-X-CONTENT-STEERING:SERVER-URI="/steering?video=00012",PATHWAY-ID="CDN-A"'
+    result = obj.dumps().strip()
+
+    assert result == expected
+
+def test_content_steering_base_path_update():
+    obj = m3u8.M3U8(playlists.CONTENT_STEERING_PLAYLIST)
+    obj.base_path = "https://another.example.com/"
+
+    assert '#EXT-X-CONTENT-STEERING:SERVER-URI="https://another.example.com/steering?video=00012",PATHWAY-ID="CDN-A"' in obj.dumps().strip()
+
+def test_add_content_steering_base_uri_update():
+    obj = m3u8.M3U8(playlists.CONTENT_STEERING_PLAYLIST)
+    obj.base_uri = "https://yet-another.example.com/"
+
+    assert obj.content_steering.absolute_uri == "https://yet-another.example.com/steering?video=00012"
 # custom asserts
 
 
