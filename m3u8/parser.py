@@ -204,6 +204,10 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_content_steering):
             _parse_content_steering(line, data, state)
 
+        elif line.startswith(protocol.ext_m3u):
+            # We don't parse #EXTM3U, it just should to be present
+            pass
+
         elif line.strip() == '':
             # blank lines are legal
             pass
