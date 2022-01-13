@@ -6,6 +6,7 @@ import decimal
 import os
 import errno
 import math
+import functools
 
 from m3u8.protocol import ext_x_start, ext_x_key, ext_x_session_key, ext_x_map
 from m3u8.parser import parse, format_date_time
@@ -155,15 +156,53 @@ class M3U8(object):
         self._initialize_attributes()
         self.base_path = base_path
 
-
     def _initialize_attributes(self):
-        self.keys = [ Key(base_uri=self.base_uri, **params) if params else None
-                      for params in self.data.get('keys', []) ]
-        self.segments = SegmentList([ Segment(base_uri=self.base_uri, keyobject=find_key(segment.get('key', {}), self.keys), **segment)
-                                      for segment in self.data.get('segments', []) ])
-        #self.keys = get_uniques([ segment.key for segment in self.segments ])
         for attr, param in self.simple_attributes:
             setattr(self, attr, self.data.get(param))
+
+        PartialPreloadHint = functools.partial(PreloadHint, base_uri=self.base_uri)
+        for attr, cls in (('start', Start), 
+                          ('server_control', ServerControl), 
+                          ('part_inf', PartInformation), 
+                          ('skip', Skip), 
+                          ('preload_hint', PartialPreloadHint)):
+            # if missing set the attribute to None
+            val = self.data.get(attr, None)
+            setattr(self, attr, val and cls(**val))
+
+        self.segment_map = self.data.get('segment_map')
+
+        def build_models(builder, key, filter_func=None):
+            param_list = self.data.get(key, [])
+            if filter_func:
+                param_list = filter(filter_func, param_list)
+            return (builder(params) for params in param_list)
+
+        build_rendention_report = lambda rendition_report: RenditionReport(base_uri=self.base_uri, **rendition_report)
+        self.rendition_reports = RenditionReportList(build_models(build_rendention_report, 'rendition_reports'))
+
+        build_session_data = lambda session_data: SessionData(**session_data)
+        self.session_data = SessionDataList(build_models(build_session_data, 'session_data',
+                                            filter_func=lambda session_data: 'data_id' in session_data))
+
+        build_iframe_playlist = lambda ifr_pl: IFramePlaylist(base_uri=self.base_uri, uri=ifr_pl['uri'], 
+                                                              iframe_stream_info=ifr_pl['iframe_stream_info'])
+        self.iframe_playlists = PlaylistList(build_models(build_iframe_playlist, 'iframe_playlists'))
+
+        build_media = lambda media: Media(base_uri=self.base_uri, **media)
+        self.media = MediaList(build_models(build_media, 'media'))
+
+        build_playlist = lambda playlist: Playlist(base_uri=self.base_uri, media=self.media, **playlist)
+        self.playlists = PlaylistList(build_models(build_playlist, 'playlists'))
+
+        build_session_key = lambda params: SessionKey(base_uri=self.base_uri, **params) if params else None
+        self.session_keys = list(build_models(build_session_key, 'session_keys'))
+
+        build_key = lambda params: Key(base_uri=self.base_uri, **params) if params else None
+        self.keys = list(build_models(build_key, 'keys'))
+
+        build_segment = lambda segment: Segment(base_uri=self.base_uri, keyobject=find_key(segment.get('key', {}), self.keys), **segment)
+        self.segments = SegmentList(build_models(build_segment, 'segments'))
 
         self.files = []
         for key in self.keys:
@@ -171,45 +210,6 @@ class M3U8(object):
             if key and key.uri not in self.files:
                 self.files.append(key.uri)
         self.files.extend(self.segments.uri)
-
-        self.media = MediaList([ Media(base_uri=self.base_uri, **media)
-                                 for media in self.data.get('media', []) ])
-
-        self.playlists = PlaylistList([ Playlist(base_uri=self.base_uri, media=self.media, **playlist)
-                                        for playlist in self.data.get('playlists', []) ])
-
-        self.iframe_playlists = PlaylistList()
-        for ifr_pl in self.data.get('iframe_playlists', []):
-            self.iframe_playlists.append(IFramePlaylist(base_uri=self.base_uri,
-                                         uri=ifr_pl['uri'],
-                                         iframe_stream_info=ifr_pl['iframe_stream_info'])
-                                        )
-        self.segment_map = self.data.get('segment_map')
-
-        start = self.data.get('start', None)
-        self.start = start and Start(**start)
-
-        server_control = self.data.get('server_control', None)
-        self.server_control = server_control and ServerControl(**server_control)
-
-        part_inf = self.data.get('part_inf', None)
-        self.part_inf = part_inf and PartInformation(**part_inf)
-
-        skip = self.data.get('skip', None)
-        self.skip = skip and Skip(**skip)
-
-        self.rendition_reports = RenditionReportList([ RenditionReport(base_uri=self.base_uri, **rendition_report)
-                                                  for rendition_report in self.data.get('rendition_reports', []) ])
-
-        self.session_data = SessionDataList([ SessionData(**session_data)
-                             for session_data in self.data.get('session_data', [])
-                             if 'data_id' in session_data ])
-
-        self.session_keys = [ SessionKey(base_uri=self.base_uri, **params) if params else None
-                      for params in self.data.get('session_keys', []) ]
-
-        preload_hint = self.data.get('preload_hint', None)
-        self.preload_hint = preload_hint and PreloadHint(base_uri=self.base_uri, **preload_hint)
 
         content_steering = self.data.get('content_steering', None)
         self.content_steering = content_steering and ContentSteering(base_uri=self.base_uri, **content_steering)
