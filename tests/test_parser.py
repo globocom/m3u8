@@ -2,11 +2,14 @@
 # Copyright 2014 Globo.com Player authors. All rights reserved.
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
+import re
 
 import m3u8
 import playlists
 import pytest
-from m3u8.parser import cast_date_time, ParseError
+from m3u8.parser import cast_date_time, ParseError, save_segment_custom_value, _parse_simple_parameter_raw_value, \
+    get_segment_custom_value
+
 
 def test_should_parse_simple_playlist_from_string():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST)
@@ -400,11 +403,14 @@ def test_simple_playlist_with_discontinuity_sequence():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_DISCONTINUITY_SEQUENCE)
     assert data['discontinuity_sequence'] == 123
 
+
 def test_simple_playlist_with_custom_tags():
-    def get_movie(line, data, lineno):
-        custom_tag = line.split(':')
-        if len(custom_tag) == 2:
-            data['movie'] = custom_tag[1].strip()
+    def get_movie(line, lineno, data, segment):
+        if line.startswith('#EXT-X-MOVIE'):
+            custom_tag = line.split(':')
+            if len(custom_tag) == 2:
+                data['movie'] = custom_tag[1].strip()
+                return True
 
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_CUSTOM_TAGS, strict=False, custom_tags_parser=get_movie)
     assert data['movie'] == 'million dollar baby'
@@ -412,6 +418,68 @@ def test_simple_playlist_with_custom_tags():
     assert 0 == data['media_sequence']
     assert ['http://media.example.com/entire.ts'] == [c['uri'] for c in data['segments']]
     assert [5220] == [c['duration'] for c in data['segments']]
+
+
+def test_iptv_playlist_with_custom_tags():
+    def parse_iptv_attributes(line, lineno, data, state):
+        # Customize parsing #EXTINF
+        if line.startswith('#EXTINF'):
+            chunks = line.replace('#EXTINF' + ':', '').split(',', 1)
+            if len(chunks) == 2:
+                duration_and_props, title = chunks
+            elif len(chunks) == 1:
+                duration_and_props = chunks[0]
+                title = ''
+
+            additional_props = {}
+            chunks = duration_and_props.strip().split(' ', 1)
+            if len(chunks) == 2:
+                duration, raw_props = chunks
+                matched_props = re.finditer(r'([\w\-]+)="([^"]*)"', raw_props)
+                for match in matched_props:
+                    additional_props[match.group(1)] = match.group(2)
+            else:
+                duration = duration_and_props
+
+            if 'segment' not in state:
+                state['segment'] = {}
+            state['segment']['duration'] = float(duration)
+            state['segment']['title'] = title
+
+            save_segment_custom_value(state, 'extinf_props', additional_props)
+
+            state['expect_segment'] = True
+            return True
+
+        # Parse #EXTGRP
+        if line.startswith('#EXTGRP'):
+            _, value = _parse_simple_parameter_raw_value(line, str)
+            save_segment_custom_value(state, 'extgrp', value)
+            state['expect_segment'] = True
+            return True
+
+        # Parse #EXTVLCOPT
+        if line.startswith('#EXTVLCOPT'):
+            _, value = _parse_simple_parameter_raw_value(line, str)
+
+            existing_opts = get_segment_custom_value(state, 'vlcopt', [])
+            existing_opts.append(value)
+            save_segment_custom_value(state, 'vlcopt', existing_opts)
+
+            state['expect_segment'] = True
+            return True
+
+    data = m3u8.parse(playlists.IPTV_PLAYLIST_WITH_CUSTOM_TAGS, strict=False, custom_tags_parser=parse_iptv_attributes)
+
+    assert ['Channel1'] == [c['title'] for c in data['segments']]
+    assert data['segments'][0]['uri'] == 'http://str00.iptv.domain/7331/mpegts?token=longtokenhere'
+    assert data['segments'][0]['custom_parser_values']['extinf_props']['tvg-id'] == 'channel1'
+    assert data['segments'][0]['custom_parser_values']['extinf_props']['group-title'] == 'Group1'
+    assert data['segments'][0]['custom_parser_values']['extinf_props']['catchup-days'] == '7'
+    assert data['segments'][0]['custom_parser_values']['extinf_props']['catchup-type'] == 'flussonic'
+    assert data['segments'][0]['custom_parser_values']['extgrp'] == 'ExtGroup1'
+    assert data['segments'][0]['custom_parser_values']['vlcopt'] == ['video-filter=invert', 'param2=value2']
+
 
 def test_master_playlist_with_frame_rate():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_FRAME_RATE)

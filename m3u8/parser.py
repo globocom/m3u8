@@ -25,7 +25,6 @@ def format_date_time(value):
     return value.isoformat()
 
 
-
 class ParseError(Exception):
 
     def __init__(self, lineno, line):
@@ -71,13 +70,22 @@ def parse(content, strict=False, custom_tags_parser=None):
         lineno += 1
         line = line.strip()
 
+        # Call custom parser if needed
+        if line.startswith('#') and callable(custom_tags_parser):
+            go_to_next_line = custom_tags_parser(line, lineno, data, state)
+
+            # Do not try to parse other standard tags on this line if custom_tags_parser function returns 'True'
+            if go_to_next_line:
+                continue
+
         if line.startswith(protocol.ext_x_byterange):
             _parse_byterange(line, state)
             state['expect_segment'] = True
+            continue
 
         if line.startswith(protocol.ext_x_bitrate):
             _parse_bitrate(line, state)
-            
+
         elif line.startswith(protocol.ext_x_targetduration):
             _parse_simple_parameter(line, data, float)
 
@@ -197,10 +205,9 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_content_steering):
             _parse_content_steering(line, data, state)
 
-        # Comments and whitespace
-        elif line.startswith('#'):
-            if callable(custom_tags_parser):
-                custom_tags_parser(line, data, lineno)
+        elif line.startswith(protocol.ext_m3u):
+            # We don't parse #EXTM3U, it just should to be present
+            pass
 
         elif line.strip() == '':
             # blank lines are legal
@@ -571,3 +578,29 @@ def urljoin(base, url):
     while '//' in url:
         url = url.replace('//', '/\0/')
     return _urljoin(base.replace('\1', '://'), url.replace('\1', '://')).replace('\0', '')
+
+
+def get_segment_custom_value(state, key, default=None):
+    """
+    Helper function for getting custom values for Segment
+    Are useful with custom_tags_parser
+    """
+    if 'segment' not in state:
+        return default
+    if 'custom_parser_values' not in state['segment']:
+        return default
+    return state['segment']['custom_parser_values'].get(key, default)
+
+
+def save_segment_custom_value(state, key, value):
+    """
+    Helper function for saving custom values for Segment
+    Are useful with custom_tags_parser
+    """
+    if 'segment' not in state:
+        state['segment'] = {}
+
+    if 'custom_parser_values' not in state['segment']:
+        state['segment']['custom_parser_values'] = {}
+
+    state['segment']['custom_parser_values'][key] = value

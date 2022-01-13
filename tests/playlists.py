@@ -879,6 +879,14 @@ http://media.example.com/entire.ts
 #EXT-X-ENDLIST
 '''
 
+IPTV_PLAYLIST_WITH_CUSTOM_TAGS = '''#EXTM3U
+#EXTVLCOPT:video-filter=invert
+#EXTGRP:ExtGroup1
+#EXTINF:-1 timeshift="0" catchup-days="7" catchup-type="flussonic" tvg-id="channel1" group-title="Group1",Channel1
+#EXTVLCOPT:param2=value2
+http://str00.iptv.domain/7331/mpegts?token=longtokenhere
+'''
+
 LOW_LATENCY_DELTA_UPDATE_PLAYLIST = '''#EXTM3U
 # Following the example above, this playlist is a response to: GET https://example.com/2M/waitForMSN.php?_HLS_msn=273&_HLS_part=3&_HLS_report=../1M/waitForMSN.php&_HLS_report=../4M/waitForMSN.php&_HLS_skip=YES
 #EXT-X-TARGETDURATION:4

@@ -155,13 +155,14 @@ class M3U8(object):
         self._initialize_attributes()
         self.base_path = base_path
 
-
     def _initialize_attributes(self):
-        self.keys = [ Key(base_uri=self.base_uri, **params) if params else None
-                      for params in self.data.get('keys', []) ]
-        self.segments = SegmentList([ Segment(base_uri=self.base_uri, keyobject=find_key(segment.get('key', {}), self.keys), **segment)
-                                      for segment in self.data.get('segments', []) ])
-        #self.keys = get_uniques([ segment.key for segment in self.segments ])
+        self.keys = [Key(base_uri=self.base_uri, **params) if params else None
+                     for params in self.data.get('keys', [])]
+        self.segments = SegmentList([
+            Segment(base_uri=self.base_uri, keyobject=find_key(segment.get('key', {}), self.keys), **segment)
+            for segment in self.data.get('segments', [])
+        ])
+        # self.keys = get_uniques([ segment.key for segment in self.segments ])
         for attr, param in self.simple_attributes:
             setattr(self, attr, self.data.get(param))
 
@@ -434,12 +435,16 @@ class Segment(BasePathMixin):
 
     `gap_tag`
       GAP tag indicates that a Media Segment is missing
+
+    `custom_parser_values`
+        Additional values which custom_tags_parser might store per segment
     '''
 
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, bitrate=None, byterange=None, cue_out=False, cue_out_start=False,
                  cue_in=False, discontinuity=False, key=None, scte35=None, scte35_duration=None,
-                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None):
+                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None,
+                 custom_parser_values=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -462,6 +467,7 @@ class Segment(BasePathMixin):
             self.init_section = None
         self.dateranges = DateRangeList( [ DateRange(**daterange) for daterange in dateranges ] if dateranges else [] )
         self.gap_tag = gap_tag
+        self.custom_parser_values = custom_parser_values or {}
 
         # Key(base_uri=base_uri, **key) if key else None
 
@@ -470,7 +476,6 @@ class Segment(BasePathMixin):
 
     def dumps(self, last_segment):
         output = []
-
 
         if last_segment and self.key != last_segment.key:
             output.append(str(self.key))
