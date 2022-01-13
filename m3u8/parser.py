@@ -81,6 +81,7 @@ def parse(content, strict=False, custom_tags_parser=None):
         if line.startswith(protocol.ext_x_byterange):
             _parse_byterange(line, state)
             state['expect_segment'] = True
+            continue
 
         if line.startswith(protocol.ext_x_bitrate):
             _parse_bitrate(line, state)
