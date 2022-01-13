@@ -1,9 +1,6 @@
 .. image:: https://travis-ci.org/globocom/m3u8.svg
     :target: https://travis-ci.org/globocom/m3u8
 
-.. image:: https://coveralls.io/repos/globocom/m3u8/badge.png?branch=master
-    :target: https://coveralls.io/r/globocom/m3u8?branch=master
-
 .. image:: https://badge.fury.io/py/m3u8.svg
     :target: https://badge.fury.io/py/m3u8
 
