@@ -10,4 +10,3 @@ python:
   - "3.8-dev"
   - "nightly"
 script: ./runtests
-after_success: coveralls
