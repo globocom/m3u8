@@ -1,5 +1,4 @@
-.. image:: https://travis-ci.org/globocom/m3u8.svg
-    :target: https://travis-ci.org/globocom/m3u8
+.. image:: https://github.com/globocom/m3u8/actions/workflows/main.yml/badge.svg
 
 .. image:: https://badge.fury.io/py/m3u8.svg
     :target: https://badge.fury.io/py/m3u8
