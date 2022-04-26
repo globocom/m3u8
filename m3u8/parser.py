@@ -159,7 +159,7 @@ def parse(content, strict=False, custom_tags_parser=None):
             data['is_endlist'] = True
 
         elif line.startswith(protocol.ext_x_map):
-            quoted_parser = remove_quotes_parser('uri')
+            quoted_parser = remove_quotes_parser('uri', 'byterange')
             segment_map_info = _parse_attribute_list(protocol.ext_x_map, line, quoted_parser)
             state['current_segment_map'] = segment_map_info
             # left for backward compatibility

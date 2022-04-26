@@ -332,6 +332,7 @@ def test_should_parse_segment_map_uri():
 def test_should_parse_segment_map_uri_with_byterange():
     data = m3u8.parse(playlists.MAP_URI_PLAYLIST_WITH_BYTERANGE)
     assert data['segment_map']['uri'] == "main.mp4"
+    assert data['segment_map']['byterange'] == '812@0'
 
 
 def test_should_parse_multiple_map_attributes():

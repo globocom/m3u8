@@ -755,7 +755,7 @@ class InitializationSection(BasePathMixin):
         if self.uri:
             output.append('URI=' + quoted(self.uri))
         if self.byterange:
-            output.append('BYTERANGE=' + self.byterange)
+            output.append('BYTERANGE=' + quoted(self.byterange))
         return "{tag}:{attributes}".format(tag=self.tag, attributes=",".join(output))
 
     def __eq__(self, other):
