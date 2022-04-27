@@ -1017,12 +1017,15 @@ def test_medialist_uri_method():
 
 def test_segment_map_uri_attribute():
     obj = m3u8.M3U8(playlists.MAP_URI_PLAYLIST)
-    assert obj.segment_map['uri'] == "fileSequence0.mp4"
+    assert obj.segment_map[0].uri == "fileSequence0.mp4"
 
 
 def test_segment_map_uri_attribute_with_byterange():
     obj = m3u8.M3U8(playlists.MAP_URI_PLAYLIST_WITH_BYTERANGE)
-    assert obj.segment_map['uri'] == "main.mp4"
+    assert obj.segment_map[0].uri == "main.mp4"
+    assert obj.segment_map[0].byterange == "812@0"
+    assert obj.segment_map[1].uri == "main2.mp4"
+    assert obj.segment_map[1].byterange == "912@0"
 
 
 def test_start_with_negative_offset():
