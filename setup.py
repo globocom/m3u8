@@ -11,8 +11,7 @@ install_reqs = [req for req in open(abspath(join(dirname(__file__), 'requirement
 setup(
     name="m3u8",
     author='Globo.com',
-    author_email='videos3@corp.globo.com',
-    version="1.0.0",
+    version="2.0.0",
     license='MIT',
     zip_safe=False,
     include_package_data=True,
