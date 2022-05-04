@@ -88,7 +88,7 @@ Supported tags
 Encryption keys
 ---------------
 
-The segments may be or not encrypted. The ``keys`` attribute list will
+The segments may or may not be encrypted. The ``keys`` attribute list will
 be a list  with all the different keys as described with `#EXT-X-KEY`_:
 
 Each key has the next properties:
@@ -109,7 +109,7 @@ To traverse the list of keys available:
     import m3u8
 
     m3u8_obj = m3u8.loads('#EXTM3U8 ... etc ...')
-    len(m3u8_obj.keys) => returns the number of keys available in the list (normally 1)
+    len(m3u8_obj.keys)  # => returns the number of keys available in the list (normally 1)
     for key in m3u8_obj.keys:
        if key:  # First one could be None
           key.uri
@@ -217,7 +217,7 @@ Quoting the documentation::
     Tags begin with #EXT.  They are case-sensitive.  All other lines that
     begin with '#' are comments and SHOULD be ignored.
 
-This library ignores all the non standard tags by default. If you want them to be collected while loading the file content,
+This library ignores all the non-standard tags by default. If you want them to be collected while loading the file content,
 you need to pass a function to the `load/loads` functions, following the example below:
 
 .. code-block:: python
@@ -347,7 +347,7 @@ Running Tests
 Contributing
 ============
 
-All contribution is welcome, but we will merge a pull request if, and only if, it
+All contributions are welcome, but we will merge a pull request if, and only if, it
 
 -  has tests
 -  follows the code conventions
