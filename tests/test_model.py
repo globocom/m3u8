@@ -642,7 +642,13 @@ def test_dump_should_work_for_iframe_playlists():
 def test_dump_should_include_program_date_time():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
 
-    assert "EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:33+00:00" in obj.dumps().strip()
+    assert "EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:33.000+00:00" in obj.dumps().strip()
+
+def test_dump_segment_honors_timespec():
+    segment = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME).segments[0]
+    segment_text = segment.dumps(None, timespec='microseconds').strip()
+
+    assert "EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:33.000000+00:00" in segment_text
 
 
 def test_dump_should_not_ignore_zero_duration():
@@ -663,16 +669,16 @@ def test_dump_should_use_decimal_floating_point_for_very_short_durations():
 def test_dump_should_include_segment_level_program_date_time():
     obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_PROGRAM_DATE_TIME)
     # Tag being expected is in the segment level, not the global one
-    assert "#EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:55+00:00" in obj.dumps().strip()
+    assert "#EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:55.000+00:00" in obj.dumps().strip()
 
 
 def test_dump_should_include_segment_level_program_date_time_without_discontinuity():
     obj = m3u8.M3U8(playlists.PLAYLIST_WITH_PROGRAM_DATE_TIME_WITHOUT_DISCONTINUITY)
 
     output = obj.dumps().strip()
-    assert "#EXT-X-PROGRAM-DATE-TIME:2019-06-10T00:05:00+00:00" in output
-    assert "#EXT-X-PROGRAM-DATE-TIME:2019-06-10T00:05:06+00:00" in output
-    assert "#EXT-X-PROGRAM-DATE-TIME:2019-06-10T00:05:12+00:00" in output
+    assert "#EXT-X-PROGRAM-DATE-TIME:2019-06-10T00:05:00.000+00:00" in output
+    assert "#EXT-X-PROGRAM-DATE-TIME:2019-06-10T00:05:06.000+00:00" in output
+    assert "#EXT-X-PROGRAM-DATE-TIME:2019-06-10T00:05:12.000+00:00" in output
 
 
 def test_dump_should_include_map_attributes():

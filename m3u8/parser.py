@@ -21,8 +21,8 @@ def cast_date_time(value):
     return iso8601.parse_date(value)
 
 
-def format_date_time(value):
-    return value.isoformat()
+def format_date_time(value, **kwargs):
+    return value.isoformat(**kwargs)
 
 
 class ParseError(Exception):
