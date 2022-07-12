@@ -153,16 +153,23 @@ def test_should_parse_variant_playlist_with_cc_subtitles_and_audio():
     assert 'http://example.com/with-cc-hi.m3u8' == playlists_list[0]['uri']
     assert 1 == playlists_list[0]['stream_info']['program_id']
     assert 7680000 == playlists_list[0]['stream_info']['bandwidth']
-    assert 'cc' == playlists_list[0]['stream_info']['closed_captions']
+    assert '"cc"' == playlists_list[0]['stream_info']['closed_captions']
     assert 'sub' == playlists_list[0]['stream_info']['subtitles']
     assert 'aud' == playlists_list[0]['stream_info']['audio']
 
     assert 'http://example.com/with-cc-low.m3u8' == playlists_list[-1]['uri']
     assert 1 == playlists_list[-1]['stream_info']['program_id']
     assert 65000 == playlists_list[-1]['stream_info']['bandwidth']
-    assert 'cc' == playlists_list[-1]['stream_info']['closed_captions']
+    assert '"cc"' == playlists_list[-1]['stream_info']['closed_captions']
     assert 'sub' == playlists_list[-1]['stream_info']['subtitles']
     assert 'aud' == playlists_list[-1]['stream_info']['audio']
+
+def test_should_parse_variant_playlist_with_none_cc_and_audio():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_NONE_CC_AND_AUDIO)
+    playlists_list = list(data['playlists'])
+
+    assert 'NONE' == playlists_list[0]['stream_info']['closed_captions']
+    assert 'NONE' == playlists_list[-1]['stream_info']['closed_captions']
 
 def test_should_parse_variant_playlist_with_average_bandwidth():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_AVERAGE_BANDWIDTH)
