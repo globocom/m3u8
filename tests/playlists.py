@@ -1199,4 +1199,17 @@ https://backup.example.com/content/videos/video12/hi/video.m3u8
 #EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=193350,CODECS="avc1.4d001f",URI="https://backup.example.com/content/videos/video12/video-1200k-iframes.m3u8",PATHWAY-ID="CDN-B"
 '''
 
+VARIANT_PLAYLIST_WITH_STABLE_VARIANT_ID = '''
+#EXT-X-STREAM-INF:BANDWIDTH=1280000,STABLE-VARIANT-ID="eb9c6e4de930b36d9a67fbd38a30b39f865d98f4a203d2140bbf71fd58ad764e"
+http://example.com/type0.m3u8
+'''
+
+VARIANT_PLAYLIST_WITH_IFRAME_STABLE_VARIANT_ID = '''
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=128000,STABLE-VARIANT-ID="415901312adff69b967a0644a54f8d00dc14004f36bc8293737e6b4251f60f3f",URI="http://example.com/type0-iframes.m3u8"
+'''
+
+VARIANT_PLAYLIST_WITH_STABLE_RENDITION_ID = '''
+#EXT-X-MEDIA:TYPE=AUDIO,NAME="audio-aac-eng",STABLE-RENDITION-ID="a8213e27c12a158ea8660e0fe8bdcac6072ca26d984e7e8603652bc61fdceffa",URI="http://example.com/eng.m3u8"
+'''
+
 del abspath, dirname, join
