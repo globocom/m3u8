@@ -270,6 +270,7 @@ def _parse_ts_chunk(line, data, state):
     scte_op = state.pop if segment['cue_in'] else state.get
     segment['scte35'] = scte_op('current_cue_out_scte35', None)
     segment['scte35_duration'] = scte_op('current_cue_out_duration', None)
+    segment['scte35_elapsedtime'] = scte_op('current_cue_out_elapsedtime', None)
     segment['discontinuity'] = state.pop('discontinuity', False)
     if state.get('current_key'):
         segment['key'] = state['current_key']
@@ -371,11 +372,24 @@ def _parse_cueout_cont(line, state):
     elements = line.split(':', 1)
     if len(elements) != 2:
         return
-    param, value = elements
-    res = re.match('.*Duration=(.*),SCTE35=(.*)$', value)
-    if res:
-        state['current_cue_out_duration'] = res.group(1)
-        state['current_cue_out_scte35'] = res.group(2)
+
+    cue_info = _parse_attribute_list(
+        protocol.ext_x_cue_out_cont,
+        line,
+        remove_quotes_parser('duration', 'elapsedtime', 'scte35')
+    )
+
+    duration = cue_info.get('duration')
+    if duration:
+        state['current_cue_out_duration'] = duration
+
+    scte35 = cue_info.get('scte35')
+    if duration:
+        state['current_cue_out_scte35'] = scte35
+
+    elapsedtime = cue_info.get('elapsedtime')
+    if elapsedtime:
+        state['current_cue_out_elapsedtime'] = elapsedtime
 
 def _cueout_no_duration(line):
     # this needs to be called first since line.split in all other
