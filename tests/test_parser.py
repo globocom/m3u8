@@ -652,3 +652,15 @@ def test_cue_in_pops_scte35_data_and_duration():
     assert data['segments'][10]['cue_in'] == False
     assert data['segments'][10]['scte35'] == None
     assert data['segments'][10]['scte35_duration'] == None
+
+def test_playlist_with_stable_variant_id():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_STABLE_VARIANT_ID)
+    assert data['playlists'][0]['stream_info']['stable_variant_id'] == 'eb9c6e4de930b36d9a67fbd38a30b39f865d98f4a203d2140bbf71fd58ad764e'
+
+def test_iframe_with_stable_variant_id():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_STABLE_VARIANT_ID)
+    assert data['iframe_playlists'][0]['iframe_stream_info']['stable_variant_id'] == '415901312adff69b967a0644a54f8d00dc14004f36bc8293737e6b4251f60f3f'
+
+def test_media_with_stable_rendition_id():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_STABLE_RENDITION_ID)
+    assert data['media'][0]['stable_rendition_id'] == 'a8213e27c12a158ea8660e0fe8bdcac6072ca26d984e7e8603652bc61fdceffa'

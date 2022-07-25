@@ -302,7 +302,7 @@ def _parse_attribute_list(prefix, line, atribute_parser):
 def _parse_stream_inf(line, data, state):
     data['is_variant'] = True
     data['media_sequence'] = None
-    atribute_parser = remove_quotes_parser('codecs', 'audio', 'video', 'subtitles', 'closed_captions', 'pathway_id')
+    atribute_parser = remove_quotes_parser('codecs', 'audio', 'video', 'subtitles', 'closed_captions', 'pathway_id', 'stable_variant_id')
     atribute_parser["program_id"] = int
     atribute_parser["bandwidth"] = lambda x: int(float(x))
     atribute_parser["average_bandwidth"] = int
@@ -313,7 +313,7 @@ def _parse_stream_inf(line, data, state):
 
 
 def _parse_i_frame_stream_inf(line, data):
-    atribute_parser = remove_quotes_parser('codecs', 'uri', 'pathway_id')
+    atribute_parser = remove_quotes_parser('codecs', 'uri', 'pathway_id', 'stable_variant_id')
     atribute_parser["program_id"] = int
     atribute_parser["bandwidth"] = int
     atribute_parser["average_bandwidth"] = int
@@ -327,7 +327,7 @@ def _parse_i_frame_stream_inf(line, data):
 
 
 def _parse_media(line, data, state):
-    quoted = remove_quotes_parser('uri', 'group_id', 'language', 'assoc_language', 'name', 'instream_id', 'characteristics', 'channels')
+    quoted = remove_quotes_parser('uri', 'group_id', 'language', 'assoc_language', 'name', 'instream_id', 'characteristics', 'channels', 'stable_rendition_id')
     media = _parse_attribute_list(protocol.ext_x_media, line, quoted)
     data['media'].append(media)
 
