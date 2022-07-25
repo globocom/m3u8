@@ -472,7 +472,7 @@ class Segment(BasePathMixin):
     def add_part(self, part):
         self.parts.append(part)
 
-    def dumps(self, last_segment):
+    def dumps(self, last_segment, timespec='milliseconds'):
         output = []
 
         if last_segment and self.key != last_segment.key:
@@ -499,7 +499,7 @@ class Segment(BasePathMixin):
             output.append('#EXT-X-DISCONTINUITY\n')
         if self.program_date_time:
             output.append('#EXT-X-PROGRAM-DATE-TIME:%s\n' %
-                          format_date_time(self.program_date_time))
+                          format_date_time(self.program_date_time, timespec=timespec))
 
         if len(self.dateranges):
             output.append(str(self.dateranges))
