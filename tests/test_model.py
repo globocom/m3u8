@@ -1052,7 +1052,7 @@ def test_playlist_stream_info_contains_group_id_refs():
     obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_VIDEO_CC_SUBS_AND_AUDIO)
     assert len(obj.playlists) == 2
     for pl in obj.playlists:
-        assert pl.stream_info.closed_captions == 'cc'
+        assert pl.stream_info.closed_captions == '"cc"'
         assert pl.stream_info.subtitles == 'sub'
         assert pl.stream_info.audio == 'aud'
         assert pl.stream_info.video == 'vid'
