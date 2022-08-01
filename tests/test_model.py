@@ -159,6 +159,15 @@ def test_segment_cue_out_cont_attributes_dumps():
     )
     assert expected in result
 
+def test_segment_oatcls_scte35_dumps():
+    obj = m3u8.M3U8(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
+
+    result = obj.dumps()
+    expected = (
+        '#EXT-OATCLS-SCTE35:/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg==\n'
+    )
+    assert expected in result
+
 def test_segment_cue_out_start_dumps():
     obj = m3u8.M3U8(playlists.CUE_OUT_WITH_DURATION_PLAYLIST)
 
