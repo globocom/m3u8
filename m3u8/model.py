@@ -513,10 +513,11 @@ class Segment(BasePathMixin):
             output.append(str(self.dateranges))
             output.append('\n')
 
-        if self.oatcls_scte35:
-            output.append(f'{ext_oatcls_scte35}:{self.oatcls_scte35}\n')
 
         if self.cue_out_start:
+            if self.oatcls_scte35:
+                output.append(f'{ext_oatcls_scte35}:{self.oatcls_scte35}\n')
+
             output.append('#EXT-X-CUE-OUT{}\n'.format(
                 (':' + self.scte35_duration) if self.scte35_duration else ''))
         elif self.cue_out:
