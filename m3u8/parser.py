@@ -111,9 +111,12 @@ def parse(content, strict=False, custom_tags_parser=None):
             state['cue_out'] = True
 
         elif line.startswith(protocol.ext_x_cue_out):
-            _parse_cueout(line, state, string_to_lines(content)[lineno - 2])
+            _parse_cueout(line, state)
             state['cue_out_start'] = True
             state['cue_out'] = True
+
+        elif line.startswith(f'{protocol.ext_oatcls_scte35}:'):
+            _parse_oatcls_scte35(line, state)
 
         elif line.startswith(protocol.ext_x_cue_in):
             state['cue_in'] = True
@@ -269,6 +272,7 @@ def _parse_ts_chunk(line, data, state):
     segment['cue_out_start'] = state.pop('cue_out_start', False)
     scte_op = state.pop if segment['cue_in'] else state.get
     segment['scte35'] = scte_op('current_cue_out_scte35', None)
+    segment['oatcls_scte35'] = scte_op('current_cue_out_oatcls_scte35', None)
     segment['scte35_duration'] = scte_op('current_cue_out_duration', None)
     segment['scte35_elapsedtime'] = scte_op('current_cue_out_elapsedtime', None)
     segment['discontinuity'] = state.pop('discontinuity', False)
@@ -397,15 +401,7 @@ def _cueout_no_duration(line):
     if line == protocol.ext_x_cue_out:
         return (None, None)
 
-def _cueout_elemental(line, state, prevline):
-    param, value = line.split(':', 1)
-    res = re.match('.*EXT-OATCLS-SCTE35:(.*)$', prevline)
-    if res:
-        return (res.group(1), value)
-    else:
-        return None
-
-def _cueout_envivio(line, state, prevline):
+def _cueout_envivio(line, state):
     param, value = line.split(':', 1)
     res = re.match('.*DURATION=(.*),.*,CUE="(.*)"', value)
     if res:
@@ -414,8 +410,6 @@ def _cueout_envivio(line, state, prevline):
         return None
 
 def _cueout_duration(line):
-    # this needs to be called after _cueout_elemental
-    # as it would capture those cues incompletely
     # This was added separately rather than modifying "simple"
     param, value = line.split(':', 1)
     res = re.match(r'DURATION=(.*)', value)
@@ -423,22 +417,21 @@ def _cueout_duration(line):
         return (None, res.group(1))
 
 def _cueout_simple(line):
-    # this needs to be called after _cueout_elemental
-    # as it would capture those cues incompletely
     param, value = line.split(':', 1)
     res = re.match(r'^(\d+(?:\.\d)?\d*)$', value)
     if res:
         return (None, res.group(1))
 
-def _parse_cueout(line, state, prevline):
+def _parse_cueout(line, state):
     _cueout_state = (_cueout_no_duration(line)
-                     or _cueout_elemental(line, state, prevline)
-                     or _cueout_envivio(line, state, prevline)
+                     or _cueout_envivio(line, state)
                      or _cueout_duration(line)
                      or _cueout_simple(line))
     if _cueout_state:
-        state['current_cue_out_scte35'] = _cueout_state[0]
-        state['current_cue_out_duration'] = _cueout_state[1]
+        cue_out_scte35, cue_out_duration = _cueout_state
+        current_cue_out_scte35 = state.get('current_cue_out_scte35')
+        state['current_cue_out_scte35'] = cue_out_scte35 or current_cue_out_scte35
+        state['current_cue_out_duration'] = cue_out_duration
 
 def _parse_server_control(line, data, state):
     attribute_parser = {
@@ -551,6 +544,13 @@ def _parse_content_steering(line, data, state):
     data['content_steering'] = _parse_attribute_list(
         protocol.ext_x_content_steering, line, attribute_parser
     )
+
+
+def _parse_oatcls_scte35(line, state):
+    scte35_cue = line.split(':', 1)[1]
+    state['current_cue_out_oatcls_scte35'] = scte35_cue
+    state['current_cue_out_scte35'] = scte35_cue
+
 
 def string_to_lines(string):
     return string.strip().splitlines()

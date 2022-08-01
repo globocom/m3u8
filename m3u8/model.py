@@ -6,7 +6,13 @@ import decimal
 import os
 import errno
 
-from m3u8.protocol import ext_x_start, ext_x_key, ext_x_session_key, ext_x_map
+from m3u8.protocol import (
+    ext_x_key,
+    ext_x_map,
+    ext_oatcls_scte35,
+    ext_x_session_key,
+    ext_x_start,
+)
 from m3u8.parser import parse, format_date_time
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
 
@@ -443,8 +449,8 @@ class Segment(BasePathMixin):
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, bitrate=None, byterange=None, cue_out=False,
                  cue_out_start=False, cue_in=False, discontinuity=False, key=None, scte35=None,
-                 scte35_duration=None, scte35_elapsedtime=None, keyobject=None, parts=None,
-                 init_section=None, dateranges=None, gap_tag=None, custom_parser_values=None):
+                 oatcls_scte35=None, scte35_duration=None, scte35_elapsedtime=None, keyobject=None,
+                 parts=None, init_section=None, dateranges=None, gap_tag=None, custom_parser_values=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -458,6 +464,7 @@ class Segment(BasePathMixin):
         self.cue_out = cue_out
         self.cue_in = cue_in
         self.scte35 = scte35
+        self.oatcls_scte35 = oatcls_scte35
         self.scte35_duration = scte35_duration
         self.scte35_elapsedtime = scte35_elapsedtime
         self.key = keyobject
@@ -505,6 +512,9 @@ class Segment(BasePathMixin):
         if len(self.dateranges):
             output.append(str(self.dateranges))
             output.append('\n')
+
+        if self.oatcls_scte35:
+            output.append(f'{ext_oatcls_scte35}:{self.oatcls_scte35}\n')
 
         if self.cue_out_start:
             output.append('#EXT-X-CUE-OUT{}\n'.format(
