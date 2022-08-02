@@ -285,12 +285,32 @@ def test_should_parse_program_date_time_from_playlist():
 
 def test_should_parse_scte35_from_playlist():
     data = m3u8.parse(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
-    assert not data['segments'][2]['cue_out']
-    assert data['segments'][3]['scte35'] == '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg=='
-    assert data['segments'][3]['oatcls_scte35'] == '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg=='
-    assert data['segments'][3]['cue_out']
-    assert '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg==' == data['segments'][4]['scte35']
-    assert '50' == data['segments'][4]['scte35_duration']
+
+    # cue_out should be maintained from [EXT-X-CUE-OUT, EXT-X-CUE-IN)
+    actual_cue_status = [s['cue_out'] for s in data['segments']]
+    expected_cue_status = [
+        False, False, False, True, True, True, True, True, True, False, False
+    ]
+    assert actual_cue_status == expected_cue_status
+
+    # scte35 should be maintained from [EXT-X-CUE-OUT, EXT-X-CUE-IN]
+    cue = '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg=='
+    actual_scte35 = [s['scte35'] for s in data['segments']]
+    expected_scte35 = [None, None, None, cue, cue, cue, cue, cue, cue, cue, None]
+    assert actual_scte35 == expected_scte35
+
+    # oatcls_scte35 should be maintained from [EXT-X-CUE-OUT, EXT-X-CUE-IN]
+    actual_oatcls_scte35 = [s['oatcls_scte35'] for s in data['segments']]
+    expected_oatcls_scte35 = [None, None, None, cue, cue, cue, cue, cue, cue, cue, None]
+    assert actual_oatcls_scte35 == expected_oatcls_scte35
+
+    # durations should be maintained from  from [EXT-X-CUE-OUT, EXT-X-CUE-IN]
+    actual_scte35_duration = [s['scte35_duration'] for s in data['segments']]
+    expected_scte35_duration = [
+        None, None, None, '50.000', '50', '50', '50', '50', '50', '50', None
+    ]
+    assert actual_scte35_duration == expected_scte35_duration
+
 
 def test_should_parse_envivio_cue_playlist():
     data = m3u8.parse(playlists.CUE_OUT_ENVIVIO_PLAYLIST)
