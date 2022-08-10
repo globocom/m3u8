@@ -368,12 +368,8 @@ class M3U8(object):
 
     def _create_sub_directories(self, filename):
         basename = os.path.dirname(filename)
-        try:
-            if basename:
-                os.makedirs(basename)
-        except OSError as error:
-            if error.errno != errno.EEXIST:
-                raise
+        if basename:
+            os.makedirs(basename, exist_ok=True)
 
 
 class Segment(BasePathMixin):
