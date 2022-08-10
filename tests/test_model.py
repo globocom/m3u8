@@ -612,21 +612,18 @@ def test_dump_should_create_sub_directories(tmpdir):
 
     assert_file_content(filename, expected)
 
-def test_dump_should_raise_if_create_sub_directories_fails(tmpdir, monkeypatch):
-    def raiseOSError(*args):
-        raise OSError
+def test_dump_should_raise_if_create_sub_directories_fails(tmpdir):
+    # The first subdirectory is read-only
+    subdir_1 = os.path.join(tmpdir, 'subdir1')
+    os.mkdir(subdir_1, mode=0o400)
 
-    monkeypatch.setattr(os, "makedirs", raiseOSError)
+    # The file is to be stored in a second subdirectory that's underneath the first
+    subdir_2 = os.path.join(subdir_1, 'subdir2')
+    file_name = os.path.join(subdir_2, 'playlist.m3u8')
 
-    raised = False
-    try:
-        obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
-        obj.dump(str(tmpdir.join('subdir1', 'playlist.m3u8')))
-    except OSError as e:
-        raised = True
-    finally:
-        assert raised
-
+    # When we try to write it, we'll be prevented from creating the second subdirectory
+    with pytest.raises(OSError):
+        m3u8.M3U8(playlists.SIMPLE_PLAYLIST).dump(file_name)
 
 def test_dump_should_work_for_variant_streams():
     obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST)
