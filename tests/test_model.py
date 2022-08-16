@@ -222,7 +222,7 @@ def test_segment_asset_metadata_dumps():
 
     # Only insert EXT-X-ASSET at cue out
     asset_metadata_line = (
-        '#EXT-X-ASSET:GENRE="CV",CAID="12345678",EPISODE="Episode%20Name%20Date",'
+        '#EXT-X-ASSET:GENRE=CV,CAID=12345678,EPISODE="Episode%20Name%20Date",'
         'SEASON="Season%20Name%20and%20Number",SERIES="Series%2520Name"\n'
     )
     assert result.count(asset_metadata_line) == 1

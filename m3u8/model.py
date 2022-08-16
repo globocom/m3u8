@@ -519,7 +519,7 @@ class Segment(BasePathMixin):
             if self.asset_metadata:
                 asset_suffix = []
                 for metadata_key, metadata_value in self.asset_metadata.items():
-                    asset_suffix.append(f'{metadata_key.upper()}="{metadata_value}"')
+                    asset_suffix.append(f'{metadata_key.upper()}={metadata_value}')
                 output.append(f"{ext_x_asset}:{','.join(asset_suffix)}\n")
 
             output.append('#EXT-X-CUE-OUT{}\n'.format(
