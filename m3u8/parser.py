@@ -559,8 +559,10 @@ def _parse_oatcls_scte35(line, state):
 
 
 def _parse_asset(line, state):
+    # EXT-X-ASSET attribute values may or may not be quoted, and need to be URL-encoded.
+    # They are preserved as-is here to prevent loss of information.
     state['asset_metadata'] = _parse_attribute_list(
-        protocol.ext_x_asset, line, {}, default_parser=remove_quotes
+        protocol.ext_x_asset, line, {}, default_parser=str
     )
 
 
