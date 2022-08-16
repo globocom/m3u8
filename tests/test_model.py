@@ -166,16 +166,8 @@ def test_segment_oatcls_scte35_dumps():
     # Only insert OATCLS-SCTE35 at cue out
     cue_out_line = (
         '#EXT-OATCLS-SCTE35:/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg==\n'
-        '#EXT-X-CUE-OUT'
     )
-    assert cue_out_line in result
-    
-    # Don't insert it for continued cue outs
-    cue_out_cont_line =  (
-        '#EXT-OATCLS-SCTE35:/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg==\n'
-        '#EXT-X-CUE-OUT-CONT'
-    )
-    assert cue_out_cont_line not in result
+    assert result.count(cue_out_line) == 1
 
 def test_segment_cue_out_start_dumps():
     obj = m3u8.M3U8(playlists.CUE_OUT_WITH_DURATION_PLAYLIST)
@@ -222,6 +214,18 @@ def test_segment_cue_out_no_duration():
     obj = m3u8.M3U8(playlists.CUE_OUT_NO_DURATION_PLAYLIST)
     assert obj.segments[0].cue_out_start == True
     assert obj.segments[2].cue_in == True
+
+
+def test_segment_asset_metadata_dumps():
+    obj = m3u8.M3U8(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
+    result = obj.dumps()
+
+    # Only insert EXT-X-ASSET at cue out
+    asset_metadata_line = (
+        '#EXT-X-ASSET:GENRE="CV",CAID="12345678",EPISODE="Episode%20Name%20Date",'
+        'SEASON="Season%20Name%20and%20Number",SERIES="Series%2520Name"\n'
+    )
+    assert result.count(asset_metadata_line) == 1
 
 def test_keys_on_clear_playlist():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
