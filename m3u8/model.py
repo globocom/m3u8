@@ -7,9 +7,10 @@ import os
 import errno
 
 from m3u8.protocol import (
+    ext_oatcls_scte35,
+    ext_x_asset,
     ext_x_key,
     ext_x_map,
-    ext_oatcls_scte35,
     ext_x_session_key,
     ext_x_start,
 )
@@ -445,8 +446,9 @@ class Segment(BasePathMixin):
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, bitrate=None, byterange=None, cue_out=False,
                  cue_out_start=False, cue_in=False, discontinuity=False, key=None, scte35=None,
-                 oatcls_scte35=None, scte35_duration=None, scte35_elapsedtime=None, keyobject=None,
-                 parts=None, init_section=None, dateranges=None, gap_tag=None, custom_parser_values=None):
+                 oatcls_scte35=None, scte35_duration=None, scte35_elapsedtime=None, asset_metadata=None,
+                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None,
+                 custom_parser_values=None):
         self.uri = uri
         self.duration = duration
         self.title = title
@@ -463,6 +465,7 @@ class Segment(BasePathMixin):
         self.oatcls_scte35 = oatcls_scte35
         self.scte35_duration = scte35_duration
         self.scte35_elapsedtime = scte35_elapsedtime
+        self.asset_metadata = asset_metadata
         self.key = keyobject
         self.parts = PartialSegmentList( [ PartialSegment(base_uri=self._base_uri, **partial) for partial in parts ] if parts else [] )
         if init_section is not None:
@@ -509,10 +512,15 @@ class Segment(BasePathMixin):
             output.append(str(self.dateranges))
             output.append('\n')
 
-
         if self.cue_out_start:
             if self.oatcls_scte35:
                 output.append(f'{ext_oatcls_scte35}:{self.oatcls_scte35}\n')
+
+            if self.asset_metadata:
+                asset_suffix = []
+                for metadata_key, metadata_value in self.asset_metadata.items():
+                    asset_suffix.append(f'{metadata_key.upper()}="{metadata_value}"')
+                output.append(f"{ext_x_asset}:{','.join(asset_suffix)}\n")
 
             output.append('#EXT-X-CUE-OUT{}\n'.format(
                 (':' + self.scte35_duration) if self.scte35_duration else ''))

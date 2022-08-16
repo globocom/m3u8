@@ -118,6 +118,9 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(f'{protocol.ext_oatcls_scte35}:'):
             _parse_oatcls_scte35(line, state)
 
+        elif line.startswith(f'{protocol.ext_x_asset}:'):
+            _parse_asset(line, state)
+
         elif line.startswith(protocol.ext_x_cue_in):
             state['cue_in'] = True
 
@@ -275,6 +278,7 @@ def _parse_ts_chunk(line, data, state):
     segment['oatcls_scte35'] = scte_op('current_cue_out_oatcls_scte35', None)
     segment['scte35_duration'] = scte_op('current_cue_out_duration', None)
     segment['scte35_elapsedtime'] = scte_op('current_cue_out_elapsedtime', None)
+    segment['asset_metadata'] = scte_op('asset_metadata', None)
     segment['discontinuity'] = state.pop('discontinuity', False)
     if state.get('current_key'):
         segment['key'] = state['current_key']
@@ -289,7 +293,7 @@ def _parse_ts_chunk(line, data, state):
     data['segments'].append(segment)
 
 
-def _parse_attribute_list(prefix, line, atribute_parser):
+def _parse_attribute_list(prefix, line, atribute_parser, default_parser=None):
     params = ATTRIBUTELISTPATTERN.split(line.replace(prefix + ':', ''))[1::2]
 
     attributes = {}
@@ -299,6 +303,8 @@ def _parse_attribute_list(prefix, line, atribute_parser):
 
         if name in atribute_parser:
             value = atribute_parser[name](value)
+        elif default_parser is not None:
+            value = default_parser(value)
 
         attributes[name] = value
 
@@ -550,6 +556,12 @@ def _parse_oatcls_scte35(line, state):
     scte35_cue = line.split(':', 1)[1]
     state['current_cue_out_oatcls_scte35'] = scte35_cue
     state['current_cue_out_scte35'] = scte35_cue
+
+
+def _parse_asset(line, state):
+    state['asset_metadata'] = _parse_attribute_list(
+        protocol.ext_x_asset, line, {}, default_parser=remove_quotes
+    )
 
 
 def string_to_lines(string):
