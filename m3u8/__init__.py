@@ -20,7 +20,7 @@ __all__ = ('M3U8', 'Segment', 'SegmentList', 'PartialSegment',
             'PartialSegmentList', 'Key', 'Playlist', 'IFramePlaylist',
             'Media', 'MediaList', 'PlaylistList', 'Start', 'RenditionReport',
             'RenditionReportList', 'ServerControl', 'Skip', 'PartInformation',
-            'PreloadHint' 'DateRange', 'DateRangeList', 'ContentSteering',
+            'PreloadHint', 'DateRange', 'DateRangeList', 'ContentSteering',
             'loads', 'load', 'parse', 'ParseError')
 
 def loads(content, uri=None, custom_tags_parser=None):
