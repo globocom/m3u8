@@ -1003,6 +1003,10 @@ class StreamInfo(object):
             stream_inf.append('PATHWAY-ID=' + quoted(self.pathway_id))
         if self.stable_variant_id is not None:
             stream_inf.append('STABLE-VARIANT-ID=' + quoted(self.stable_variant_id))
+        if self.audio is not None:
+            stream_inf.append('AUDIO=' + quoted(self.audio))
+        if self.subtitles is not None:
+            stream_inf.append('SUBTITLES=' + quoted(self.subtitles))
         return ",".join(stream_inf)
 
 
