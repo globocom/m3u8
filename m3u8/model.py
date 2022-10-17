@@ -1007,6 +1007,8 @@ class StreamInfo(object):
             stream_inf.append('AUDIO=' + quoted(self.audio))
         if self.subtitles is not None:
             stream_inf.append('SUBTITLES=' + quoted(self.subtitles))
+        if self.video is not None:
+            stream_inf.append('VIDEO=' + quoted(self.video))
         return ",".join(stream_inf)
 
 
