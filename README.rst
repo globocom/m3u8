@@ -57,7 +57,7 @@ Supported tags
 * `#EXT-X-KEY`_
 * `#EXT-X-STREAM-INF`_
 * `#EXT-X-VERSION`_
-* #EXT-X-ALLOW-CACHE
+* `#EXT-X-ALLOW-CACHE`_
 * `#EXT-X-ENDLIST`_
 * `#EXTINF`_
 * `#EXT-X-I-FRAMES-ONLY`_
@@ -73,11 +73,11 @@ Supported tags
 * `#EXT-X-INDEPENDENT-SEGMENTS`_
 * `#EXT-X-MAP`_
 * `#EXT-X-START`_
-* #EXT-X-SERVER-CONTROL
-* #EXT-X-PART-INF
-* #EXT-X-PART
-* #EXT-X-RENDITION-REPORT
-* #EXT-X-SKIP
+* `#EXT-X-SERVER-CONTROL`_
+* `#EXT-X-PART-INF`_
+* `#EXT-X-PART`_
+* `#EXT-X-RENDITION-REPORT`_
+* `#EXT-X-SKIP`_
 * `#EXT-X-SESSION-DATA`_
 * `#EXT-X-PRELOAD-HINT`_
 * `#EXT-X-SESSION-KEY`_
@@ -359,6 +359,7 @@ the same thing.
 .. _m3u8: https://tools.ietf.org/html/rfc8216
 .. _#EXT-X-VERSION: https://tools.ietf.org/html/rfc8216#section-4.3.1.2
 .. _#EXTINF: https://tools.ietf.org/html/rfc8216#section-4.3.2.1
+.. _#EXT-X-ALLOW-CACHE: https://datatracker.ietf.org/doc/html/draft-pantos-http-live-streaming-07#section-3.3.6
 .. _#EXT-X-BITRATE: https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.8
 .. _#EXT-X-BYTERANGE: https://tools.ietf.org/html/rfc8216#section-4.3.2.2
 .. _#EXT-X-DISCONTINUITY: https://tools.ietf.org/html/rfc8216#section-4.3.2.3
@@ -382,7 +383,12 @@ the same thing.
 .. _#EXT-X-PRELOAD-HINT: https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis-09#section-4.4.5.3
 .. _#EXT-X-DATERANGE: https://tools.ietf.org/html/rfc8216#section-4.3.2.7
 .. _#EXT-X-GAP: https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-05#section-4.4.2.7
-.. _#EXT-X-CONTENT-STEERING: https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-10#section-4.4.6.6
+.. _#EXT-X-CONTENT-STEERING: https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-10#section-4.4.6.64
+.. _#EXT-X-SKIP: https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.5.2
+.. _#EXT-X-RENDITION-REPORT: https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.5.4
+.. _#EXT-X-PART: https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.9
+.. _#EXT-X-PART-INF: https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.3.7
+.. _#EXT-X-SERVER-CONTROL: https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.3.8
 .. _issue 1: https://github.com/globocom/m3u8/issues/1
 .. _variant streams: https://tools.ietf.org/html/rfc8216#section-6.2.4
 .. _example here: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.5
