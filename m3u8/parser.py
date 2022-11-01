@@ -412,8 +412,7 @@ def _cueout_envivio(line, state):
     res = re.match('.*DURATION=(.*),.*,CUE="(.*)"', value)
     if res:
         return (res.group(2), res.group(1))
-    else:
-        return None
+    return None
 
 def _cueout_duration(line):
     # This was added separately rather than modifying "simple"

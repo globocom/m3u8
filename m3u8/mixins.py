@@ -8,8 +8,7 @@ def _urijoin(base_uri, path):
         if base_uri[-1] != '/':
             base_uri += '/'
         return urljoin(base_uri, path)
-    else:
-        return os.path.normpath(os.path.join(base_uri, path.strip('/')))
+    return os.path.normpath(os.path.join(base_uri, path.strip('/')))
 
 
 class BasePathMixin(object):
@@ -20,10 +19,9 @@ class BasePathMixin(object):
             return None
         if is_url(self.uri):
             return self.uri
-        else:
-            if self.base_uri is None:
-                raise ValueError('There can not be `absolute_uri` with no `base_uri` set')
-            return _urijoin(self.base_uri, self.uri)
+        if self.base_uri is None:
+            raise ValueError('There can not be `absolute_uri` with no `base_uri` set')
+        return _urijoin(self.base_uri, self.uri)
 
     @property
     def base_path(self):
