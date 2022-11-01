@@ -207,8 +207,8 @@ def test_segment_envivio_scte35_attribute():
 
 def test_segment_unknown_scte35_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_INVALID_PLAYLIST)
-    assert obj.segments[0].scte35 == None
-    assert obj.segments[0].scte35_duration == None
+    assert obj.segments[0].scte35 is None
+    assert obj.segments[0].scte35_duration is None
 
 def test_segment_cue_out_no_duration():
     obj = m3u8.M3U8(playlists.CUE_OUT_NO_DURATION_PLAYLIST)
@@ -231,7 +231,7 @@ def test_keys_on_clear_playlist():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
 
     assert len(obj.keys) == 1
-    assert obj.keys[0] == None
+    assert obj.keys[0] is None
 
 
 def test_keys_on_simple_encrypted_playlist():
@@ -1269,7 +1269,7 @@ def test_iframe_playlists_base_path_update():
     obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS)
 
     assert obj.iframe_playlists[0].uri == 'video-800k-iframes.m3u8'
-    assert obj.iframe_playlists[0].base_uri == None
+    assert obj.iframe_playlists[0].base_uri is None
 
     obj.base_path = 'http://localhost/base_path'
     obj.base_uri = 'http://localhost/base_uri'
