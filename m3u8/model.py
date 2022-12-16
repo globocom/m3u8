@@ -174,9 +174,8 @@ class M3U8(object):
         for attr, param in self.simple_attributes:
             setattr(self, attr, self.data.get(param))
 
-        if self.media_sequence is not None:
-            for i, segment in enumerate(self.segments, self.media_sequence):
-                segment.media_sequence = i
+        for i, segment in enumerate(self.segments, self.media_sequence or 0):
+            segment.media_sequence = i
 
         self.files = []
         for key in self.keys:
