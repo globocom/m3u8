@@ -174,6 +174,10 @@ class M3U8(object):
         for attr, param in self.simple_attributes:
             setattr(self, attr, self.data.get(param))
 
+        if self.media_sequence is not None:
+            for i, segment in enumerate(self.segments, self.media_sequence):
+                segment.media_sequence = i
+
         self.files = []
         for key in self.keys:
             # Avoid None key, it could be the first one, don't repeat them
@@ -448,7 +452,8 @@ class Segment(BasePathMixin):
                  cue_out_start=False, cue_in=False, discontinuity=False, key=None, scte35=None,
                  oatcls_scte35=None, scte35_duration=None, scte35_elapsedtime=None, asset_metadata=None,
                  keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None,
-                 custom_parser_values=None):
+                 media_sequence=None, custom_parser_values=None):
+        self.media_sequence = media_sequence
         self.uri = uri
         self.duration = duration
         self.title = title

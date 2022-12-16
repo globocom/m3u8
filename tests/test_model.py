@@ -51,9 +51,9 @@ def test_target_duration_attribute():
 
 def test_media_sequence_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
-    mock_parser_data(obj, {'media_sequence': '1234567'})
+    mock_parser_data(obj, {'media_sequence': 1234567})
 
-    assert '1234567' == obj.media_sequence
+    assert 1234567 == obj.media_sequence
 
 
 def test_program_date_time_attribute():
@@ -1430,6 +1430,11 @@ def test_add_content_steering_base_uri_update():
     obj.base_uri = "https://yet-another.example.com/"
 
     assert obj.content_steering.absolute_uri == "https://yet-another.example.com/steering?video=00012"
+
+def test_segment_media_sequence():
+    obj = m3u8.M3U8(playlists.SLIDING_WINDOW_PLAYLIST)
+    assert [s.media_sequence for s in obj.segments] == [2680, 2681, 2682]
+
 # custom asserts
 
 
