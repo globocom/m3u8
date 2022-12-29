@@ -821,7 +821,7 @@ class Playlist(BasePathMixin):
         self.base_uri = base_uri
 
         resolution = stream_info.get('resolution')
-        if resolution != None:
+        if resolution is not None:
             resolution = resolution.strip('"')
             values = resolution.split('x')
             resolution_pair = (int(values[0]), int(values[1]))

@@ -678,8 +678,8 @@ def test_cue_in_pops_scte35_data_and_duration():
     assert data['segments'][9]['scte35'] == '/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg=='
     assert data['segments'][9]['scte35_duration'] == '50'
     assert data['segments'][10]['cue_in'] == False
-    assert data['segments'][10]['scte35'] == None
-    assert data['segments'][10]['scte35_duration'] == None
+    assert data['segments'][10]['scte35'] is None
+    assert data['segments'][10]['scte35_duration'] is None
 
 def test_playlist_with_stable_variant_id():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_STABLE_VARIANT_ID)
