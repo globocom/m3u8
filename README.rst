@@ -376,6 +376,9 @@ the same thing.
 .. _#EXT-X-MEDIA: https://tools.ietf.org/html/rfc8216#section-4.3.4.1
 .. _#EXT-X-STREAM-INF: https://tools.ietf.org/html/rfc8216#section-4.3.4.2
 .. _#EXT-X-I-FRAME-STREAM-INF: https://tools.ietf.org/html/rfc8216#section-4.3.4.3
+.. _#EXT-X-IMAGES-ONLY: https://github.com/image-media-playlist/spec/blob/master/image_media_playlist_v0_4.pdf
+.. _#EXT-X-IMAGE-STREAM-INF: https://github.com/image-media-playlist/spec/blob/master/image_media_playlist_v0_4.pdf
+.. _#EXT-X-TILES: https://github.com/image-media-playlist/spec/blob/master/image_media_playlist_v0_4.pdf
 .. _#EXT-X-SESSION-DATA: https://tools.ietf.org/html/rfc8216#section-4.3.4.4
 .. _#EXT-X-SESSION-KEY: https://tools.ietf.org/html/rfc8216#section-4.3.4.5
 .. _#EXT-X-INDEPENDENT-SEGMENTS: https://tools.ietf.org/html/rfc8216#section-4.3.5.1
