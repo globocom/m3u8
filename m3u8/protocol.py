@@ -41,3 +41,6 @@ ext_x_preload_hint = "#EXT-X-PRELOAD-HINT"
 ext_x_daterange = "#EXT-X-DATERANGE"
 ext_x_gap = "#EXT-X-GAP"
 ext_x_content_steering = "#EXT-X-CONTENT-STEERING"
+ext_x_image_stream_inf = '#EXT-X-IMAGE-STREAM-INF'
+ext_x_images_only = '#EXT-X-IMAGES-ONLY'
+ext_x_tiles = '#EXT-X-TILES'
