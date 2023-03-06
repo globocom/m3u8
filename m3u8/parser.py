@@ -44,10 +44,13 @@ def parse(content, strict=False, custom_tags_parser=None):
         "is_endlist": False,
         "is_i_frames_only": False,
         "is_independent_segments": False,
+        "is_images_only": False,
         "playlist_type": None,
         "playlists": [],
         "segments": [],
         "iframe_playlists": [],
+        "image_playlists": [],
+        "tiles": [],
         "media": [],
         "keys": [],
         "rendition_reports": [],
@@ -214,6 +217,15 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_content_steering):
             _parse_content_steering(line, data, state)
 
+        elif line.startswith(protocol.ext_x_image_stream_inf):
+            _parse_image_stream_inf(line, data)
+
+        elif line.startswith(protocol.ext_x_images_only):
+            data['is_images_only'] = True
+
+        elif line.startswith(protocol.ext_x_tiles):
+            _parse_tiles(line, data, state)
+
         elif line.startswith(protocol.ext_m3u):
             # We don't parse #EXTM3U, it just should to be present
             pass
@@ -361,6 +373,39 @@ def _parse_i_frame_stream_inf(line, data):
     data["iframe_playlists"].append(iframe_playlist)
 
 
+def _parse_image_stream_inf(line, data):
+    atribute_parser = remove_quotes_parser(
+        "codecs", "uri", "pathway_id", "stable_variant_id"
+    )
+    atribute_parser["program_id"] = int
+    atribute_parser["bandwidth"] = int
+    atribute_parser["average_bandwidth"] = int
+    atribute_parser["resolution"] = lambda x: tuple(map(int, x.split("x")))
+    image_stream_info = _parse_attribute_list(
+        protocol.ext_x_image_stream_inf, line, atribute_parser
+    )
+    image_playlist = {
+        "uri": image_stream_info.pop("uri"),
+        "image_stream_info": image_stream_info,
+    }
+
+    data["image_playlists"].append(image_playlist)
+
+
+
+def _parse_tiles(line, data, state):
+    quoted_parser = remove_quotes_parser("uri")
+    attribute_parser = {
+        "resolution": lambda x: tuple(map(int, x.split("x"))),
+        "layout": lambda x: tuple(map(int, x.split("x"))),
+        "duration": lambda x: float(x)
+    }
+    tiles_info = _parse_attribute_list(
+        protocol.ext_x_tiles, line, attribute_parser, quoted_parser
+    )
+    data["tiles"].append(tiles_info)
+
+
 def _parse_media(line, data, state):
     quoted = remove_quotes_parser(
         "uri",
@@ -372,6 +417,8 @@ def _parse_media(line, data, state):
         "characteristics",
         "channels",
         "stable_rendition_id",
+        "thumbnails",
+        "image",
     )
     media = _parse_attribute_list(protocol.ext_x_media, line, quoted)
     data["media"].append(media)
