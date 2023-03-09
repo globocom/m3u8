@@ -1,5 +1,6 @@
 # coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
+# Copyright 2023 Ronan RABOUIN
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 import decimal
@@ -131,6 +132,13 @@ class M3U8(object):
         Returns true if EXT-X-INDEPENDENT-SEGMENTS tag present in M3U8.
         https://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.4.16
 
+      `image_playlists`
+        If this is a variant playlist (`is_variant` is True), returns a list of
+        ImagePlaylist objects
+
+      `is_images_only`
+        Returns true if EXT-X-IMAGES-ONLY tag present in M3U8.
+        https://github.com/image-media-playlist/spec/blob/master/image_media_playlist_v0_4.pdf
     """
 
     simple_attributes = (
@@ -146,6 +154,7 @@ class M3U8(object):
         ("allow_cache", "allow_cache"),
         ("playlist_type", "playlist_type"),
         ("discontinuity_sequence", "discontinuity_sequence"),
+        ("is_images_only", "is_images_only")
     )
 
     def __init__(
@@ -225,6 +234,16 @@ class M3U8(object):
                 )
             )
 
+        self.image_playlists = PlaylistList()
+        for img_pl in self.data.get('image_playlists', []):
+            self.image_playlists.append(
+                ImagePlaylist(
+                    base_uri=self.base_uri,
+                    uri=img_pl["uri"],
+                    image_stream_info=img_pl["image_stream_info"]
+                )
+            )
+
         start = self.data.get("start", None)
         self.start = start and Start(**start)
 
@@ -282,6 +301,7 @@ class M3U8(object):
         self.iframe_playlists.base_uri = new_base_uri
         self.segments.base_uri = new_base_uri
         self.rendition_reports.base_uri = new_base_uri
+        self.image_playlists.base_uri = new_base_uri
         for key in self.keys:
             if key:
                 key.base_uri = new_base_uri
@@ -315,6 +335,7 @@ class M3U8(object):
         self.segments.base_path = self._base_path
         self.playlists.base_path = self._base_path
         self.iframe_playlists.base_path = self._base_path
+        self.image_playlists.base_path = self._base_path
         self.rendition_reports.base_path = self._base_path
         if self.preload_hint:
             self.preload_hint.base_path = self._base_path
@@ -329,6 +350,11 @@ class M3U8(object):
         if iframe_playlist is not None:
             self.is_variant = True
             self.iframe_playlists.append(iframe_playlist)
+
+    def add_image_playlist(self, image_playlist):
+        if image_playlist is not None:
+            self.is_variant = True
+            self.image_playlists.append(image_playlist)   
 
     def add_media(self, media):
         self.media.append(media)
@@ -347,8 +373,6 @@ class M3U8(object):
         output = ["#EXTM3U"]
         if self.content_steering:
             output.append(str(self.content_steering))
-        if self.is_independent_segments:
-            output.append("#EXT-X-INDEPENDENT-SEGMENTS")
         if self.media_sequence:
             output.append("#EXT-X-MEDIA-SEQUENCE:" + str(self.media_sequence))
         if self.discontinuity_sequence:
@@ -359,6 +383,8 @@ class M3U8(object):
             output.append("#EXT-X-ALLOW-CACHE:" + self.allow_cache.upper())
         if self.version:
             output.append("#EXT-X-VERSION:" + str(self.version))
+        if self.is_independent_segments:
+            output.append("#EXT-X-INDEPENDENT-SEGMENTS")
         if self.target_duration:
             output.append(
                 "#EXT-X-TARGETDURATION:" + number_to_string(self.target_duration)
@@ -369,6 +395,8 @@ class M3U8(object):
             output.append(str(self.start))
         if self.is_i_frames_only:
             output.append("#EXT-X-I-FRAMES-ONLY")
+        if self.is_images_only:
+            output.append("#EXT-X-IMAGES-ONLY")
         if self.server_control:
             output.append(str(self.server_control))
         if self.is_variant:
@@ -377,6 +405,8 @@ class M3U8(object):
             output.append(str(self.playlists))
             if self.iframe_playlists:
                 output.append(str(self.iframe_playlists))
+            if self.image_playlists:
+                output.append(str(self.image_playlists))
         if self.part_inf:
             output.append(str(self.part_inf))
         if self.skip:
@@ -1476,6 +1506,110 @@ class ContentSteering(BasePathMixin):
     def __str__(self):
         return self.dumps()
 
+
+class ImagePlaylist(BasePathMixin):
+    """
+    ImagePlaylist object representing a link to a
+    variant M3U8 image playlist with a specific bitrate.
+
+    Attributes:
+
+    `image_stream_info` is a named tuple containing the attributes:
+     `bandwidth`, `resolution` which is a tuple (w, h) of integers and `codecs`, 
+
+    More info: https://github.com/image-media-playlist/spec/blob/master/image_media_playlist_v0_4.pdf
+    """
+
+    def __init__(self, base_uri, uri, image_stream_info):
+        self.uri = uri
+        self.base_uri = base_uri
+
+        resolution = image_stream_info.get("resolution")
+        if resolution is not None:
+            values = resolution.split("x")
+            resolution_pair = (int(values[0]), int(values[1]))
+        else:
+            resolution_pair = None
+
+        self.image_stream_info = StreamInfo(
+            bandwidth=image_stream_info.get("bandwidth"),
+            average_bandwidth=image_stream_info.get("average_bandwidth"),
+            video=image_stream_info.get("video"),
+            # Audio, subtitles, closed captions, video range and hdcp level should not exist in
+            # EXT-X-IMAGE-STREAM-INF, so just hardcode them to None.
+            audio=None,
+            subtitles=None,
+            closed_captions=None,
+            program_id=image_stream_info.get("program_id"),
+            resolution=resolution_pair,
+            codecs=image_stream_info.get("codecs"),
+            video_range=None,
+            hdcp_level=None,
+            frame_rate=None,
+            pathway_id=image_stream_info.get("pathway_id"),
+            stable_variant_id=image_stream_info.get("stable_variant_id")
+        )
+
+    def __str__(self):
+        image_stream_inf = []
+        if self.image_stream_info.program_id:
+            image_stream_inf.append("PROGRAM-ID=%d" %
+                                     self.image_stream_info.program_id)
+        if self.image_stream_info.bandwidth:
+            image_stream_inf.append("BANDWIDTH=%d" %
+                                     self.image_stream_info.bandwidth)
+        if self.image_stream_info.average_bandwidth:
+            image_stream_inf.append("AVERAGE-BANDWIDTH=%d" %
+                                     self.image_stream_info.average_bandwidth)
+        if self.image_stream_info.resolution:
+            res = (str(self.image_stream_info.resolution[0]) + "x" +
+                   str(self.image_stream_info.resolution[1]))
+            image_stream_inf.append("RESOLUTION=" + res)
+        if self.image_stream_info.codecs:
+            image_stream_inf.append("CODECS=" +
+                                     quoted(self.image_stream_info.codecs))
+        if self.uri:
+            image_stream_inf.append("URI=" + quoted(self.uri))
+        if self.image_stream_info.pathway_id:
+            image_stream_inf.append(
+                "PATHWAY-ID=" + quoted(self.image_stream_info.pathway_id)
+            )
+        if self.image_stream_info.stable_variant_id:
+            image_stream_inf.append(
+                "STABLE-VARIANT-ID=" + quoted(self.image_stream_info.stable_variant_id)
+            )
+
+        return "#EXT-X-IMAGE-STREAM-INF:" + ",".join(image_stream_inf)
+
+class Tiles(BasePathMixin):
+    """
+    A tile from a M3U8 playlist
+
+    `resolution`
+      resolution attribute from EXT-X-TILES tag
+
+    `layout`
+      layout attribute from EXT-X-TILES tag
+
+    `duration`
+      duration attribute from EXT-X-TILES tag
+    """
+
+    def __init__(self, resolution, layout, duration):
+        self.resolution = resolution
+        self.layout = layout
+        self.duration = duration
+
+    def dumps(self):
+        tiles = []
+        tiles.append("RESOLUTION=" + self.resolution)
+        tiles.append("LAYOUT=" + self.layout)
+        tiles.append("DURATION=" + self.duration)
+
+        return "#EXT-X-TILES:" + ",".join(tiles)
+
+    def __str__(self):
+        return self.dumps()
 
 def find_key(keydata, keylist):
     if not keydata:

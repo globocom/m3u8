@@ -1,5 +1,6 @@
 # coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
+# Copyright 2023 Ronan RABOUIN
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 import re
@@ -301,10 +302,10 @@ def test_should_parse_variant_playlist_with_image_playlists():
 
     assert True == data['is_variant']
     assert 2 == len(image_playlists)
-    assert (320, 180) == image_playlists[0]['image_stream_info']['resolution']
+    assert '320x180' == image_playlists[0]['image_stream_info']['resolution']
     assert 'jpeg' == image_playlists[0]['image_stream_info']['codecs']
     assert '5x2_320x180/320x180-5x2.m3u8' == image_playlists[0]['uri']
-    assert (640, 360) == image_playlists[1]['image_stream_info']['resolution']
+    assert '640x360' == image_playlists[1]['image_stream_info']['resolution']
     assert 'jpeg' == image_playlists[1]['image_stream_info']['codecs']
     assert '5x2_640x360/640x360-5x2.m3u8' == image_playlists[1]['uri']
 
@@ -314,8 +315,8 @@ def test_should_parse_vod_image_playlist():
     assert True == data['is_images_only']
     assert 8 == len(data['tiles'])
     assert 'preroll-ad-1.jpg' == data['segments'][0]['uri']
-    assert (640, 360) == data['tiles'][0]['resolution']
-    assert (5, 2) == data['tiles'][0]['layout']
+    assert '640x360' == data['tiles'][0]['resolution']
+    assert '5x2' == data['tiles'][0]['layout']
     assert 6.006 == data['tiles'][0]['duration']
     assert 'byterange' not in data['tiles'][0]
 
@@ -323,8 +324,8 @@ def test_should_parse_vod_image_playlist2():
     data = m3u8.parse(playlists.VOD_IMAGE_PLAYLIST2)
 
     assert True == data['is_images_only']
-    assert (640, 360) == data['tiles'][0]['resolution']
-    assert (4, 3) == data['tiles'][0]['layout']
+    assert '640x360' == data['tiles'][0]['resolution']
+    assert '4x3' == data['tiles'][0]['layout']
     assert 2.002 == data['tiles'][0]['duration']
     assert 6 == len(data['tiles'])
     assert 'promo_1.jpg' == data['segments'][0]['uri']

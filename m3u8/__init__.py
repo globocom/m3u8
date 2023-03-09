@@ -1,5 +1,6 @@
 # coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
+# Copyright 2023 Ronan RABOUIN
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
@@ -31,6 +32,8 @@ from m3u8.model import (
     DateRange,
     DateRangeList,
     ContentSteering,
+    ImagePlaylist,
+    Tiles
 )
 from m3u8.parser import parse, ParseError
 
@@ -57,10 +60,12 @@ __all__ = (
     "DateRange",
     "DateRangeList",
     "ContentSteering",
+    "ImagePlaylist",
+    "Tiles",
     "loads",
     "load",
     "parse",
-    "ParseError",
+    "ParseError"
 )
 
 
