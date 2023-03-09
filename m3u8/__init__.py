@@ -7,6 +7,7 @@
 import sys
 import os
 
+<<<<<<< HEAD
 from urllib.parse import urljoin, urlsplit
 
 from m3u8.httpclient import DefaultHTTPClient
@@ -68,6 +69,26 @@ __all__ = (
     "ParseError"
 )
 
+=======
+from m3u8.httpclient import DefaultHTTPClient, _parsed_url
+from m3u8.model import (M3U8, Segment, SegmentList, PartialSegment,
+                        PartialSegmentList, Key, Playlist, IFramePlaylist,
+                        Media, MediaList, PlaylistList, Start,
+                        RenditionReport, RenditionReportList, ServerControl,
+                        Skip, PartInformation, PreloadHint, DateRange,
+                        DateRangeList, ContentSteering,
+                        ImagePlaylist, Tiles)
+from m3u8.parser import parse, is_url, ParseError
+
+
+__all__ = ('M3U8', 'Segment', 'SegmentList', 'PartialSegment',
+            'PartialSegmentList', 'Key', 'Playlist', 'IFramePlaylist',
+            'Media', 'MediaList', 'PlaylistList', 'Start', 'RenditionReport',
+            'RenditionReportList', 'ServerControl', 'Skip', 'PartInformation',
+            'PreloadHint', 'DateRange', 'DateRangeList', 'ContentSteering',
+            'ImagePlaylist', 'Tiles',
+            'loads', 'load', 'parse', 'ParseError')
+>>>>>>> 5a6ddf4 (add model and tests and fix parser)
 
 def loads(content, uri=None, custom_tags_parser=None):
     """

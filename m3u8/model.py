@@ -1611,6 +1611,110 @@ class Tiles(BasePathMixin):
     def __str__(self):
         return self.dumps()
 
+class ImagePlaylist(BasePathMixin):
+    '''
+    ImagePlaylist object representing a link to a
+    variant M3U8 image playlist with a specific bitrate.
+
+    Attributes:
+
+    `image_stream_info` is a named tuple containing the attributes:
+     `bandwidth`, `resolution` which is a tuple (w, h) of integers and `codecs`, 
+
+    More info: https://github.com/image-media-playlist/spec/blob/master/image_media_playlist_v0_4.pdf
+    '''
+
+    def __init__(self, base_uri, uri, image_stream_info):
+        self.uri = uri
+        self.base_uri = base_uri
+
+        resolution = image_stream_info.get('resolution')
+        if resolution is not None:
+            values = resolution.split('x')
+            resolution_pair = (int(values[0]), int(values[1]))
+        else:
+            resolution_pair = None
+
+        self.image_stream_info = StreamInfo(
+            bandwidth=image_stream_info.get('bandwidth'),
+            average_bandwidth=image_stream_info.get('average_bandwidth'),
+            video=image_stream_info.get('video'),
+            # Audio, subtitles, closed captions, video range and hdcp level should not exist in
+            # EXT-X-IMAGE-STREAM-INF, so just hardcode them to None.
+            audio=None,
+            subtitles=None,
+            closed_captions=None,
+            program_id=image_stream_info.get('program_id'),
+            resolution=resolution_pair,
+            codecs=image_stream_info.get('codecs'),
+            video_range=None,
+            hdcp_level=None,
+            frame_rate=None,
+            pathway_id=image_stream_info.get('pathway_id'),
+            stable_variant_id=image_stream_info.get('stable_variant_id')
+        )
+
+    def __str__(self):
+        image_stream_inf = []
+        if self.image_stream_info.program_id:
+            image_stream_inf.append('PROGRAM-ID=%d' %
+                                     self.image_stream_info.program_id)
+        if self.image_stream_info.bandwidth:
+            image_stream_inf.append('BANDWIDTH=%d' %
+                                     self.image_stream_info.bandwidth)
+        if self.image_stream_info.average_bandwidth:
+            image_stream_inf.append('AVERAGE-BANDWIDTH=%d' %
+                                     self.image_stream_info.average_bandwidth)
+        if self.image_stream_info.resolution:
+            res = (str(self.image_stream_info.resolution[0]) + 'x' +
+                   str(self.image_stream_info.resolution[1]))
+            image_stream_inf.append('RESOLUTION=' + res)
+        if self.image_stream_info.codecs:
+            image_stream_inf.append('CODECS=' +
+                                     quoted(self.image_stream_info.codecs))
+        if self.uri:
+            image_stream_inf.append('URI=' + quoted(self.uri))
+        if self.image_stream_info.pathway_id:
+            image_stream_inf.append(
+                'PATHWAY-ID=' + quoted(self.image_stream_info.pathway_id)
+            )
+        if self.image_stream_info.stable_variant_id:
+            image_stream_inf.append(
+                'STABLE-VARIANT-ID=' + quoted(self.image_stream_info.stable_variant_id)
+            )
+
+        return '#EXT-X-IMAGE-STREAM-INF:' + ','.join(image_stream_inf)
+
+class Tiles(BasePathMixin):
+    '''
+    A tile from a M3U8 playlist
+
+    `resolution`
+      resolution attribute from EXT-X-TILES tag
+
+    `layout`
+      layout attribute from EXT-X-TILES tag
+
+    `duration`
+      duration attribute from EXT-X-TILES tag
+    '''
+
+    def __init__(self, resolution, layout, duration):
+        self.resolution = resolution
+        self.layout = layout
+        self.duration = duration
+
+    def dumps(self):
+        tiles = []
+        tiles.append('RESOLUTION=' + self.resolution)
+        tiles.append('LAYOUT=' + self.layout)
+        tiles.append('DURATION=' + self.duration)
+
+        return '#EXT-X-TILES:' + ','.join(tiles)
+
+    def __str__(self):
+        return self.dumps()
+
 def find_key(keydata, keylist):
     if not keydata:
         return None

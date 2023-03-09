@@ -1597,6 +1597,13 @@ def test_dump_should_work_for_variant_playlists_with_image_playlists():
 
     assert expected == obj.dumps().strip()
 
+def test_dump_should_work_for_variant_playlists_with_image_playlists():
+    obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS)
+
+    expected = playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS.strip()
+
+    assert expected == obj.dumps().strip()
+
 def test_segment_media_sequence():
     obj = m3u8.M3U8(playlists.SLIDING_WINDOW_PLAYLIST)
     assert [s.media_sequence for s in obj.segments] == [2680, 2681, 2682]
