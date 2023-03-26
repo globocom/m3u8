@@ -457,9 +457,9 @@ class Segment(BasePathMixin):
 
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, bitrate=None, byterange=None, cue_out=False,
-                 cue_out_start=False, cue_in=False, discontinuity=False, keys=None, scte35=None,
-                 oatcls_scte35=None, scte35_duration=None, scte35_elapsedtime=None, asset_metadata=None, keyobject=None,
-                 keyobjects=None, parts=None, init_section=None, dateranges=None, gap_tag=None,
+                 cue_out_start=False, cue_in=False, discontinuity=False, keys=None, key=None, scte35=None,
+                 oatcls_scte35=None, scte35_duration=None, scte35_elapsedtime=None, asset_metadata=None,
+                 keyobject=None, keyobjects=None, parts=None, init_section=None, dateranges=None, gap_tag=None,
                  media_sequence=None, custom_parser_values=None):
         self.media_sequence = media_sequence
         self.uri = uri
