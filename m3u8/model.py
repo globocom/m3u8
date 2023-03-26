@@ -475,7 +475,7 @@ class Segment(BasePathMixin):
         self.scte35_duration = scte35_duration
         self.scte35_elapsedtime = scte35_elapsedtime
         self.asset_metadata = asset_metadata
-        self.keys = keyobjects
+        self.keys = keyobjects or []
         self.parts = PartialSegmentList( [ PartialSegment(base_uri=self._base_uri, **partial) for partial in parts ] if parts else [] )
         if init_section is not None:
             self.init_section = InitializationSection(self._base_uri, **init_section)
