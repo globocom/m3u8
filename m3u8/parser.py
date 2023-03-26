@@ -64,6 +64,7 @@ def parse(content, strict=False, custom_tags_parser=None):
         'expect_segment': False,
         'expect_playlist': False,
         'current_keys': [],
+        'current_key': None,
         'current_segment_map': None,
     }
 
@@ -97,6 +98,7 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_discontinuity_sequence):
             _parse_simple_parameter(line, data, int)
             state['current_keys'].clear()
+            state['current_key'] = None
 
         elif line.startswith(protocol.ext_x_program_date_time):
             _, program_date_time = _parse_simple_parameter_raw_value(line, cast_date_time)
@@ -138,6 +140,7 @@ def parse(content, strict=False, custom_tags_parser=None):
         elif line.startswith(protocol.ext_x_key):
             key = _parse_key(line)
             state['current_keys'].append(key)
+            state['current_key'] = key
             if key not in data['keys']:
                 data['keys'].append(key)
 
@@ -225,6 +228,7 @@ def parse(content, strict=False, custom_tags_parser=None):
             _parse_ts_chunk(line, data, state)
             state['expect_segment'] = False
             state['current_keys'].clear()
+            state['current_key'] = None
 
         elif state['expect_playlist']:
             _parse_variant_playlist(line, data, state)
@@ -284,6 +288,8 @@ def _parse_ts_chunk(line, data, state):
     segment['asset_metadata'] = scte_op('asset_metadata', None)
     segment['discontinuity'] = state.pop('discontinuity', False)
     segment['keys'] = copy(state['current_keys'])
+    if state.get('current_key'):
+        segment['key'] = state['current_key']
     if not state['current_keys']:
         # For unencrypted segments, the initial key would be None
         if None not in data['keys']:

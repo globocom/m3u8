@@ -172,6 +172,7 @@ class M3U8(object):
                 keyobjects=[
                     find_key(segment_key, self.keys)
                     for segment_key in segment.get('keys', [])],
+                keyobject=find_key(segment.get('key', {}), self.keys),
                 **segment)
             for segment in self.data.get('segments', [])
         ])
@@ -436,7 +437,10 @@ class Segment(BasePathMixin):
       byterange attribute from EXT-X-BYTERANGE parameter
 
     `keys`
-      Keys used to encrypt the segment (EXT-X-KEY)
+      Keys used to encrypt the segment (list of EXT-X-KEY)
+
+    `key`
+      Last Key within keys used to encrypt the segment (EXT-X-KEY)
 
     `parts`
       partial segments that make up this segment
@@ -454,7 +458,7 @@ class Segment(BasePathMixin):
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, bitrate=None, byterange=None, cue_out=False,
                  cue_out_start=False, cue_in=False, discontinuity=False, keys=None, scte35=None,
-                 oatcls_scte35=None, scte35_duration=None, scte35_elapsedtime=None, asset_metadata=None,
+                 oatcls_scte35=None, scte35_duration=None, scte35_elapsedtime=None, asset_metadata=None, keyobject=None,
                  keyobjects=None, parts=None, init_section=None, dateranges=None, gap_tag=None,
                  media_sequence=None, custom_parser_values=None):
         self.media_sequence = media_sequence
@@ -476,6 +480,7 @@ class Segment(BasePathMixin):
         self.scte35_elapsedtime = scte35_elapsedtime
         self.asset_metadata = asset_metadata
         self.keys = keyobjects or []
+        self.key = keyobject
         self.parts = PartialSegmentList( [ PartialSegment(base_uri=self._base_uri, **partial) for partial in parts ] if parts else [] )
         if init_section is not None:
             self.init_section = InitializationSection(self._base_uri, **init_section)
