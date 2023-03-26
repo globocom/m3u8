@@ -171,7 +171,7 @@ class M3U8(object):
                 base_uri=self.base_uri,
                 keyobjects=[
                     find_key(segment_key, self.keys)
-                    for segment_key in segment['keys']],
+                    for segment_key in segment.get('keys', [])],
                 **segment)
             for segment in self.data.get('segments', [])
         ])
