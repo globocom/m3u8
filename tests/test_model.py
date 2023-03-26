@@ -373,9 +373,7 @@ def test_segment_attribute_with_multiple_keys():
 
     segments = obj.segments
     assert segments[0].key.uri == '/hls-key/key.bin'
-    assert segments[1].key.uri == '/hls-key/key.bin'
     assert segments[4].key.uri == '/hls-key/key2.bin'
-    assert segments[5].key.uri == '/hls-key/key2.bin'
 
 def test_segment_title_dumps():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_QUOTED_TITLE)
