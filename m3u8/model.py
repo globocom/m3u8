@@ -311,8 +311,9 @@ class M3U8(object):
         if self.media_sequence:
             output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
         if self.discontinuity_sequence:
-            output.append('#EXT-X-DISCONTINUITY-SEQUENCE:{}'.format(
-                number_to_string(self.discontinuity_sequence)))
+            output.append(
+                '#EXT-X-DISCONTINUITY-SEQUENCE:{}'.format(self.discontinuity_sequence)
+            )
         if self.allow_cache:
             output.append('#EXT-X-ALLOW-CACHE:' + self.allow_cache.upper())
         if self.version:
@@ -1139,10 +1140,9 @@ class RenditionReport(BasePathMixin):
     def dumps(self):
         report = []
         report.append('URI=' + quoted(self.uri))
-        report.append('LAST-MSN=' + number_to_string(self.last_msn))
+        report.append('LAST-MSN=' + str(self.last_msn))
         if self.last_part is not None:
-            report.append('LAST-PART=' + number_to_string(
-                self.last_part))
+            report.append('LAST-PART=' + str(self.last_part))
 
         return ('#EXT-X-RENDITION-REPORT:' + ','.join(report))
 
@@ -1199,8 +1199,7 @@ class Skip(object):
 
     def dumps(self):
         skip = []
-        skip.append('SKIPPED-SEGMENTS=%s' % number_to_string(
-            self.skipped_segments))
+        skip.append('SKIPPED-SEGMENTS=%s' % self.skipped_segments)
         if self.recently_removed_dateranges is not None:
             skip.append('RECENTLY-REMOVED-DATERANGES=%s' %
                 quoted(self.recently_removed_dateranges))
@@ -1241,7 +1240,7 @@ class PreloadHint(BasePathMixin):
             if self[attr] is not None:
                 hint.append('%s=%s' % (
                     denormalize_attribute(attr),
-                    number_to_string(self[attr])
+                    self[attr]
                 ))
 
         return ('#EXT-X-PRELOAD-HINT:' + ','.join(hint))
