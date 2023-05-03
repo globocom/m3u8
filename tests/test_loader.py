@@ -42,7 +42,7 @@ def test_load_should_create_object_from_file_with_relative_segments():
     obj = m3u8.load(playlists.RELATIVE_PLAYLIST_FILENAME)
     expected_key_abspath = '%s/key.bin' % os.path.dirname(base_uri)
     expected_key_path = '../key.bin'
-    expected_ts1_abspath = '%s/entire1.ts' % base_uri
+    expected_ts1_abspath = '/entire1.ts'
     expected_ts1_path = '/entire1.ts'
     expected_ts2_abspath = '%s/entire2.ts' % os.path.dirname(base_uri)
     expected_ts2_path = '../entire2.ts'
@@ -51,7 +51,7 @@ def test_load_should_create_object_from_file_with_relative_segments():
     expected_ts4_abspath = '%s/entire4.ts' % base_uri
     expected_ts4_path = 'entire4.ts'
     expected_ts5_abspath = '%s/entire5.ts' % base_uri
-    expected_ts5_path = '//entire5.ts'
+    expected_ts5_path = './entire5.ts'
     expected_ts6_abspath = '%s/entire6.ts' % base_uri
     expected_ts6_path = './/entire6.ts'
 
@@ -87,9 +87,9 @@ def test_load_should_create_object_from_uri_with_relative_segments():
     expected_ts3_path = '../../entire3.ts'
     expected_ts4_abspath = '%s%sentire4.ts' % (prefix, base_uri + '/')
     expected_ts4_path = 'entire4.ts'
-    expected_ts5_abspath = '%s%sentire5.ts' % (prefix, '//')
-    expected_ts5_path = '//entire5.ts'
-    expected_ts6_abspath = '%s%sentire6.ts' % (prefix, os.path.normpath(base_uri + '/.') + '//')
+    expected_ts5_abspath = '%s%sentire5.ts' % (prefix, base_uri + '/')
+    expected_ts5_path = './entire5.ts'
+    expected_ts6_abspath = '%s%sentire6.ts' % (prefix, base_uri + '/')
     expected_ts6_path = './/entire6.ts'
 
     assert isinstance(obj, m3u8.M3U8)
