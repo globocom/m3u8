@@ -167,7 +167,13 @@ class M3U8(object):
         self.segment_map = [InitializationSection(base_uri=self.base_uri, **params) if params else None
                      for params in self.data.get('segment_map', [])]
         self.segments = SegmentList([
-            Segment(base_uri=self.base_uri, keyobject=find_key(segment.get('key', {}), self.keys), **segment)
+            Segment(
+                base_uri=self.base_uri,
+                keyobjects=[
+                    find_key(segment_key, self.keys)
+                    for segment_key in segment.get('keys', [])],
+                keyobject=find_key(segment.get('key', {}), self.keys),
+                **segment)
             for segment in self.data.get('segments', [])
         ])
 
@@ -431,8 +437,11 @@ class Segment(BasePathMixin):
     `byterange`
       byterange attribute from EXT-X-BYTERANGE parameter
 
+    `keys`
+      Keys used to encrypt the segment (list of EXT-X-KEY)
+
     `key`
-      Key used to encrypt the segment (EXT-X-KEY)
+      Last Key within keys used to encrypt the segment (EXT-X-KEY)
 
     `parts`
       partial segments that make up this segment
@@ -449,9 +458,9 @@ class Segment(BasePathMixin):
 
     def __init__(self, uri=None, base_uri=None, program_date_time=None, current_program_date_time=None,
                  duration=None, title=None, bitrate=None, byterange=None, cue_out=False,
-                 cue_out_start=False, cue_in=False, discontinuity=False, key=None, scte35=None,
+                 cue_out_start=False, cue_in=False, discontinuity=False, keys=None, key=None, scte35=None,
                  oatcls_scte35=None, scte35_duration=None, scte35_elapsedtime=None, asset_metadata=None,
-                 keyobject=None, parts=None, init_section=None, dateranges=None, gap_tag=None,
+                 keyobject=None, keyobjects=None, parts=None, init_section=None, dateranges=None, gap_tag=None,
                  media_sequence=None, custom_parser_values=None):
         self.media_sequence = media_sequence
         self.uri = uri
@@ -471,6 +480,7 @@ class Segment(BasePathMixin):
         self.scte35_duration = scte35_duration
         self.scte35_elapsedtime = scte35_elapsedtime
         self.asset_metadata = asset_metadata
+        self.keys = keyobjects or []
         self.key = keyobject
         self.parts = PartialSegmentList( [ PartialSegment(base_uri=self._base_uri, **partial) for partial in parts ] if parts else [] )
         if init_section is not None:
@@ -487,14 +497,9 @@ class Segment(BasePathMixin):
     def dumps(self, last_segment, timespec='milliseconds'):
         output = []
 
-        if last_segment and self.key != last_segment.key:
-            output.append(str(self.key))
-            output.append('\n')
-        else:
-            # The key must be checked anyway now for the first segment
-            if self.key and last_segment is None:
-                output.append(str(self.key))
-                output.append('\n')
+        if not last_segment or (self.keys and self.keys != last_segment.keys):
+            for key in self.keys:
+                output.append(str(key) + '\n')
 
         if last_segment and self.init_section != last_segment.init_section:
             if not self.init_section:
@@ -611,7 +616,7 @@ class SegmentList(list, GroupedBasePathMixin):
 
 
     def by_key(self, key):
-        return [ segment for segment in self if segment.key == key ]
+        return [ segment for segment in self if key in segment.keys ]
 
 
 
