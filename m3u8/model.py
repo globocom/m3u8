@@ -308,7 +308,7 @@ class M3U8(object):
             output.append(str(self.content_steering))
         if self.is_independent_segments:
             output.append('#EXT-X-INDEPENDENT-SEGMENTS')
-        if self.media_sequence:
+        if not self.is_variant and self.media_sequence is not None:
             output.append('#EXT-X-MEDIA-SEQUENCE:' + str(self.media_sequence))
         if self.discontinuity_sequence:
             output.append(
