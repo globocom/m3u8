@@ -1,4 +1,5 @@
-from os.path import dirname, abspath, join, exists
+from os.path import abspath, dirname, exists, join
+
 from setuptools import setup
 
 long_description = None
@@ -11,7 +12,7 @@ install_reqs = [req for req in open(abspath(join(dirname(__file__), 'requirement
 setup(
     name="m3u8",
     author='Globo.com',
-    version="3.4.0",
+    version="3.5.0",
     license='MIT',
     zip_safe=False,
     include_package_data=True,
