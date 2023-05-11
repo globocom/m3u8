@@ -3,7 +3,6 @@ from urllib.parse import urljoin, urlsplit
 
 
 class BasePathMixin(object):
-
     @property
     def absolute_uri(self):
         if self.uri is None:
@@ -14,8 +13,8 @@ class BasePathMixin(object):
             return ret
 
         if not urlsplit(ret).scheme:
-            raise ValueError('There can not be `absolute_uri` with no `base_uri` set')
-        
+            raise ValueError("There can not be `absolute_uri` with no `base_uri` set")
+
         return ret
 
     @property
@@ -38,7 +37,6 @@ class BasePathMixin(object):
 
 
 class GroupedBasePathMixin(object):
-
     def _set_base_uri(self, new_base_uri):
         for item in self:
             item.base_uri = new_base_uri

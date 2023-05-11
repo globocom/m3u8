@@ -4,16 +4,18 @@ from setuptools import setup
 
 long_description = None
 if exists("README.rst"):
-    with  open("README.rst") as file:
+    with open("README.rst") as file:
         long_description = file.read()
 
-install_reqs = [req for req in open(abspath(join(dirname(__file__), 'requirements.txt')))]
+install_reqs = [
+    req for req in open(abspath(join(dirname(__file__), "requirements.txt")))
+]
 
 setup(
     name="m3u8",
-    author='Globo.com',
+    author="Globo.com",
     version="3.5.0",
-    license='MIT',
+    license="MIT",
     zip_safe=False,
     include_package_data=True,
     install_requires=install_reqs,
@@ -21,5 +23,5 @@ setup(
     url="https://github.com/globocom/m3u8",
     description="Python m3u8 parser",
     long_description=long_description,
-    python_requires='>=3.6'
+    python_requires=">=3.6",
 )
