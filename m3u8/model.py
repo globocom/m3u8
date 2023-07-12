@@ -1583,7 +1583,7 @@ class ImagePlaylist(BasePathMixin):
 
 class Tiles(BasePathMixin):
     """
-    A tile from a M3U8 playlist
+    Image tiles from a M3U8 playlist
 
     `resolution`
       resolution attribute from EXT-X-TILES tag
@@ -1685,35 +1685,6 @@ class ImagePlaylist(BasePathMixin):
 
         return '#EXT-X-IMAGE-STREAM-INF:' + ','.join(image_stream_inf)
 
-class Tiles(BasePathMixin):
-    '''
-    Image tiles from a M3U8 image playlist
-
-    `resolution`
-      resolution attribute from EXT-X-TILES tag
-
-    `layout`
-      layout attribute from EXT-X-TILES tag
-
-    `duration`
-      duration attribute from EXT-X-TILES tag
-    '''
-
-    def __init__(self, resolution, layout, duration):
-        self.resolution = resolution
-        self.layout = layout
-        self.duration = duration
-
-    def dumps(self):
-        tiles = []
-        tiles.append('RESOLUTION=' + self.resolution)
-        tiles.append('LAYOUT=' + self.layout)
-        tiles.append('DURATION=' + self.duration)
-
-        return '#EXT-X-TILES:' + ','.join(tiles)
-
-    def __str__(self):
-        return self.dumps()
 
 def find_key(keydata, keylist):
     if not keydata:
