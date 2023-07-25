@@ -1,10 +1,9 @@
 # coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
-# Copyright 2023 Ronan RABOUIN
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
-from os.path import dirname, abspath, join
+from os.path import abspath, dirname, join
 
 TEST_HOST = "http://localhost:8112"
 

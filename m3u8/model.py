@@ -1,12 +1,13 @@
 # coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
-# Copyright 2023 Ronan RABOUIN
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 import decimal
-import os
 import errno
+import os
 
+from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
+from m3u8.parser import format_date_time, parse
 from m3u8.protocol import (
     ext_oatcls_scte35,
     ext_x_asset,
@@ -15,8 +16,6 @@ from m3u8.protocol import (
     ext_x_session_key,
     ext_x_start,
 )
-from m3u8.parser import parse, format_date_time
-from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
 
 
 class MalformedPlaylistError(Exception):
@@ -354,7 +353,7 @@ class M3U8(object):
     def add_image_playlist(self, image_playlist):
         if image_playlist is not None:
             self.is_variant = True
-            self.image_playlists.append(image_playlist)   
+            self.image_playlists.append(image_playlist)
 
     def add_media(self, media):
         self.media.append(media)
@@ -1515,7 +1514,7 @@ class ImagePlaylist(BasePathMixin):
     Attributes:
 
     `image_stream_info` is a named tuple containing the attributes:
-     `bandwidth`, `resolution` which is a tuple (w, h) of integers and `codecs`, 
+     `bandwidth`, `resolution` which is a tuple (w, h) of integers and `codecs`,
 
     More info: https://github.com/image-media-playlist/spec/blob/master/image_media_playlist_v0_4.pdf
     """
@@ -1619,7 +1618,7 @@ class ImagePlaylist(BasePathMixin):
     Attributes:
 
     `image_stream_info` is a named tuple containing the attributes:
-     `bandwidth`, `resolution` which is a tuple (w, h) of integers and `codecs`, 
+     `bandwidth`, `resolution` which is a tuple (w, h) of integers and `codecs`,
 
     More info: https://github.com/image-media-playlist/spec/blob/master/image_media_playlist_v0_4.pdf
     '''

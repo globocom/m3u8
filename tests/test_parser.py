@@ -1,19 +1,19 @@
 # coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
-# Copyright 2023 Ronan RABOUIN
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 import re
 
-import m3u8
 import playlists
 import pytest
+
+import m3u8
 from m3u8.parser import (
-    cast_date_time,
     ParseError,
-    save_segment_custom_value,
     _parse_simple_parameter_raw_value,
+    cast_date_time,
     get_segment_custom_value,
+    save_segment_custom_value,
 )
 
 

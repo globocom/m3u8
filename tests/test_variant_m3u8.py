@@ -1,10 +1,11 @@
 # coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
-# Copyright 2023 Ronan RABOUIN
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
-import m3u8, playlists
+import playlists
+
+import m3u8
 
 
 def test_create_a_variant_m3u8_with_two_playlists():

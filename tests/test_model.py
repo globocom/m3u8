@@ -1,6 +1,5 @@
 # coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
-# Copyright 2023 Ronan RABOUIN
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
@@ -9,26 +8,26 @@
 
 import datetime
 import os
-import pytest
 import sys
 
-from m3u8.protocol import ext_x_start, ext_x_part, ext_x_preload_hint
+import playlists
+import pytest
 
 import m3u8
-import playlists
 from m3u8.model import (
-    Segment,
+    DateRange,
     Key,
     Media,
     MediaList,
-    RenditionReport,
     PartialSegment,
+    PreloadHint,
+    RenditionReport,
+    Segment,
+    SessionData,
     denormalize_attribute,
     find_key,
-    SessionData,
-    PreloadHint,
-    DateRange,
 )
+from m3u8.protocol import ext_x_part, ext_x_preload_hint, ext_x_start
 
 
 class UTC(datetime.tzinfo):

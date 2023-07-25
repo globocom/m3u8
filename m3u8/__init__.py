@@ -1,42 +1,39 @@
 # coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
-# Copyright 2023 Ronan RABOUIN
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
-import sys
 import os
-
+import sys
 from urllib.parse import urljoin, urlsplit
 
 from m3u8.httpclient import DefaultHTTPClient
 from m3u8.model import (
     M3U8,
-    Segment,
-    SegmentList,
-    PartialSegment,
-    PartialSegmentList,
-    Key,
-    Playlist,
-    IFramePlaylist,
-    Media,
-    MediaList,
-    PlaylistList,
-    Start,
-    RenditionReport,
-    RenditionReportList,
-    ServerControl,
-    Skip,
-    PartInformation,
-    PreloadHint,
+    ContentSteering,
     DateRange,
     DateRangeList,
-    ContentSteering,
+    IFramePlaylist,
     ImagePlaylist,
-    Tiles
+    Key,
+    Media,
+    MediaList,
+    PartialSegment,
+    PartialSegmentList,
+    PartInformation,
+    Playlist,
+    PlaylistList,
+    PreloadHint,
+    RenditionReport,
+    RenditionReportList,
+    Segment,
+    SegmentList,
+    ServerControl,
+    Skip,
+    Start,
+    Tiles,
 )
-from m3u8.parser import parse, ParseError
-
+from m3u8.parser import ParseError, parse
 
 __all__ = (
     "M3U8",
