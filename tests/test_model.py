@@ -1,5 +1,6 @@
 # coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
+# Copyright 2023 Ronan RABOUIN
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
@@ -1588,6 +1589,20 @@ def test_add_content_steering_base_uri_update():
         == "https://yet-another.example.com/steering?video=00012"
     )
 
+
+def test_dump_should_work_for_variant_playlists_with_image_playlists():
+    obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS)
+
+    expected = playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS.strip()
+
+    assert expected == obj.dumps().strip()
+
+def test_dump_should_work_for_variant_playlists_with_image_playlists():
+    obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS)
+
+    expected = playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS.strip()
+
+    assert expected == obj.dumps().strip()
 
 def test_segment_media_sequence():
     obj = m3u8.M3U8(playlists.SLIDING_WINDOW_PLAYLIST)

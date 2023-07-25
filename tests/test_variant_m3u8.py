@@ -1,5 +1,6 @@
 # coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
+# Copyright 2023 Ronan RABOUIN
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
@@ -364,5 +365,69 @@ video-TYPE-1.m3u8
 #EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,HDCP-LEVEL=NONE,URI="video-NONE-iframes.m3u8"
 #EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,HDCP-LEVEL=TYPE-0,URI="video-TYPE-0-iframes.m3u8"
 #EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=3000000,HDCP-LEVEL=TYPE-1,URI="video-TYPE-1-iframes.m3u8"
+"""
+    assert expected_content == variant_m3u8.dumps()
+
+
+def test_create_a_variant_m3u8_with_two_playlists_and_two_image_playlists():
+    variant_m3u8 = m3u8.M3U8()
+
+    subtitles = m3u8.Media('english_sub.m3u8', 'SUBTITLES', 'subs', 'en',
+                           'English', 'YES', 'YES', 'NO', None)
+    variant_m3u8.add_media(subtitles)
+
+    low_playlist = m3u8.Playlist(
+        uri='video-800k.m3u8',
+        stream_info={'bandwidth': 800000,
+                     'program_id': 1,
+                     'resolution': '624x352',
+                     'codecs': 'avc1.4d001f, mp4a.40.5',
+                     'subtitles': 'subs'},
+        media=[subtitles],
+        base_uri='http://example.com/'
+    )
+    high_playlist = m3u8.Playlist(
+        uri='video-1200k.m3u8',
+        stream_info={'bandwidth': 1200000,
+                     'program_id': 1,
+                     'codecs': 'avc1.4d001f, mp4a.40.5',
+                     'subtitles': 'subs'},
+        media=[subtitles],
+        base_uri='http://example.com/'
+    )
+    low_image_playlist = m3u8.ImagePlaylist(
+        uri='thumbnails-sd.m3u8',
+        image_stream_info={'bandwidth': 151288,
+                            'resolution': '320x160',
+                            'codecs': 'jpeg'},
+        base_uri='http://example.com/'
+    )
+    high_image_playlist = m3u8.ImagePlaylist(
+        uri='thumbnails-hd.m3u8',
+        image_stream_info={'bandwidth': 193350,
+                            'resolution': '640x320',
+                            'codecs': 'jpeg'},
+        base_uri='http://example.com/'
+    )
+
+    variant_m3u8.add_playlist(low_playlist)
+    variant_m3u8.add_playlist(high_playlist)
+    variant_m3u8.add_image_playlist(low_image_playlist)
+    variant_m3u8.add_image_playlist(high_image_playlist)
+
+    expected_content = """\
+#EXTM3U
+#EXT-X-MEDIA:URI="english_sub.m3u8",TYPE=SUBTITLES,GROUP-ID="subs",\
+LANGUAGE="en",NAME="English",DEFAULT=YES,AUTOSELECT=YES,FORCED=NO
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=624x352,\
+CODECS="avc1.4d001f, mp4a.40.5",SUBTITLES="subs"
+video-800k.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1200000,\
+CODECS="avc1.4d001f, mp4a.40.5",SUBTITLES="subs"
+video-1200k.m3u8
+#EXT-X-IMAGE-STREAM-INF:BANDWIDTH=151288,RESOLUTION=320x160,\
+CODECS="jpeg",URI="thumbnails-sd.m3u8"
+#EXT-X-IMAGE-STREAM-INF:BANDWIDTH=193350,RESOLUTION=640x320,\
+CODECS="jpeg",URI="thumbnails-hd.m3u8"
 """
     assert expected_content == variant_m3u8.dumps()
