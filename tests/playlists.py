@@ -899,6 +899,14 @@ IPTV_PLAYLIST_WITH_CUSTOM_TAGS = """#EXTM3U
 http://str00.iptv.domain/7331/mpegts?token=longtokenhere
 """
 
+IPTV_PLAYLIST_WITH_EARLY_EXTINF = """#EXTM3U
+#EXTVLCOPT:video-filter=invert
+#EXTGRP:ExtGroup1
+#EXTINF:0,Info
+#EXTVLCOPT:param2=value2
+http://str00.iptv.domain/7331/mpegts?token=longtokenhere
+"""
+
 LOW_LATENCY_DELTA_UPDATE_PLAYLIST = """#EXTM3U
 # Following the example above, this playlist is a response to: GET https://example.com/2M/waitForMSN.php?_HLS_msn=273&_HLS_part=3&_HLS_report=../1M/waitForMSN.php&_HLS_report=../4M/waitForMSN.php&_HLS_skip=YES
 #EXT-X-TARGETDURATION:4
