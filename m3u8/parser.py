@@ -236,11 +236,11 @@ def parse(content, strict=False, custom_tags_parser=None):
             # blank lines are legal
             pass
 
-        elif state["expect_segment"]:
+        elif (not line.startswith('#')) and (state["expect_segment"]):
             _parse_ts_chunk(line, data, state)
             state["expect_segment"] = False
 
-        elif state["expect_playlist"]:
+        elif (not line.startswith('#')) and (state["expect_playlist"]):
             _parse_variant_playlist(line, data, state)
             state["expect_playlist"] = False
 

@@ -671,6 +671,13 @@ def test_iptv_playlist_with_custom_tags():
     ]
 
 
+def test_tag_after_extinf():
+    parsed_playlist = m3u8.loads(playlists.IPTV_PLAYLIST_WITH_EARLY_EXTINF)
+    actual = parsed_playlist.segments[0].uri
+    expected = 'http://str00.iptv.domain/7331/mpegts?token=longtokenhere'
+    assert actual == expected
+
+
 def test_master_playlist_with_frame_rate():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_FRAME_RATE)
     playlists_list = list(data["playlists"])
