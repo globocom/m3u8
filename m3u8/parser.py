@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
@@ -6,9 +5,6 @@
 import datetime
 import itertools
 import re
-from urllib.parse import urljoin as _urljoin
-
-import iso8601
 
 from m3u8 import protocol
 
@@ -20,7 +16,7 @@ ATTRIBUTELISTPATTERN = re.compile(r"""((?:[^,"']|"[^"]*"|'[^']*')+)""")
 
 
 def cast_date_time(value):
-    return iso8601.parse_date(value)
+    return datetime.datetime.fromisoformat(value)
 
 
 def format_date_time(value, **kwargs):

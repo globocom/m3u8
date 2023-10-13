@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
@@ -19,8 +18,8 @@ from m3u8.parser import (
 
 def test_should_parse_simple_playlist_from_string():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST)
-    assert 5220 == data["targetduration"]
-    assert 0 == data["media_sequence"]
+    assert data["targetduration"] == 5220
+    assert data["media_sequence"] == 0
     assert ["http://media.example.com/entire.ts"] == [
         c["uri"] for c in data["segments"]
     ]
@@ -29,7 +28,7 @@ def test_should_parse_simple_playlist_from_string():
 
 def test_should_parse_non_integer_duration_from_playlist_string():
     data = m3u8.parse(playlists.PLAYLIST_WITH_NON_INTEGER_DURATION)
-    assert 5220.5 == data["targetduration"]
+    assert data["targetduration"] == 5220.5
     assert [5220.5] == [c["duration"] for c in data["segments"]]
 
 
@@ -40,7 +39,7 @@ def test_should_parse_comma_in_title():
 
 def test_should_parse_simple_playlist_from_string_with_different_linebreaks():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST.replace("\n", "\r\n"))
-    assert 5220 == data["targetduration"]
+    assert data["targetduration"] == 5220
     assert ["http://media.example.com/entire.ts"] == [
         c["uri"] for c in data["segments"]
     ]
@@ -49,8 +48,8 @@ def test_should_parse_simple_playlist_from_string_with_different_linebreaks():
 
 def test_should_parse_sliding_window_playlist_from_string():
     data = m3u8.parse(playlists.SLIDING_WINDOW_PLAYLIST)
-    assert 8 == data["targetduration"]
-    assert 2680 == data["media_sequence"]
+    assert data["targetduration"] == 8
+    assert data["media_sequence"] == 2680
     assert [
         "https://priv.example.com/fileSequence2680.ts",
         "https://priv.example.com/fileSequence2681.ts",
@@ -61,10 +60,10 @@ def test_should_parse_sliding_window_playlist_from_string():
 
 def test_should_parse_playlist_with_encrypted_segments_from_string():
     data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS)
-    assert 7794 == data["media_sequence"]
-    assert 15 == data["targetduration"]
-    assert "AES-128" == data["keys"][0]["method"]
-    assert "https://priv.example.com/key.php?r=52" == data["keys"][0]["uri"]
+    assert data["media_sequence"] == 7794
+    assert data["targetduration"] == 15
+    assert data["keys"][0]["method"] == "AES-128"
+    assert data["keys"][0]["uri"] == "https://priv.example.com/key.php?r=52"
     assert [
         "http://media.example.com/fileSequence52-1.ts",
         "http://media.example.com/fileSequence52-2.ts",
@@ -75,9 +74,9 @@ def test_should_parse_playlist_with_encrypted_segments_from_string():
 
 def test_should_load_playlist_with_iv_from_string():
     data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
-    assert "/hls-key/key.bin" == data["keys"][0]["uri"]
-    assert "AES-128" == data["keys"][0]["method"]
-    assert "0X10ef8f758ca555115584bb5b3c687f52" == data["keys"][0]["iv"]
+    assert data["keys"][0]["uri"] == "/hls-key/key.bin"
+    assert data["keys"][0]["method"] == "AES-128"
+    assert data["keys"][0]["iv"] == "0X10ef8f758ca555115584bb5b3c687f52"
 
 
 def test_should_add_key_attribute_to_segment_from_playlist():
@@ -85,13 +84,13 @@ def test_should_add_key_attribute_to_segment_from_playlist():
         playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS
     )
     first_segment_key = data["segments"][0]["key"]
-    assert "/hls-key/key.bin" == first_segment_key["uri"]
-    assert "AES-128" == first_segment_key["method"]
-    assert "0X10ef8f758ca555115584bb5b3c687f52" == first_segment_key["iv"]
+    assert first_segment_key["uri"] == "/hls-key/key.bin"
+    assert first_segment_key["method"] == "AES-128"
+    assert first_segment_key["iv"] == "0X10ef8f758ca555115584bb5b3c687f52"
     last_segment_key = data["segments"][-1]["key"]
-    assert "/hls-key/key2.bin" == last_segment_key["uri"]
-    assert "AES-128" == last_segment_key["method"]
-    assert "0Xcafe8f758ca555115584bb5b3c687f52" == last_segment_key["iv"]
+    assert last_segment_key["uri"] == "/hls-key/key2.bin"
+    assert last_segment_key["method"] == "AES-128"
+    assert last_segment_key["iv"] == "0Xcafe8f758ca555115584bb5b3c687f52"
 
 
 def test_should_add_non_key_for_multiple_keys_unencrypted_and_encrypted():
@@ -100,13 +99,13 @@ def test_should_add_non_key_for_multiple_keys_unencrypted_and_encrypted():
     assert "key" not in data["segments"][0]
     assert "key" not in data["segments"][1]
     third_segment_key = data["segments"][2]["key"]
-    assert "/hls-key/key.bin" == third_segment_key["uri"]
-    assert "AES-128" == third_segment_key["method"]
-    assert "0X10ef8f758ca555115584bb5b3c687f52" == third_segment_key["iv"]
+    assert third_segment_key["uri"] == "/hls-key/key.bin"
+    assert third_segment_key["method"] == "AES-128"
+    assert third_segment_key["iv"] == "0X10ef8f758ca555115584bb5b3c687f52"
     last_segment_key = data["segments"][-1]["key"]
-    assert "/hls-key/key2.bin" == last_segment_key["uri"]
-    assert "AES-128" == last_segment_key["method"]
-    assert "0Xcafe8f758ca555115584bb5b3c687f52" == last_segment_key["iv"]
+    assert last_segment_key["uri"] == "/hls-key/key2.bin"
+    assert last_segment_key["method"] == "AES-128"
+    assert last_segment_key["iv"] == "0Xcafe8f758ca555115584bb5b3c687f52"
 
 
 def test_should_handle_key_method_none_and_no_uri_attr():
@@ -116,18 +115,18 @@ def test_should_handle_key_method_none_and_no_uri_attr():
     assert "key" not in data["segments"][0]
     assert "key" not in data["segments"][1]
     third_segment_key = data["segments"][2]["key"]
-    assert "/hls-key/key.bin" == third_segment_key["uri"]
-    assert "AES-128" == third_segment_key["method"]
-    assert "0X10ef8f758ca555115584bb5b3c687f52" == third_segment_key["iv"]
-    assert "NONE" == data["segments"][6]["key"]["method"]
+    assert third_segment_key["uri"] == "/hls-key/key.bin"
+    assert third_segment_key["method"] == "AES-128"
+    assert third_segment_key["iv"] == "0X10ef8f758ca555115584bb5b3c687f52"
+    assert data["segments"][6]["key"]["method"] == "NONE"
 
 
 def test_should_parse_playlist_with_session_encrypted_segments_from_string():
     data = m3u8.parse(playlists.PLAYLIST_WITH_SESSION_ENCRYPTED_SEGMENTS)
-    assert 7794 == data["media_sequence"]
-    assert 15 == data["targetduration"]
-    assert "AES-128" == data["session_keys"][0]["method"]
-    assert "https://priv.example.com/key.php?r=52" == data["session_keys"][0]["uri"]
+    assert data["media_sequence"] == 7794
+    assert data["targetduration"] == 15
+    assert data["session_keys"][0]["method"] == "AES-128"
+    assert data["session_keys"][0]["uri"] == "https://priv.example.com/key.php?r=52"
     assert [
         "http://media.example.com/fileSequence52-1.ts",
         "http://media.example.com/fileSequence52-2.ts",
@@ -138,102 +137,102 @@ def test_should_parse_playlist_with_session_encrypted_segments_from_string():
 
 def test_should_load_playlist_with_session_iv_from_string():
     data = m3u8.parse(playlists.PLAYLIST_WITH_SESSION_ENCRYPTED_SEGMENTS_AND_IV)
-    assert "/hls-key/key.bin" == data["session_keys"][0]["uri"]
-    assert "AES-128" == data["session_keys"][0]["method"]
-    assert "0X10ef8f758ca555115584bb5b3c687f52" == data["session_keys"][0]["iv"]
+    assert data["session_keys"][0]["uri"] == "/hls-key/key.bin"
+    assert data["session_keys"][0]["method"] == "AES-128"
+    assert data["session_keys"][0]["iv"] == "0X10ef8f758ca555115584bb5b3c687f52"
 
 
 def test_should_parse_quoted_title_from_playlist():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_QUOTED_TITLE)
-    assert 1 == len(data["segments"])
-    assert 5220 == data["segments"][0]["duration"]
-    assert '"A sample title"' == data["segments"][0]["title"]
-    assert "http://media.example.com/entire.ts" == data["segments"][0]["uri"]
+    assert len(data["segments"]) == 1
+    assert data["segments"][0]["duration"] == 5220
+    assert data["segments"][0]["title"] == '"A sample title"'
+    assert data["segments"][0]["uri"] == "http://media.example.com/entire.ts"
 
 
 def test_should_parse_unquoted_title_from_playlist():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_WITH_UNQUOTED_TITLE)
-    assert 1 == len(data["segments"])
-    assert 5220 == data["segments"][0]["duration"]
-    assert "A sample unquoted title" == data["segments"][0]["title"]
-    assert "http://media.example.com/entire.ts" == data["segments"][0]["uri"]
+    assert len(data["segments"]) == 1
+    assert data["segments"][0]["duration"] == 5220
+    assert data["segments"][0]["title"] == "A sample unquoted title"
+    assert data["segments"][0]["uri"] == "http://media.example.com/entire.ts"
 
 
 def test_should_parse_variant_playlist():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST)
     playlists_list = list(data["playlists"])
 
-    assert True == data["is_variant"]
-    assert None == data["media_sequence"]
-    assert 4 == len(playlists_list)
+    assert True is data["is_variant"]
+    assert None is data["media_sequence"]
+    assert len(playlists_list) == 4
 
-    assert "http://example.com/low.m3u8" == playlists_list[0]["uri"]
-    assert 1 == playlists_list[0]["stream_info"]["program_id"]
-    assert 1280000 == playlists_list[0]["stream_info"]["bandwidth"]
+    assert playlists_list[0]["uri"] == "http://example.com/low.m3u8"
+    assert playlists_list[0]["stream_info"]["program_id"] == 1
+    assert playlists_list[0]["stream_info"]["bandwidth"] == 1280000
 
-    assert "http://example.com/audio-only.m3u8" == playlists_list[-1]["uri"]
-    assert 1 == playlists_list[-1]["stream_info"]["program_id"]
-    assert 65000 == playlists_list[-1]["stream_info"]["bandwidth"]
-    assert "mp4a.40.5,avc1.42801e" == playlists_list[-1]["stream_info"]["codecs"]
+    assert playlists_list[-1]["uri"] == "http://example.com/audio-only.m3u8"
+    assert playlists_list[-1]["stream_info"]["program_id"] == 1
+    assert playlists_list[-1]["stream_info"]["bandwidth"] == 65000
+    assert playlists_list[-1]["stream_info"]["codecs"] == "mp4a.40.5,avc1.42801e"
 
 
 def test_should_parse_variant_playlist_with_cc_subtitles_and_audio():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_CC_SUBS_AND_AUDIO)
     playlists_list = list(data["playlists"])
 
-    assert True == data["is_variant"]
-    assert None == data["media_sequence"]
-    assert 2 == len(playlists_list)
+    assert True is data["is_variant"]
+    assert None is data["media_sequence"]
+    assert len(playlists_list) == 2
 
-    assert "http://example.com/with-cc-hi.m3u8" == playlists_list[0]["uri"]
-    assert 1 == playlists_list[0]["stream_info"]["program_id"]
-    assert 7680000 == playlists_list[0]["stream_info"]["bandwidth"]
-    assert '"cc"' == playlists_list[0]["stream_info"]["closed_captions"]
-    assert "sub" == playlists_list[0]["stream_info"]["subtitles"]
-    assert "aud" == playlists_list[0]["stream_info"]["audio"]
+    assert playlists_list[0]["uri"] == "http://example.com/with-cc-hi.m3u8"
+    assert playlists_list[0]["stream_info"]["program_id"] == 1
+    assert playlists_list[0]["stream_info"]["bandwidth"] == 7680000
+    assert playlists_list[0]["stream_info"]["closed_captions"] == '"cc"'
+    assert playlists_list[0]["stream_info"]["subtitles"] == "sub"
+    assert playlists_list[0]["stream_info"]["audio"] == "aud"
 
-    assert "http://example.com/with-cc-low.m3u8" == playlists_list[-1]["uri"]
-    assert 1 == playlists_list[-1]["stream_info"]["program_id"]
-    assert 65000 == playlists_list[-1]["stream_info"]["bandwidth"]
-    assert '"cc"' == playlists_list[-1]["stream_info"]["closed_captions"]
-    assert "sub" == playlists_list[-1]["stream_info"]["subtitles"]
-    assert "aud" == playlists_list[-1]["stream_info"]["audio"]
+    assert playlists_list[-1]["uri"] == "http://example.com/with-cc-low.m3u8"
+    assert playlists_list[-1]["stream_info"]["program_id"] == 1
+    assert playlists_list[-1]["stream_info"]["bandwidth"] == 65000
+    assert playlists_list[-1]["stream_info"]["closed_captions"] == '"cc"'
+    assert playlists_list[-1]["stream_info"]["subtitles"] == "sub"
+    assert playlists_list[-1]["stream_info"]["audio"] == "aud"
 
 
 def test_should_parse_variant_playlist_with_none_cc_and_audio():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_NONE_CC_AND_AUDIO)
     playlists_list = list(data["playlists"])
 
-    assert "NONE" == playlists_list[0]["stream_info"]["closed_captions"]
-    assert "NONE" == playlists_list[-1]["stream_info"]["closed_captions"]
+    assert playlists_list[0]["stream_info"]["closed_captions"] == "NONE"
+    assert playlists_list[-1]["stream_info"]["closed_captions"] == "NONE"
 
 
 def test_should_parse_variant_playlist_with_average_bandwidth():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_AVERAGE_BANDWIDTH)
     playlists_list = list(data["playlists"])
-    assert 1280000 == playlists_list[0]["stream_info"]["bandwidth"]
-    assert 1252345 == playlists_list[0]["stream_info"]["average_bandwidth"]
-    assert 2560000 == playlists_list[1]["stream_info"]["bandwidth"]
-    assert 2466570 == playlists_list[1]["stream_info"]["average_bandwidth"]
-    assert 7680000 == playlists_list[2]["stream_info"]["bandwidth"]
-    assert 7560423 == playlists_list[2]["stream_info"]["average_bandwidth"]
-    assert 65000 == playlists_list[3]["stream_info"]["bandwidth"]
-    assert 63005 == playlists_list[3]["stream_info"]["average_bandwidth"]
+    assert playlists_list[0]["stream_info"]["bandwidth"] == 1280000
+    assert playlists_list[0]["stream_info"]["average_bandwidth"] == 1252345
+    assert playlists_list[1]["stream_info"]["bandwidth"] == 2560000
+    assert playlists_list[1]["stream_info"]["average_bandwidth"] == 2466570
+    assert playlists_list[2]["stream_info"]["bandwidth"] == 7680000
+    assert playlists_list[2]["stream_info"]["average_bandwidth"] == 7560423
+    assert playlists_list[3]["stream_info"]["bandwidth"] == 65000
+    assert playlists_list[3]["stream_info"]["average_bandwidth"] == 63005
 
 
 def test_should_parse_variant_playlist_with_video_range():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_VIDEO_RANGE)
     playlists_list = list(data["playlists"])
-    assert "SDR" == playlists_list[0]["stream_info"]["video_range"]
-    assert "PQ" == playlists_list[1]["stream_info"]["video_range"]
+    assert playlists_list[0]["stream_info"]["video_range"] == "SDR"
+    assert playlists_list[1]["stream_info"]["video_range"] == "PQ"
 
 
 def test_should_parse_variant_playlist_with_hdcp_level():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_HDCP_LEVEL)
     playlists_list = list(data["playlists"])
-    assert "NONE" == playlists_list[0]["stream_info"]["hdcp_level"]
-    assert "TYPE-0" == playlists_list[1]["stream_info"]["hdcp_level"]
-    assert "TYPE-1" == playlists_list[2]["stream_info"]["hdcp_level"]
+    assert playlists_list[0]["stream_info"]["hdcp_level"] == "NONE"
+    assert playlists_list[1]["stream_info"]["hdcp_level"] == "TYPE-0"
+    assert playlists_list[2]["stream_info"]["hdcp_level"] == "TYPE-1"
 
 
 # This is actually not according to specification but as for example Twitch.tv
@@ -243,134 +242,134 @@ def test_should_parse_variant_playlist_with_hdcp_level():
 def test_should_parse_variant_playlist_with_bandwidth_as_float():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_BANDWIDTH_FLOAT)
     playlists_list = list(data["playlists"])
-    assert 1280000 == playlists_list[0]["stream_info"]["bandwidth"]
-    assert 2560000 == playlists_list[1]["stream_info"]["bandwidth"]
-    assert 7680000 == playlists_list[2]["stream_info"]["bandwidth"]
-    assert 65000 == playlists_list[3]["stream_info"]["bandwidth"]
+    assert playlists_list[0]["stream_info"]["bandwidth"] == 1280000
+    assert playlists_list[1]["stream_info"]["bandwidth"] == 2560000
+    assert playlists_list[2]["stream_info"]["bandwidth"] == 7680000
+    assert playlists_list[3]["stream_info"]["bandwidth"] == 65000
 
 
 def test_should_parse_variant_playlist_with_iframe_playlists():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS)
     iframe_playlists = list(data["iframe_playlists"])
 
-    assert True == data["is_variant"]
+    assert True is data["is_variant"]
 
-    assert 4 == len(iframe_playlists)
+    assert len(iframe_playlists) == 4
 
-    assert 1 == iframe_playlists[0]["iframe_stream_info"]["program_id"]
-    assert 151288 == iframe_playlists[0]["iframe_stream_info"]["bandwidth"]
-    assert "624x352" == iframe_playlists[0]["iframe_stream_info"]["resolution"]
-    assert "avc1.4d001f" == iframe_playlists[0]["iframe_stream_info"]["codecs"]
-    assert "video-800k-iframes.m3u8" == iframe_playlists[0]["uri"]
+    assert iframe_playlists[0]["iframe_stream_info"]["program_id"] == 1
+    assert iframe_playlists[0]["iframe_stream_info"]["bandwidth"] == 151288
+    assert iframe_playlists[0]["iframe_stream_info"]["resolution"] == "624x352"
+    assert iframe_playlists[0]["iframe_stream_info"]["codecs"] == "avc1.4d001f"
+    assert iframe_playlists[0]["uri"] == "video-800k-iframes.m3u8"
 
-    assert 38775 == iframe_playlists[-1]["iframe_stream_info"]["bandwidth"]
-    assert "avc1.4d001f" == (iframe_playlists[-1]["iframe_stream_info"]["codecs"])
-    assert "video-150k-iframes.m3u8" == iframe_playlists[-1]["uri"]
+    assert iframe_playlists[-1]["iframe_stream_info"]["bandwidth"] == 38775
+    assert (iframe_playlists[-1]["iframe_stream_info"]["codecs"]) == "avc1.4d001f"
+    assert iframe_playlists[-1]["uri"] == "video-150k-iframes.m3u8"
 
 
 def test_should_parse_variant_playlist_with_alt_iframe_playlists_layout():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_ALT_IFRAME_PLAYLISTS_LAYOUT)
     iframe_playlists = list(data["iframe_playlists"])
 
-    assert True == data["is_variant"]
+    assert True is data["is_variant"]
 
-    assert 4 == len(iframe_playlists)
+    assert len(iframe_playlists) == 4
 
-    assert 1 == iframe_playlists[0]["iframe_stream_info"]["program_id"]
-    assert 151288 == iframe_playlists[0]["iframe_stream_info"]["bandwidth"]
-    assert "624x352" == iframe_playlists[0]["iframe_stream_info"]["resolution"]
-    assert "avc1.4d001f" == iframe_playlists[0]["iframe_stream_info"]["codecs"]
-    assert "video-800k-iframes.m3u8" == iframe_playlists[0]["uri"]
+    assert iframe_playlists[0]["iframe_stream_info"]["program_id"] == 1
+    assert iframe_playlists[0]["iframe_stream_info"]["bandwidth"] == 151288
+    assert iframe_playlists[0]["iframe_stream_info"]["resolution"] == "624x352"
+    assert iframe_playlists[0]["iframe_stream_info"]["codecs"] == "avc1.4d001f"
+    assert iframe_playlists[0]["uri"] == "video-800k-iframes.m3u8"
 
-    assert 38775 == iframe_playlists[-1]["iframe_stream_info"]["bandwidth"]
-    assert "avc1.4d001f" == (iframe_playlists[-1]["iframe_stream_info"]["codecs"])
-    assert "video-150k-iframes.m3u8" == iframe_playlists[-1]["uri"]
+    assert iframe_playlists[-1]["iframe_stream_info"]["bandwidth"] == 38775
+    assert (iframe_playlists[-1]["iframe_stream_info"]["codecs"]) == "avc1.4d001f"
+    assert iframe_playlists[-1]["uri"] == "video-150k-iframes.m3u8"
 
 
 def test_should_parse_iframe_playlist():
     data = m3u8.parse(playlists.IFRAME_PLAYLIST)
 
-    assert True == data["is_i_frames_only"]
-    assert 4.12 == data["segments"][0]["duration"]
-    assert "9400@376" == data["segments"][0]["byterange"]
-    assert "segment1.ts" == data["segments"][0]["uri"]
+    assert True is data["is_i_frames_only"]
+    assert data["segments"][0]["duration"] == 4.12
+    assert data["segments"][0]["byterange"] == "9400@376"
+    assert data["segments"][0]["uri"] == "segment1.ts"
 
 
 def test_should_parse_variant_playlist_with_image_playlists():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS)
     image_playlists = list(data['image_playlists'])
 
-    assert True == data['is_variant']
-    assert 2 == len(image_playlists)
-    assert '320x180' == image_playlists[0]['image_stream_info']['resolution']
-    assert 'jpeg' == image_playlists[0]['image_stream_info']['codecs']
-    assert '5x2_320x180/320x180-5x2.m3u8' == image_playlists[0]['uri']
-    assert '640x360' == image_playlists[1]['image_stream_info']['resolution']
-    assert 'jpeg' == image_playlists[1]['image_stream_info']['codecs']
-    assert '5x2_640x360/640x360-5x2.m3u8' == image_playlists[1]['uri']
+    assert True is data['is_variant']
+    assert len(image_playlists) == 2
+    assert image_playlists[0]['image_stream_info']['resolution'] == '320x180'
+    assert image_playlists[0]['image_stream_info']['codecs'] == 'jpeg'
+    assert image_playlists[0]['uri'] == '5x2_320x180/320x180-5x2.m3u8'
+    assert image_playlists[1]['image_stream_info']['resolution'] == '640x360'
+    assert image_playlists[1]['image_stream_info']['codecs'] == 'jpeg'
+    assert image_playlists[1]['uri'] == '5x2_640x360/640x360-5x2.m3u8'
 
 def test_should_parse_vod_image_playlist():
     data = m3u8.parse(playlists.VOD_IMAGE_PLAYLIST)
 
-    assert True == data['is_images_only']
-    assert 8 == len(data['tiles'])
-    assert 'preroll-ad-1.jpg' == data['segments'][0]['uri']
-    assert '640x360' == data['tiles'][0]['resolution']
-    assert '5x2' == data['tiles'][0]['layout']
-    assert 6.006 == data['tiles'][0]['duration']
+    assert True is data['is_images_only']
+    assert len(data['tiles']) == 8
+    assert data['segments'][0]['uri'] == 'preroll-ad-1.jpg'
+    assert data['tiles'][0]['resolution'] == '640x360'
+    assert data['tiles'][0]['layout'] == '5x2'
+    assert data['tiles'][0]['duration'] == 6.006
     assert 'byterange' not in data['tiles'][0]
 
 def test_should_parse_vod_image_playlist2():
     data = m3u8.parse(playlists.VOD_IMAGE_PLAYLIST2)
 
-    assert True == data['is_images_only']
-    assert '640x360' == data['tiles'][0]['resolution']
-    assert '4x3' == data['tiles'][0]['layout']
-    assert 2.002 == data['tiles'][0]['duration']
-    assert 6 == len(data['tiles'])
-    assert 'promo_1.jpg' == data['segments'][0]['uri']
+    assert True is data['is_images_only']
+    assert data['tiles'][0]['resolution'] == '640x360'
+    assert data['tiles'][0]['layout'] == '4x3'
+    assert data['tiles'][0]['duration'] == 2.002
+    assert len(data['tiles']) == 6
+    assert data['segments'][0]['uri'] == 'promo_1.jpg'
 
 def test_should_parse_live_image_playlist():
     data = m3u8.parse(playlists.LIVE_IMAGE_PLAYLIST)
 
-    assert True == data['is_images_only']
-    assert 10 == len(data['segments'])
-    assert 'content-123.jpg' == data['segments'][0]['uri']
-    assert 'content-124.jpg' == data['segments'][1]['uri']
-    assert 'content-125.jpg' == data['segments'][2]['uri']
-    assert 'missing-midroll.jpg' == data['segments'][3]['uri']
-    assert 'missing-midroll.jpg' == data['segments'][4]['uri']
-    assert 'missing-midroll.jpg' == data['segments'][5]['uri']
-    assert 'content-128.jpg' == data['segments'][6]['uri']
-    assert 'content-129.jpg' == data['segments'][7]['uri']
-    assert 'content-130.jpg' == data['segments'][8]['uri']
-    assert 'content-131.jpg' == data['segments'][9]['uri']
+    assert True is data['is_images_only']
+    assert len(data['segments']) == 10
+    assert data['segments'][0]['uri'] == 'content-123.jpg'
+    assert data['segments'][1]['uri'] == 'content-124.jpg'
+    assert data['segments'][2]['uri'] == 'content-125.jpg'
+    assert data['segments'][3]['uri'] == 'missing-midroll.jpg'
+    assert data['segments'][4]['uri'] == 'missing-midroll.jpg'
+    assert data['segments'][5]['uri'] == 'missing-midroll.jpg'
+    assert data['segments'][6]['uri'] == 'content-128.jpg'
+    assert data['segments'][7]['uri'] == 'content-129.jpg'
+    assert data['segments'][8]['uri'] == 'content-130.jpg'
+    assert data['segments'][9]['uri'] == 'content-131.jpg'
 
 def test_should_parse_playlist_using_byteranges():
     data = m3u8.parse(playlists.PLAYLIST_USING_BYTERANGES)
 
-    assert False == data["is_i_frames_only"]
-    assert 10 == data["segments"][0]["duration"]
-    assert "76242@0" == data["segments"][0]["byterange"]
-    assert "segment.ts" == data["segments"][0]["uri"]
+    assert False is data["is_i_frames_only"]
+    assert data["segments"][0]["duration"] == 10
+    assert data["segments"][0]["byterange"] == "76242@0"
+    assert data["segments"][0]["uri"] == "segment.ts"
 
 
 def test_should_parse_endlist_playlist():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST)
-    assert True == data["is_endlist"]
+    assert True is data["is_endlist"]
 
     data = m3u8.parse(playlists.SLIDING_WINDOW_PLAYLIST)
-    assert False == data["is_endlist"]
+    assert False is data["is_endlist"]
 
 
 def test_should_parse_ALLOW_CACHE():
     data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
-    assert "no" == data["allow_cache"]
+    assert data["allow_cache"] == "no"
 
 
 def test_should_parse_VERSION():
     data = m3u8.parse(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
-    assert 2 == data["version"]
+    assert data["version"] == 2
 
 
 def test_should_parse_program_date_time_from_playlist():
@@ -432,18 +431,18 @@ def test_should_parse_envivio_cue_playlist():
     assert data["segments"][3]["scte35"]
     assert data["segments"][3]["cue_out"]
     assert (
-        "/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=="
-        == data["segments"][3]["scte35"]
+        data["segments"][3]["scte35"]
+        == "/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=="
     )
-    assert "366" == data["segments"][3]["scte35_duration"]
+    assert data["segments"][3]["scte35_duration"] == "366"
     assert data["segments"][4]["cue_out"]
     assert (
-        "/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=="
-        == data["segments"][4]["scte35"]
+        data["segments"][4]["scte35"]
+        == "/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=="
     )
     assert (
-        "/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=="
-        == data["segments"][5]["scte35"]
+        data["segments"][5]["scte35"]
+        == "/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=="
     )
 
 
@@ -455,8 +454,8 @@ def test_should_parse_no_duration_cue_playlist():
 
 def test_parse_simple_playlist_messy():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_MESSY)
-    assert 5220 == data["targetduration"]
-    assert 0 == data["media_sequence"]
+    assert data["targetduration"] == 5220
+    assert data["media_sequence"] == 0
     assert ["http://media.example.com/entire.ts"] == [
         c["uri"] for c in data["segments"]
     ]
@@ -471,8 +470,8 @@ def test_parse_simple_playlist_messy_strict():
 
 def test_commaless_extinf():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST_COMMALESS_EXTINF)
-    assert 5220 == data["targetduration"]
-    assert 0 == data["media_sequence"]
+    assert data["targetduration"] == 5220
+    assert data["media_sequence"] == 0
     assert ["http://media.example.com/entire.ts"] == [
         c["uri"] for c in data["segments"]
     ]
@@ -510,7 +509,7 @@ def test_should_parse_empty_uri_with_base_path():
     media = data.media[0]
     assert media.uri is None
     assert media.base_path is None
-    assert "base_uri/" == media.base_uri
+    assert media.base_uri == "base_uri/"
 
 
 def test_should_parse_audio_channels():
@@ -580,8 +579,8 @@ def test_simple_playlist_with_custom_tags():
         custom_tags_parser=get_movie,
     )
     assert data["movie"] == "million dollar baby"
-    assert 5220 == data["targetduration"]
-    assert 0 == data["media_sequence"]
+    assert data["targetduration"] == 5220
+    assert data["media_sequence"] == 0
     assert ["http://media.example.com/entire.ts"] == [
         c["uri"] for c in data["segments"]
     ]
@@ -681,16 +680,16 @@ def test_tag_after_extinf():
 def test_master_playlist_with_frame_rate():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_FRAME_RATE)
     playlists_list = list(data["playlists"])
-    assert 25 == playlists_list[0]["stream_info"]["frame_rate"]
-    assert 50 == playlists_list[1]["stream_info"]["frame_rate"]
-    assert 60 == playlists_list[2]["stream_info"]["frame_rate"]
-    assert 12.5 == playlists_list[3]["stream_info"]["frame_rate"]
+    assert playlists_list[0]["stream_info"]["frame_rate"] == 25
+    assert playlists_list[1]["stream_info"]["frame_rate"] == 50
+    assert playlists_list[2]["stream_info"]["frame_rate"] == 60
+    assert playlists_list[3]["stream_info"]["frame_rate"] == 12.5
 
 
 def test_master_playlist_with_unrounded_frame_rate():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_ROUNDABLE_FRAME_RATE)
     playlists_list = list(data["playlists"])
-    assert 12.54321 == playlists_list[0]["stream_info"]["frame_rate"]
+    assert playlists_list[0]["stream_info"]["frame_rate"] == 12.54321
 
 
 def test_low_latency_playlist():
@@ -770,8 +769,8 @@ def test_gap():
     data = m3u8.parse(playlists.GAP_PLAYLIST)
 
     assert data["segments"][0]["gap_tag"] is None
-    assert data["segments"][1]["gap_tag"] == True
-    assert data["segments"][2]["gap_tag"] == True
+    assert data["segments"][1]["gap_tag"] is True
+    assert data["segments"][2]["gap_tag"] is True
     assert data["segments"][3]["gap_tag"] is None
 
 
@@ -782,7 +781,7 @@ def test_gap_in_parts():
     assert data["segments"][0]["parts"][0].get("gap", None) is None
     assert data["segments"][0]["parts"][1]["gap_tag"] is None
     assert data["segments"][0]["parts"][1]["gap"] == "YES"
-    assert data["segments"][0]["parts"][2]["gap_tag"] == True
+    assert data["segments"][0]["parts"][2]["gap_tag"] is True
     assert data["segments"][0]["parts"][2].get("gap", None) is None
 
 
@@ -790,40 +789,40 @@ def test_should_parse_variant_playlist_with_iframe_with_average_bandwidth():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_AVERAGE_BANDWIDTH)
     iframe_playlists = list(data["iframe_playlists"])
 
-    assert True == data["is_variant"]
+    assert True is data["is_variant"]
 
-    assert 4 == len(iframe_playlists)
+    assert len(iframe_playlists) == 4
 
-    assert 151288 == iframe_playlists[0]["iframe_stream_info"]["bandwidth"]
+    assert iframe_playlists[0]["iframe_stream_info"]["bandwidth"] == 151288
     # Check for absence of average_bandwidth if not given in the playlist
     assert "average_bandwidth" not in iframe_playlists[0]["iframe_stream_info"]
-    assert "624x352" == iframe_playlists[0]["iframe_stream_info"]["resolution"]
-    assert "avc1.4d001f" == iframe_playlists[0]["iframe_stream_info"]["codecs"]
-    assert "video-800k-iframes.m3u8" == iframe_playlists[0]["uri"]
+    assert iframe_playlists[0]["iframe_stream_info"]["resolution"] == "624x352"
+    assert iframe_playlists[0]["iframe_stream_info"]["codecs"] == "avc1.4d001f"
+    assert iframe_playlists[0]["uri"] == "video-800k-iframes.m3u8"
 
-    assert 38775 == iframe_playlists[-1]["iframe_stream_info"]["bandwidth"]
-    assert "avc1.4d001f" == (iframe_playlists[-1]["iframe_stream_info"]["codecs"])
-    assert "video-150k-iframes.m3u8" == iframe_playlists[-1]["uri"]
-    assert 155000 == iframe_playlists[1]["iframe_stream_info"]["average_bandwidth"]
-    assert 65000 == iframe_playlists[2]["iframe_stream_info"]["average_bandwidth"]
-    assert 30000 == iframe_playlists[3]["iframe_stream_info"]["average_bandwidth"]
+    assert iframe_playlists[-1]["iframe_stream_info"]["bandwidth"] == 38775
+    assert (iframe_playlists[-1]["iframe_stream_info"]["codecs"]) == "avc1.4d001f"
+    assert iframe_playlists[-1]["uri"] == "video-150k-iframes.m3u8"
+    assert iframe_playlists[1]["iframe_stream_info"]["average_bandwidth"] == 155000
+    assert iframe_playlists[2]["iframe_stream_info"]["average_bandwidth"] == 65000
+    assert iframe_playlists[3]["iframe_stream_info"]["average_bandwidth"] == 30000
 
 
 def test_should_parse_variant_playlist_with_iframe_with_video_range():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_VIDEO_RANGE)
     iframe_playlists = list(data["iframe_playlists"])
 
-    assert True == data["is_variant"]
+    assert True is data["is_variant"]
 
-    assert 4 == len(iframe_playlists)
+    assert len(iframe_playlists) == 4
 
-    assert "http://example.com/sdr-iframes.m3u8" == iframe_playlists[0]["uri"]
-    assert "SDR" == iframe_playlists[0]["iframe_stream_info"]["video_range"]
-    assert "http://example.com/hdr-pq-iframes.m3u8" == iframe_playlists[1]["uri"]
-    assert "PQ" == iframe_playlists[1]["iframe_stream_info"]["video_range"]
-    assert "http://example.com/hdr-hlg-iframes.m3u8" == iframe_playlists[2]["uri"]
-    assert "HLG" == iframe_playlists[2]["iframe_stream_info"]["video_range"]
-    assert "http://example.com/unknown-iframes.m3u8" == iframe_playlists[3]["uri"]
+    assert iframe_playlists[0]["uri"] == "http://example.com/sdr-iframes.m3u8"
+    assert iframe_playlists[0]["iframe_stream_info"]["video_range"] == "SDR"
+    assert iframe_playlists[1]["uri"] == "http://example.com/hdr-pq-iframes.m3u8"
+    assert iframe_playlists[1]["iframe_stream_info"]["video_range"] == "PQ"
+    assert iframe_playlists[2]["uri"] == "http://example.com/hdr-hlg-iframes.m3u8"
+    assert iframe_playlists[2]["iframe_stream_info"]["video_range"] == "HLG"
+    assert iframe_playlists[3]["uri"] == "http://example.com/unknown-iframes.m3u8"
     assert "video_range" not in iframe_playlists[3]["iframe_stream_info"]
 
 
@@ -831,17 +830,17 @@ def test_should_parse_variant_playlist_with_iframe_with_hdcp_level():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_HDCP_LEVEL)
     iframe_playlists = list(data["iframe_playlists"])
 
-    assert True == data["is_variant"]
+    assert True is data["is_variant"]
 
-    assert 4 == len(iframe_playlists)
+    assert len(iframe_playlists) == 4
 
-    assert "http://example.com/none-iframes.m3u8" == iframe_playlists[0]["uri"]
-    assert "NONE" == iframe_playlists[0]["iframe_stream_info"]["hdcp_level"]
-    assert "http://example.com/type0-iframes.m3u8" == iframe_playlists[1]["uri"]
-    assert "TYPE-0" == iframe_playlists[1]["iframe_stream_info"]["hdcp_level"]
-    assert "http://example.com/type1-iframes.m3u8" == iframe_playlists[2]["uri"]
-    assert "TYPE-1" == iframe_playlists[2]["iframe_stream_info"]["hdcp_level"]
-    assert "http://example.com/unknown-iframes.m3u8" == iframe_playlists[3]["uri"]
+    assert iframe_playlists[0]["uri"] == "http://example.com/none-iframes.m3u8"
+    assert iframe_playlists[0]["iframe_stream_info"]["hdcp_level"] == "NONE"
+    assert iframe_playlists[1]["uri"] == "http://example.com/type0-iframes.m3u8"
+    assert iframe_playlists[1]["iframe_stream_info"]["hdcp_level"] == "TYPE-0"
+    assert iframe_playlists[2]["uri"] == "http://example.com/type1-iframes.m3u8"
+    assert iframe_playlists[2]["iframe_stream_info"]["hdcp_level"] == "TYPE-1"
+    assert iframe_playlists[3]["uri"] == "http://example.com/unknown-iframes.m3u8"
     assert "hdcp_level" not in iframe_playlists[3]["iframe_stream_info"]
 
 
@@ -869,13 +868,13 @@ def test_content_steering():
 
 def test_cue_in_pops_scte35_data_and_duration():
     data = m3u8.parse(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
-    assert data["segments"][9]["cue_in"] == True
+    assert data["segments"][9]["cue_in"] is True
     assert (
         data["segments"][9]["scte35"]
         == "/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg=="
     )
     assert data["segments"][9]["scte35_duration"] == "50"
-    assert data["segments"][10]["cue_in"] == False
+    assert data["segments"][10]["cue_in"] is False
     assert data["segments"][10]["scte35"] is None
     assert data["segments"][10]["scte35_duration"] is None
 

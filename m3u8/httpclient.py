@@ -1,6 +1,5 @@
 import ssl
 import urllib.request
-
 from urllib.parse import urljoin
 
 

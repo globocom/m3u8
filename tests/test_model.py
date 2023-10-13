@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
@@ -64,14 +63,14 @@ def test_target_duration_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {"targetduration": "1234567"})
 
-    assert "1234567" == obj.target_duration
+    assert obj.target_duration == "1234567"
 
 
 def test_media_sequence_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {"media_sequence": 1234567})
 
-    assert 1234567 == obj.media_sequence
+    assert obj.media_sequence == 1234567
 
 
 def test_program_date_time_attribute():
@@ -152,30 +151,30 @@ def test_segment_discontinuity_attribute():
     obj = m3u8.M3U8(playlists.DISCONTINUITY_PLAYLIST_WITH_PROGRAM_DATE_TIME)
     segments = obj.segments
 
-    assert segments[0].discontinuity == False
-    assert segments[5].discontinuity == True
-    assert segments[6].discontinuity == False
+    assert segments[0].discontinuity is False
+    assert segments[5].discontinuity is True
+    assert segments[6].discontinuity is False
 
 
 def test_segment_cue_out_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_PLAYLIST)
     segments = obj.segments
 
-    assert segments[1].cue_out == True
-    assert segments[2].cue_out == True
-    assert segments[3].cue_out == False
+    assert segments[1].cue_out is True
+    assert segments[2].cue_out is True
+    assert segments[3].cue_out is False
 
 
 def test_segment_cue_out_start_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_WITH_DURATION_PLAYLIST)
 
-    assert obj.segments[0].cue_out_start == True
+    assert obj.segments[0].cue_out_start is True
 
 
 def test_segment_cue_in_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_WITH_DURATION_PLAYLIST)
 
-    assert obj.segments[2].cue_in == True
+    assert obj.segments[2].cue_in is True
 
 
 def test_segment_cue_out_cont_dumps():
@@ -236,8 +235,8 @@ def test_segment_cue_out_in_dumps():
 def test_segment_elemental_scte35_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
     segments = obj.segments
-    assert segments[4].cue_out == True
-    assert segments[9].cue_out == False
+    assert segments[4].cue_out is True
+    assert segments[9].cue_out is False
     assert (
         segments[4].scte35 == "/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg=="
     )
@@ -246,14 +245,14 @@ def test_segment_elemental_scte35_attribute():
 def test_segment_envivio_scte35_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_ENVIVIO_PLAYLIST)
     segments = obj.segments
-    assert segments[3].cue_out == True
+    assert segments[3].cue_out is True
     assert (
         segments[4].scte35 == "/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=="
     )
     assert (
         segments[5].scte35 == "/DAlAAAENOOQAP/wFAUBAABrf+//N25XDf4B9p/gAAEBAQAAxKni9A=="
     )
-    assert segments[7].cue_out == False
+    assert segments[7].cue_out is False
 
 
 def test_segment_unknown_scte35_attribute():
@@ -264,8 +263,8 @@ def test_segment_unknown_scte35_attribute():
 
 def test_segment_cue_out_no_duration():
     obj = m3u8.M3U8(playlists.CUE_OUT_NO_DURATION_PLAYLIST)
-    assert obj.segments[0].cue_out_start == True
-    assert obj.segments[2].cue_in == True
+    assert obj.segments[0].cue_out_start is True
+    assert obj.segments[2].cue_in is True
 
 
 def test_segment_asset_metadata_dumps():
@@ -299,10 +298,10 @@ def test_key_attribute():
     data = {"keys": [{"method": "AES-128", "uri": "/key", "iv": "foobar"}]}
     mock_parser_data(obj, data)
 
-    assert "Key" == obj.keys[0].__class__.__name__
-    assert "AES-128" == obj.keys[0].method
-    assert "/key" == obj.keys[0].uri
-    assert "foobar" == obj.keys[0].iv
+    assert obj.keys[0].__class__.__name__ == "Key"
+    assert obj.keys[0].method == "AES-128"
+    assert obj.keys[0].uri == "/key"
+    assert obj.keys[0].iv == "foobar"
 
 
 def test_key_attribute_on_none():
@@ -316,9 +315,9 @@ def test_key_attribute_without_initialization_vector():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {"keys": [{"method": "AES-128", "uri": "/key"}]})
 
-    assert "AES-128" == obj.keys[0].method
-    assert "/key" == obj.keys[0].uri
-    assert None == obj.keys[0].iv
+    assert obj.keys[0].method == "AES-128"
+    assert obj.keys[0].uri == "/key"
+    assert None is obj.keys[0].iv
 
 
 def test_session_keys_on_clear_playlist():
@@ -339,10 +338,10 @@ def test_session_key_attribute():
     data = {"session_keys": [{"method": "AES-128", "uri": "/key", "iv": "foobar"}]}
     mock_parser_data(obj, data)
 
-    assert "SessionKey" == obj.session_keys[0].__class__.__name__
-    assert "AES-128" == obj.session_keys[0].method
-    assert "/key" == obj.session_keys[0].uri
-    assert "foobar" == obj.session_keys[0].iv
+    assert obj.session_keys[0].__class__.__name__ == "SessionKey"
+    assert obj.session_keys[0].method == "AES-128"
+    assert obj.session_keys[0].uri == "/key"
+    assert obj.session_keys[0].iv == "foobar"
 
 
 def test_session_key_attribute_on_none():
@@ -356,9 +355,9 @@ def test_session_key_attribute_without_initialization_vector():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {"session_keys": [{"method": "AES-128", "uri": "/key"}]})
 
-    assert "AES-128" == obj.session_keys[0].method
-    assert "/key" == obj.session_keys[0].uri
-    assert None == obj.session_keys[0].iv
+    assert obj.session_keys[0].method == "AES-128"
+    assert obj.session_keys[0].uri == "/key"
+    assert None is obj.session_keys[0].iv
 
 
 def test_segments_attribute():
@@ -373,22 +372,22 @@ def test_segments_attribute():
         },
     )
 
-    assert 2 == len(obj.segments)
+    assert len(obj.segments) == 2
 
-    assert "/foo/bar-1.ts" == obj.segments[0].uri
-    assert "First Segment" == obj.segments[0].title
-    assert 1500 == obj.segments[0].duration
+    assert obj.segments[0].uri == "/foo/bar-1.ts"
+    assert obj.segments[0].title == "First Segment"
+    assert obj.segments[0].duration == 1500
 
 
 def test_segments_attribute_without_title():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {"segments": [{"uri": "/foo/bar-1.ts", "duration": 1500}]})
 
-    assert 1 == len(obj.segments)
+    assert len(obj.segments) == 1
 
-    assert "/foo/bar-1.ts" == obj.segments[0].uri
-    assert 1500 == obj.segments[0].duration
-    assert None == obj.segments[0].title
+    assert obj.segments[0].uri == "/foo/bar-1.ts"
+    assert obj.segments[0].duration == 1500
+    assert None is obj.segments[0].title
 
 
 def test_segments_attribute_without_duration():
@@ -397,11 +396,11 @@ def test_segments_attribute_without_duration():
         obj, {"segments": [{"uri": "/foo/bar-1.ts", "title": "Segment title"}]}
     )
 
-    assert 1 == len(obj.segments)
+    assert len(obj.segments) == 1
 
-    assert "/foo/bar-1.ts" == obj.segments[0].uri
-    assert "Segment title" == obj.segments[0].title
-    assert None == obj.segments[0].duration
+    assert obj.segments[0].uri == "/foo/bar-1.ts"
+    assert obj.segments[0].title == "Segment title"
+    assert None is obj.segments[0].duration
 
 
 def test_segments_attribute_with_byterange():
@@ -420,12 +419,12 @@ def test_segments_attribute_with_byterange():
         },
     )
 
-    assert 1 == len(obj.segments)
+    assert len(obj.segments) == 1
 
-    assert "/foo/bar-1.ts" == obj.segments[0].uri
-    assert "Segment title" == obj.segments[0].title
-    assert 1500 == obj.segments[0].duration
-    assert "76242@0" == obj.segments[0].byterange
+    assert obj.segments[0].uri == "/foo/bar-1.ts"
+    assert obj.segments[0].title == "Segment title"
+    assert obj.segments[0].duration == 1500
+    assert obj.segments[0].byterange == "76242@0"
 
 
 def test_segment_attribute_with_multiple_keys():
@@ -514,39 +513,39 @@ def test_playlists_attribute():
     }
     mock_parser_data(obj, data)
 
-    assert 2 == len(obj.playlists)
+    assert len(obj.playlists) == 2
 
-    assert "/url/1.m3u8" == obj.playlists[0].uri
-    assert 1 == obj.playlists[0].stream_info.program_id
-    assert 320000 == obj.playlists[0].stream_info.bandwidth
-    assert None == obj.playlists[0].stream_info.closed_captions
-    assert None == obj.playlists[0].stream_info.codecs
+    assert obj.playlists[0].uri == "/url/1.m3u8"
+    assert obj.playlists[0].stream_info.program_id == 1
+    assert obj.playlists[0].stream_info.bandwidth == 320000
+    assert None is obj.playlists[0].stream_info.closed_captions
+    assert None is obj.playlists[0].stream_info.codecs
 
-    assert None == obj.playlists[0].media[0].uri
-    assert "high" == obj.playlists[0].media[0].group_id
-    assert "VIDEO" == obj.playlists[0].media[0].type
-    assert None == obj.playlists[0].media[0].language
-    assert "High" == obj.playlists[0].media[0].name
-    assert None == obj.playlists[0].media[0].default
-    assert None == obj.playlists[0].media[0].autoselect
-    assert None == obj.playlists[0].media[0].forced
-    assert None == obj.playlists[0].media[0].characteristics
+    assert None is obj.playlists[0].media[0].uri
+    assert obj.playlists[0].media[0].group_id == "high"
+    assert obj.playlists[0].media[0].type == "VIDEO"
+    assert None is obj.playlists[0].media[0].language
+    assert obj.playlists[0].media[0].name == "High"
+    assert None is obj.playlists[0].media[0].default
+    assert None is obj.playlists[0].media[0].autoselect
+    assert None is obj.playlists[0].media[0].forced
+    assert None is obj.playlists[0].media[0].characteristics
 
-    assert "/url/2.m3u8" == obj.playlists[1].uri
-    assert 1 == obj.playlists[1].stream_info.program_id
-    assert 120000 == obj.playlists[1].stream_info.bandwidth
-    assert None == obj.playlists[1].stream_info.closed_captions
-    assert "mp4a.40.5" == obj.playlists[1].stream_info.codecs
+    assert obj.playlists[1].uri == "/url/2.m3u8"
+    assert obj.playlists[1].stream_info.program_id == 1
+    assert obj.playlists[1].stream_info.bandwidth == 120000
+    assert None is obj.playlists[1].stream_info.closed_captions
+    assert obj.playlists[1].stream_info.codecs == "mp4a.40.5"
 
-    assert None == obj.playlists[1].media[0].uri
-    assert "low" == obj.playlists[1].media[0].group_id
-    assert "VIDEO" == obj.playlists[1].media[0].type
-    assert None == obj.playlists[1].media[0].language
-    assert "Low" == obj.playlists[1].media[0].name
-    assert "YES" == obj.playlists[1].media[0].default
-    assert "YES" == obj.playlists[1].media[0].autoselect
-    assert None == obj.playlists[1].media[0].forced
-    assert None == obj.playlists[1].media[0].characteristics
+    assert None is obj.playlists[1].media[0].uri
+    assert obj.playlists[1].media[0].group_id == "low"
+    assert obj.playlists[1].media[0].type == "VIDEO"
+    assert None is obj.playlists[1].media[0].language
+    assert obj.playlists[1].media[0].name == "Low"
+    assert obj.playlists[1].media[0].default == "YES"
+    assert obj.playlists[1].media[0].autoselect == "YES"
+    assert None is obj.playlists[1].media[0].forced
+    assert None is obj.playlists[1].media[0].characteristics
 
     assert [] == obj.iframe_playlists
 
@@ -558,20 +557,20 @@ def test_playlists_attribute_without_program_id():
         {"playlists": [{"uri": "/url/1.m3u8", "stream_info": {"bandwidth": 320000}}]},
     )
 
-    assert 1 == len(obj.playlists)
+    assert len(obj.playlists) == 1
 
-    assert "/url/1.m3u8" == obj.playlists[0].uri
-    assert 320000 == obj.playlists[0].stream_info.bandwidth
-    assert None == obj.playlists[0].stream_info.codecs
-    assert None == obj.playlists[0].stream_info.program_id
+    assert obj.playlists[0].uri == "/url/1.m3u8"
+    assert obj.playlists[0].stream_info.bandwidth == 320000
+    assert None is obj.playlists[0].stream_info.codecs
+    assert None is obj.playlists[0].stream_info.program_id
 
 
 def test_playlists_attribute_with_resolution():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_RESOLUTION)
 
-    assert 2 == len(obj.playlists)
-    assert (512, 288) == obj.playlists[0].stream_info.resolution
-    assert None == obj.playlists[1].stream_info.resolution
+    assert len(obj.playlists) == 2
+    assert obj.playlists[0].stream_info.resolution == (512, 288)
+    assert None is obj.playlists[1].stream_info.resolution
 
 
 def test_iframe_playlists_attribute():
@@ -595,28 +594,28 @@ def test_iframe_playlists_attribute():
     }
     mock_parser_data(obj, data)
 
-    assert 2 == len(obj.iframe_playlists)
+    assert len(obj.iframe_playlists) == 2
 
-    assert "/url/1.m3u8" == obj.iframe_playlists[0].uri
-    assert 1 == obj.iframe_playlists[0].iframe_stream_info.program_id
-    assert 320000 == obj.iframe_playlists[0].iframe_stream_info.bandwidth
-    assert (320, 180) == obj.iframe_playlists[0].iframe_stream_info.resolution
-    assert "avc1.4d001f" == obj.iframe_playlists[0].iframe_stream_info.codecs
+    assert obj.iframe_playlists[0].uri == "/url/1.m3u8"
+    assert obj.iframe_playlists[0].iframe_stream_info.program_id == 1
+    assert obj.iframe_playlists[0].iframe_stream_info.bandwidth == 320000
+    assert obj.iframe_playlists[0].iframe_stream_info.resolution == (320, 180)
+    assert obj.iframe_playlists[0].iframe_stream_info.codecs == "avc1.4d001f"
 
-    assert "/url/2.m3u8" == obj.iframe_playlists[1].uri
-    assert None == obj.iframe_playlists[1].iframe_stream_info.program_id
-    assert "120000" == obj.iframe_playlists[1].iframe_stream_info.bandwidth
-    assert None == obj.iframe_playlists[1].iframe_stream_info.resolution
-    assert "avc1.4d400d" == obj.iframe_playlists[1].iframe_stream_info.codecs
+    assert obj.iframe_playlists[1].uri == "/url/2.m3u8"
+    assert None is obj.iframe_playlists[1].iframe_stream_info.program_id
+    assert obj.iframe_playlists[1].iframe_stream_info.bandwidth == "120000"
+    assert None is obj.iframe_playlists[1].iframe_stream_info.resolution
+    assert obj.iframe_playlists[1].iframe_stream_info.codecs == "avc1.4d400d"
 
 
 def test_version_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {"version": 2})
-    assert 2 == obj.version
+    assert obj.version == 2
 
     mock_parser_data(obj, {})
-    assert None == obj.version
+    assert None is obj.version
 
 
 def test_version_settable_as_int():
@@ -636,10 +635,10 @@ def test_version_settable_as_string():
 def test_allow_cache_attribute():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
     mock_parser_data(obj, {"allow_cache": "no"})
-    assert "no" == obj.allow_cache
+    assert obj.allow_cache == "no"
 
     mock_parser_data(obj, {})
-    assert None == obj.allow_cache
+    assert None is obj.allow_cache
 
 
 def test_files_attribute_should_list_all_files_including_segments_and_key():
@@ -1126,49 +1125,49 @@ def test_should_correctly_update_base_path_if_its_blank():
     segment = Segment("entire.ts", "http://1.2/")
     assert not segment.base_path
     segment.base_path = "base_path"
-    assert "http://1.2/base_path/entire.ts" == segment.absolute_uri
+    assert segment.absolute_uri == "http://1.2/base_path/entire.ts"
 
 
 def test_base_path_should_just_return_uri_if_absolute():
     segment = Segment("http://1.2/entire.ts", "")
-    assert "http://1.2/entire.ts" == segment.absolute_uri
+    assert segment.absolute_uri == "http://1.2/entire.ts"
 
 
 def test_m3u8_should_propagate_base_uri_to_segments():
     with open(playlists.RELATIVE_PLAYLIST_FILENAME) as f:
         content = f.read()
     obj = m3u8.M3U8(content, base_uri="/any/path")
-    assert "/entire1.ts" == obj.segments[0].uri
-    assert "/entire1.ts" == obj.segments[0].absolute_uri
-    assert "entire4.ts" == obj.segments[3].uri
-    assert "/any/path/entire4.ts" == obj.segments[3].absolute_uri
+    assert obj.segments[0].uri == "/entire1.ts"
+    assert obj.segments[0].absolute_uri == "/entire1.ts"
+    assert obj.segments[3].uri == "entire4.ts"
+    assert obj.segments[3].absolute_uri == "/any/path/entire4.ts"
     obj.base_uri = "/any/where/"
-    assert "/entire1.ts" == obj.segments[0].uri
-    assert "/entire1.ts" == obj.segments[0].absolute_uri
-    assert "entire4.ts" == obj.segments[3].uri
-    assert "/any/where/entire4.ts" == obj.segments[3].absolute_uri
+    assert obj.segments[0].uri == "/entire1.ts"
+    assert obj.segments[0].absolute_uri == "/entire1.ts"
+    assert obj.segments[3].uri == "entire4.ts"
+    assert obj.segments[3].absolute_uri == "/any/where/entire4.ts"
 
 
 def test_m3u8_should_propagate_base_uri_to_key():
     with open(playlists.RELATIVE_PLAYLIST_FILENAME) as f:
         content = f.read()
     obj = m3u8.M3U8(content, base_uri="/any/path")
-    assert "../key.bin" == obj.keys[0].uri
-    assert "/any/key.bin" == obj.keys[0].absolute_uri
+    assert obj.keys[0].uri == "../key.bin"
+    assert obj.keys[0].absolute_uri == "/any/key.bin"
     obj.base_uri = "/any/where/"
-    assert "../key.bin" == obj.keys[0].uri
-    assert "/any/key.bin" == obj.keys[0].absolute_uri
+    assert obj.keys[0].uri == "../key.bin"
+    assert obj.keys[0].absolute_uri == "/any/key.bin"
 
 
 def test_m3u8_should_propagate_base_uri_to_session_key():
     with open(playlists.RELATIVE_PLAYLIST_FILENAME) as f:
         content = f.read()
     obj = m3u8.M3U8(content, base_uri="/any/path")
-    assert "../key.bin" == obj.session_keys[0].uri
-    assert "/any/key.bin" == obj.session_keys[0].absolute_uri
+    assert obj.session_keys[0].uri == "../key.bin"
+    assert obj.session_keys[0].absolute_uri == "/any/key.bin"
     obj.base_uri = "/any/where/"
-    assert "../key.bin" == obj.session_keys[0].uri
-    assert "/any/key.bin" == obj.session_keys[0].absolute_uri
+    assert obj.session_keys[0].uri == "../key.bin"
+    assert obj.session_keys[0].absolute_uri == "/any/key.bin"
 
 
 def test_base_path_with_optional_uri_should_do_nothing():
@@ -1287,7 +1286,7 @@ def test_find_key_throws_when_no_match():
                 # deliberately empty
             ],
         )
-    except KeyError as e:
+    except KeyError:
         threw = True
     finally:
         assert threw
