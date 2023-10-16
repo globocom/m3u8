@@ -3,9 +3,9 @@
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
-import datetime
 import itertools
 import re
+from datetime import datetime, timedelta
 from urllib.parse import urljoin as _urljoin
 
 try:
@@ -25,7 +25,7 @@ ATTRIBUTELISTPATTERN = re.compile(r"""((?:[^,"']|"[^"]*"|'[^']*')+)""")
 
 
 def cast_date_time(value):
-    return datetime.datetime.fromisoformat(value)
+    return datetime.fromisoformat(value)
 
 
 def format_date_time(value, **kwargs):
@@ -292,7 +292,7 @@ def _parse_ts_chunk(line, data, state):
         segment["program_date_time"] = state.pop("program_date_time")
     if state.get("current_program_date_time"):
         segment["current_program_date_time"] = state["current_program_date_time"]
-        state["current_program_date_time"] += datetime.timedelta(
+        state["current_program_date_time"] += timedelta(
             seconds=segment["duration"]
         )
     segment["uri"] = line
@@ -580,7 +580,7 @@ def _parse_part(line, data, state):
     # this should always be true according to spec
     if state.get("current_program_date_time"):
         part["program_date_time"] = state["current_program_date_time"]
-        state["current_program_date_time"] += datetime.timedelta(
+        state["current_program_date_time"] += timedelta(
             seconds=part["duration"]
         )
 
