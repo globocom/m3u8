@@ -1012,22 +1012,6 @@ def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated()
     base_path = "http://videoserver.com/hls/live"
 
     obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
-    obj.base_path = base_path  # update later
-
-    expected = (
-        playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_SORTED.replace(", IV", ",IV")
-        .replace("../../../../hls", base_path)
-        .replace("/hls-key", base_path)
-        .strip()
-    )
-
-    assert obj.dumps() == expected
-
-
-def test_should_normalize_segments_and_key_urls_if_base_path_attribute_updated():
-    base_path = "http://videoserver.com/hls/live"
-
-    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV)
     obj.base_path = base_path
 
     expected = (
@@ -1561,13 +1545,6 @@ def test_add_content_steering_base_uri_update():
         == "https://yet-another.example.com/steering?video=00012"
     )
 
-
-def test_dump_should_work_for_variant_playlists_with_image_playlists():
-    obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS)
-
-    expected = playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS.strip()
-
-    assert expected == obj.dumps().strip()
 
 def test_dump_should_work_for_variant_playlists_with_image_playlists():
     obj = m3u8.M3U8(playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS)
