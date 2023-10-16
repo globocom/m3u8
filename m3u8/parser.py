@@ -9,9 +9,10 @@ import re
 from urllib.parse import urljoin as _urljoin
 
 try:
-    from iso8601 import parse_date
+    from backports.datetime_fromisoformat import MonkeyPatch
+    MonkeyPatch.patch_fromisoformat()
 except ImportError:
-    parse_date = datetime.datetime.fromisoformat
+    pass
 
 
 from m3u8 import protocol
@@ -24,7 +25,7 @@ ATTRIBUTELISTPATTERN = re.compile(r"""((?:[^,"']|"[^"]*"|'[^']*')+)""")
 
 
 def cast_date_time(value):
-    return parse_date(value)
+    return datetime.datetime.fromisoformat(value)
 
 
 def format_date_time(value, **kwargs):
