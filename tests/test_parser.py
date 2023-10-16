@@ -162,8 +162,8 @@ def test_should_parse_variant_playlist():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST)
     playlists_list = list(data["playlists"])
 
-    assert True == data["is_variant"]
-    assert None == data["media_sequence"]
+    assert True is data["is_variant"]
+    assert None is data["media_sequence"]
     assert 4 == len(playlists_list)
 
     assert "http://example.com/low.m3u8" == playlists_list[0]["uri"]
@@ -180,8 +180,8 @@ def test_should_parse_variant_playlist_with_cc_subtitles_and_audio():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_CC_SUBS_AND_AUDIO)
     playlists_list = list(data["playlists"])
 
-    assert True == data["is_variant"]
-    assert None == data["media_sequence"]
+    assert True is data["is_variant"]
+    assert None is data["media_sequence"]
     assert 2 == len(playlists_list)
 
     assert "http://example.com/with-cc-hi.m3u8" == playlists_list[0]["uri"]
@@ -252,7 +252,7 @@ def test_should_parse_variant_playlist_with_iframe_playlists():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_PLAYLISTS)
     iframe_playlists = list(data["iframe_playlists"])
 
-    assert True == data["is_variant"]
+    assert True is data["is_variant"]
 
     assert 4 == len(iframe_playlists)
 
@@ -271,7 +271,7 @@ def test_should_parse_variant_playlist_with_alt_iframe_playlists_layout():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_ALT_IFRAME_PLAYLISTS_LAYOUT)
     iframe_playlists = list(data["iframe_playlists"])
 
-    assert True == data["is_variant"]
+    assert True is data["is_variant"]
 
     assert 4 == len(iframe_playlists)
 
@@ -289,7 +289,7 @@ def test_should_parse_variant_playlist_with_alt_iframe_playlists_layout():
 def test_should_parse_iframe_playlist():
     data = m3u8.parse(playlists.IFRAME_PLAYLIST)
 
-    assert True == data["is_i_frames_only"]
+    assert True is data["is_i_frames_only"]
     assert 4.12 == data["segments"][0]["duration"]
     assert "9400@376" == data["segments"][0]["byterange"]
     assert "segment1.ts" == data["segments"][0]["uri"]
@@ -299,7 +299,7 @@ def test_should_parse_variant_playlist_with_image_playlists():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS)
     image_playlists = list(data['image_playlists'])
 
-    assert True == data['is_variant']
+    assert True is data['is_variant']
     assert 2 == len(image_playlists)
     assert '320x180' == image_playlists[0]['image_stream_info']['resolution']
     assert 'jpeg' == image_playlists[0]['image_stream_info']['codecs']
@@ -311,7 +311,7 @@ def test_should_parse_variant_playlist_with_image_playlists():
 def test_should_parse_vod_image_playlist():
     data = m3u8.parse(playlists.VOD_IMAGE_PLAYLIST)
 
-    assert True == data['is_images_only']
+    assert True is data['is_images_only']
     assert 8 == len(data['tiles'])
     assert 'preroll-ad-1.jpg' == data['segments'][0]['uri']
     assert '640x360' == data['tiles'][0]['resolution']
@@ -322,7 +322,7 @@ def test_should_parse_vod_image_playlist():
 def test_should_parse_vod_image_playlist2():
     data = m3u8.parse(playlists.VOD_IMAGE_PLAYLIST2)
 
-    assert True == data['is_images_only']
+    assert True is data['is_images_only']
     assert '640x360' == data['tiles'][0]['resolution']
     assert '4x3' == data['tiles'][0]['layout']
     assert 2.002 == data['tiles'][0]['duration']
@@ -332,7 +332,7 @@ def test_should_parse_vod_image_playlist2():
 def test_should_parse_live_image_playlist():
     data = m3u8.parse(playlists.LIVE_IMAGE_PLAYLIST)
 
-    assert True == data['is_images_only']
+    assert True is data['is_images_only']
     assert 10 == len(data['segments'])
     assert 'content-123.jpg' == data['segments'][0]['uri']
     assert 'content-124.jpg' == data['segments'][1]['uri']
@@ -348,7 +348,7 @@ def test_should_parse_live_image_playlist():
 def test_should_parse_playlist_using_byteranges():
     data = m3u8.parse(playlists.PLAYLIST_USING_BYTERANGES)
 
-    assert False == data["is_i_frames_only"]
+    assert False is data["is_i_frames_only"]
     assert 10 == data["segments"][0]["duration"]
     assert "76242@0" == data["segments"][0]["byterange"]
     assert "segment.ts" == data["segments"][0]["uri"]
@@ -356,10 +356,10 @@ def test_should_parse_playlist_using_byteranges():
 
 def test_should_parse_endlist_playlist():
     data = m3u8.parse(playlists.SIMPLE_PLAYLIST)
-    assert True == data["is_endlist"]
+    assert True is data["is_endlist"]
 
     data = m3u8.parse(playlists.SLIDING_WINDOW_PLAYLIST)
-    assert False == data["is_endlist"]
+    assert False is data["is_endlist"]
 
 
 def test_should_parse_ALLOW_CACHE():
@@ -769,8 +769,8 @@ def test_gap():
     data = m3u8.parse(playlists.GAP_PLAYLIST)
 
     assert data["segments"][0]["gap_tag"] is None
-    assert data["segments"][1]["gap_tag"] == True
-    assert data["segments"][2]["gap_tag"] == True
+    assert data["segments"][1]["gap_tag"] is True
+    assert data["segments"][2]["gap_tag"] is True
     assert data["segments"][3]["gap_tag"] is None
 
 
@@ -781,7 +781,7 @@ def test_gap_in_parts():
     assert data["segments"][0]["parts"][0].get("gap", None) is None
     assert data["segments"][0]["parts"][1]["gap_tag"] is None
     assert data["segments"][0]["parts"][1]["gap"] == "YES"
-    assert data["segments"][0]["parts"][2]["gap_tag"] == True
+    assert data["segments"][0]["parts"][2]["gap_tag"] is True
     assert data["segments"][0]["parts"][2].get("gap", None) is None
 
 
@@ -789,7 +789,7 @@ def test_should_parse_variant_playlist_with_iframe_with_average_bandwidth():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_AVERAGE_BANDWIDTH)
     iframe_playlists = list(data["iframe_playlists"])
 
-    assert True == data["is_variant"]
+    assert True is data["is_variant"]
 
     assert 4 == len(iframe_playlists)
 
@@ -812,7 +812,7 @@ def test_should_parse_variant_playlist_with_iframe_with_video_range():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_VIDEO_RANGE)
     iframe_playlists = list(data["iframe_playlists"])
 
-    assert True == data["is_variant"]
+    assert True is data["is_variant"]
 
     assert 4 == len(iframe_playlists)
 
@@ -830,7 +830,7 @@ def test_should_parse_variant_playlist_with_iframe_with_hdcp_level():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IFRAME_HDCP_LEVEL)
     iframe_playlists = list(data["iframe_playlists"])
 
-    assert True == data["is_variant"]
+    assert True is data["is_variant"]
 
     assert 4 == len(iframe_playlists)
 
@@ -868,13 +868,13 @@ def test_content_steering():
 
 def test_cue_in_pops_scte35_data_and_duration():
     data = m3u8.parse(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
-    assert data["segments"][9]["cue_in"] == True
+    assert data["segments"][9]["cue_in"] is True
     assert (
         data["segments"][9]["scte35"]
         == "/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg=="
     )
     assert data["segments"][9]["scte35_duration"] == "50"
-    assert data["segments"][10]["cue_in"] == False
+    assert data["segments"][10]["cue_in"] is False
     assert data["segments"][10]["scte35"] is None
     assert data["segments"][10]["scte35_duration"] is None
 
