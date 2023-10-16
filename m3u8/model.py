@@ -2,7 +2,6 @@
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 import decimal
-import errno
 import os
 
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin

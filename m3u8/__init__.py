@@ -3,7 +3,6 @@
 # license that can be found in the LICENSE file.
 
 import os
-import sys
 from urllib.parse import urljoin, urlsplit
 
 from m3u8.httpclient import DefaultHTTPClient

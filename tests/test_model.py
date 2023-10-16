@@ -1270,7 +1270,7 @@ def test_find_key_throws_when_no_match():
                 # deliberately empty
             ],
         )
-    except KeyError as e:
+    except KeyError:
         threw = True
     finally:
         assert threw
