@@ -14,7 +14,7 @@ playlists = abspath(join(dirname(__file__), "playlists"))
 
 
 @route("/path/to/redirect_me")
-def simple():
+def redirect_route():
     redirect("/simple.m3u8")
 
 
@@ -25,14 +25,14 @@ def simple():
 
 
 @route("/timeout_simple.m3u8")
-def simple():
+def timeout_simple():
     time.sleep(5)
     response.set_header("Content-Type", "application/vnd.apple.mpegurl")
     return m3u8_file("simple-playlist.m3u8")
 
 
 @route("/path/to/relative-playlist.m3u8")
-def simple():
+def relative_playlist():
     response.set_header("Content-Type", "application/vnd.apple.mpegurl")
     return m3u8_file("relative-playlist.m3u8")
 
