@@ -8,7 +8,11 @@ import itertools
 import re
 from urllib.parse import urljoin as _urljoin
 
-import iso8601
+try:
+    from iso8601 import parse_date
+except ImportError:
+    parse_date = datetime.datetime.fromisoformat
+
 
 from m3u8 import protocol
 
@@ -20,7 +24,7 @@ ATTRIBUTELISTPATTERN = re.compile(r"""((?:[^,"']|"[^"]*"|'[^']*')+)""")
 
 
 def cast_date_time(value):
-    return iso8601.parse_date(value)
+    return parse_date(value)
 
 
 def format_date_time(value, **kwargs):
