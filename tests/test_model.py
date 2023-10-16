@@ -7,7 +7,6 @@
 
 import datetime
 import os
-import sys
 
 import playlists
 import pytest
@@ -1235,15 +1234,6 @@ def test_should_round_frame_rate():
     expected = playlists.VARIANT_PLAYLIST_WITH_ROUNDED_FRAME_RATE.strip()
 
     assert expected == obj.dumps().strip()
-
-
-@pytest.mark.skipif(sys.version_info >= (3,), reason="unicode not available in v3")
-def test_m3u8_unicode_method():
-    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
-
-    result = unicode(obj).strip()
-    expected = playlists.SIMPLE_PLAYLIST.strip()
-    assert result == expected
 
 
 def test_add_segment_to_playlist():
