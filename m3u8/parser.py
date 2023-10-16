@@ -5,7 +5,6 @@
 import itertools
 import re
 from datetime import datetime, timedelta
-from urllib.parse import urljoin as _urljoin
 
 try:
     from backports.datetime_fromisoformat import MonkeyPatch
