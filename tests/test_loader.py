@@ -3,6 +3,7 @@
 # license that can be found in the LICENSE file.
 
 import os
+import socket
 import urllib.parse
 import m3u8
 import pytest
@@ -141,7 +142,7 @@ def test_presence_of_base_uri_if_provided_when_loading_from_string():
 def test_raise_timeout_exception_if_timeout_happens_when_loading_from_uri():
     try:
         m3u8.load(playlists.TIMEOUT_SIMPLE_PLAYLIST_URI, timeout=1)
-    except:
+    except socket.timeout:
         assert True
     else:
         assert False
