@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
@@ -22,7 +21,7 @@ class MalformedPlaylistError(Exception):
     pass
 
 
-class M3U8(object):
+class M3U8:
     """
     Represents a single M3U8 playlist. Should be instantiated with
     the content as string.
@@ -376,7 +375,7 @@ class M3U8(object):
             output.append("#EXT-X-MEDIA-SEQUENCE:" + str(self.media_sequence))
         if self.discontinuity_sequence:
             output.append(
-                "#EXT-X-DISCONTINUITY-SEQUENCE:{}".format(self.discontinuity_sequence)
+                f"#EXT-X-DISCONTINUITY-SEQUENCE:{self.discontinuity_sequence}"
             )
         if self.allow_cache:
             output.append("#EXT-X-ALLOW-CACHE:" + self.allow_cache.upper())
@@ -680,7 +679,7 @@ class Segment(BasePathMixin):
 
     @property
     def base_path(self):
-        return super(Segment, self).base_path
+        return super().base_path
 
     @base_path.setter
     def base_path(self, newbase_path):
@@ -995,7 +994,7 @@ class Playlist(BasePathMixin):
             else:
                 media_types += [media.type]
                 media_type = media.type.upper()
-                stream_inf.append('%s="%s"' % (media_type, media.group_id))
+                stream_inf.append(f'{media_type}="{media.group_id}"')
 
         return "#EXT-X-STREAM-INF:" + ",".join(stream_inf) + "\n" + self.uri
 
@@ -1087,7 +1086,7 @@ class IFramePlaylist(BasePathMixin):
         return "#EXT-X-I-FRAME-STREAM-INF:" + ",".join(iframe_stream_inf)
 
 
-class StreamInfo(object):
+class StreamInfo:
     bandwidth = None
     closed_captions = None
     average_bandwidth = None
@@ -1266,7 +1265,7 @@ class SessionDataList(TagList):
     pass
 
 
-class Start(object):
+class Start:
     def __init__(self, time_offset, precise=None):
         self.time_offset = float(time_offset)
         self.precise = precise
@@ -1305,7 +1304,7 @@ class RenditionReportList(list, GroupedBasePathMixin):
         return "\n".join(output)
 
 
-class ServerControl(object):
+class ServerControl:
     def __init__(
         self,
         can_skip_until=None,
@@ -1346,7 +1345,7 @@ class ServerControl(object):
         return self.dumps()
 
 
-class Skip(object):
+class Skip:
     def __init__(self, skipped_segments, recently_removed_dateranges=None):
         self.skipped_segments = skipped_segments
         self.recently_removed_dateranges = recently_removed_dateranges
@@ -1366,7 +1365,7 @@ class Skip(object):
         return self.dumps()
 
 
-class PartInformation(object):
+class PartInformation:
     def __init__(self, part_target=None):
         self.part_target = part_target
 
@@ -1397,7 +1396,7 @@ class PreloadHint(BasePathMixin):
 
         for attr in ["byterange_start", "byterange_length"]:
             if self[attr] is not None:
-                hint.append("%s=%s" % (denormalize_attribute(attr), self[attr]))
+                hint.append(f"{denormalize_attribute(attr)}={self[attr]}")
 
         return "#EXT-X-PRELOAD-HINT:" + ",".join(hint)
 
@@ -1405,7 +1404,7 @@ class PreloadHint(BasePathMixin):
         return self.dumps()
 
 
-class SessionData(object):
+class SessionData:
     def __init__(self, data_id, value=None, uri=None, language=None):
         self.data_id = data_id
         self.value = value
@@ -1432,7 +1431,7 @@ class DateRangeList(TagList):
     pass
 
 
-class DateRange(object):
+class DateRange:
     def __init__(self, **kwargs):
         self.id = kwargs["id"]
         self.start_date = kwargs.get("start_date")
@@ -1479,7 +1478,7 @@ class DateRange(object):
 
         # client attributes sorted alphabetically output order is predictable
         for attr, value in sorted(self.x_client_attrs):
-            daterange.append("%s=%s" % (denormalize_attribute(attr), value))
+            daterange.append(f"{denormalize_attribute(attr)}={value}")
 
         return "#EXT-X-DATERANGE:" + ",".join(daterange)
 

@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
@@ -77,28 +76,28 @@ def test_load_should_create_object_from_uri_with_relative_segments():
     urlparsed = urllib.parse.urlparse(playlists.RELATIVE_PLAYLIST_URI)
     base_uri = os.path.normpath(urlparsed.path + "/..")
     prefix = urlparsed.scheme + "://" + urlparsed.netloc
-    expected_key_abspath = "%s%skey.bin" % (
+    expected_key_abspath = "{}{}key.bin".format(
         prefix,
         os.path.normpath(base_uri + "/..") + "/",
     )
     expected_key_path = "../key.bin"
-    expected_ts1_abspath = "%s%sentire1.ts" % (prefix, "/")
+    expected_ts1_abspath = "{}{}entire1.ts".format(prefix, "/")
     expected_ts1_path = "/entire1.ts"
-    expected_ts2_abspath = "%s%sentire2.ts" % (
+    expected_ts2_abspath = "{}{}entire2.ts".format(
         prefix,
         os.path.normpath(base_uri + "/..") + "/",
     )
     expected_ts2_path = "../entire2.ts"
-    expected_ts3_abspath = "%s%sentire3.ts" % (
+    expected_ts3_abspath = "{}{}entire3.ts".format(
         prefix,
         os.path.normpath(base_uri + "/../.."),
     )
     expected_ts3_path = "../../entire3.ts"
-    expected_ts4_abspath = "%s%sentire4.ts" % (prefix, base_uri + "/")
+    expected_ts4_abspath = "{}{}entire4.ts".format(prefix, base_uri + "/")
     expected_ts4_path = "entire4.ts"
-    expected_ts5_abspath = "%s%sentire5.ts" % (prefix, base_uri + "/")
+    expected_ts5_abspath = "{}{}entire5.ts".format(prefix, base_uri + "/")
     expected_ts5_path = "./entire5.ts"
-    expected_ts6_abspath = "%s%sentire6.ts" % (prefix, base_uri + "/")
+    expected_ts6_abspath = "{}{}entire6.ts".format(prefix, base_uri + "/")
     expected_ts6_path = ".//entire6.ts"
 
     assert isinstance(obj, m3u8.M3U8)

@@ -2,7 +2,7 @@ from os.path import dirname
 from urllib.parse import urljoin, urlsplit
 
 
-class BasePathMixin(object):
+class BasePathMixin:
     @property
     def absolute_uri(self):
         if self.uri is None:
@@ -31,12 +31,12 @@ class BasePathMixin(object):
     def base_path(self, newbase_path):
         if self.uri is not None:
             if not self.base_path:
-                self.uri = "%s/%s" % (newbase_path, self.uri)
+                self.uri = f"{newbase_path}/{self.uri}"
             else:
                 self.uri = self.uri.replace(self.base_path, newbase_path)
 
 
-class GroupedBasePathMixin(object):
+class GroupedBasePathMixin:
     def _set_base_uri(self, new_base_uri):
         for item in self:
             item.base_uri = new_base_uri
