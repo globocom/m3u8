@@ -30,23 +30,7 @@ from m3u8.model import (
 from m3u8.protocol import ext_x_part, ext_x_preload_hint, ext_x_start
 
 
-class UTC(datetime.tzinfo):
-    """tzinfo class used for backwards compatibility reasons.
-    Extracted from the official documentation.
-    Ref: https://docs.python.org/2/library/datetime.html#datetime.tzinfo.fromutc
-    """
-
-    def utcoffset(self, dt):
-        return datetime.timedelta(0)
-
-    def tzname(self, dt):
-        return "UTC"
-
-    def dst(self, dt):
-        return datetime.timedelta(0)
-
-
-utc = UTC()
+utc = datetime.timezone.utc
 
 
 def test_base_path_playlist_with_slash_in_query_string():
