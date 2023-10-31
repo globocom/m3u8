@@ -470,6 +470,17 @@ def _parse_cueout_cont(line, state):
     if len(elements) != 2:
         return
 
+    # EXT-X-CUE-OUT-CONT:2.436/120 style
+    res = re.match(
+        r"^[-+]?([0-9]+(\.[0-9]+)?|\.[0-9]+)/[-+]?([0-9]+(\.[0-9]+)?|\.[0-9]+)$",
+        elements[1]
+    )
+    if res:
+        state["current_cue_out_elapsedtime"] = res.group(1)
+        state["current_cue_out_duration"] = res.group(3)
+        return
+
+    # EXT-X-CUE-OUT-CONT:ElapsedTime=10,Duration=60,SCTE35=... style
     cue_info = _parse_attribute_list(
         protocol.ext_x_cue_out_cont,
         line,
