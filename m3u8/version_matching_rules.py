@@ -20,21 +20,24 @@ def valid_floating_point_EXTINF(line: str, version: float):
     chunks = line.replace(protocol.extinf + ":", "").split(",", 1)
     duration = chunks[0]
 
-    def is_floating_number(value: str):
+    def is_number(value: str):
         try:
-            float_value = float(value)
-            return "." in value and float_value != int(float_value)
-        except ValueError:
+            float(value)
+            return True
+        except:
             return False
+
+    def is_floating_number(value: str):
+        return is_number(value) and "." in value
 
     if is_floating_number(duration):
         return version >= 3
 
-    return True
+    return is_number(duration)
 
 
 # You must use at least protocol version 4 if you have EXT-X-BYTERANGE or EXT-X-IFRAME-ONLY.
-def valid_EXT_X_BYTERANGE_or_EXT_X_IFRAME_ONLY(line: str, version: float):
+def valid_EXT_X_BYTERANGE_or_EXT_X_I_FRAMES_ONLY(line: str, version: float):
     if not protocol.ext_x_byterange in line and not protocol.ext_i_frames_only in line:
         return True
 
