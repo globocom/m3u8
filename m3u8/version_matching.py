@@ -26,7 +26,7 @@ def valid_in_all_rules(line_number: int, line: str, version: float):
     rules: List[Callable[[str, float], bool]] = [
         valid_iv_in_EXT_X_KEY,
         valid_floating_point_EXTINF,
-        valid_EXT_X_BYTERANGE_or_EXT_X_IFRAME_ONLY,
+        valid_EXT_X_BYTERANGE_or_EXT_X_I_FRAMES_ONLY,
     ]
 
     for rule in rules:

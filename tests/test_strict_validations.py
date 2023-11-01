@@ -3,7 +3,10 @@
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 
+import invalid_versioned_playlists
 import pytest
+
+import m3u8
 
 
 @pytest.mark.xfail
@@ -33,7 +36,7 @@ def test_should_fail_if_EXT_X_MEDIA_SEQUENCE_is_not_a_number():
 
 @pytest.mark.xfail
 def test_should_validate_supported_EXT_X_VERSION():
-    assert 0
+    m3u8.parse(invalid_versioned_playlists.M3U8_RULE_IV)
 
 
 @pytest.mark.xfail
