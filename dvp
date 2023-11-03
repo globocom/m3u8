@@ -1,0 +1,7 @@
+#EXTM3U url-tvg="dvptv.com"
+#EXTINF:-1 tvg-id="[DVP-TV]" tvg-name="DVP-TV" tvg-logo="tvlog.dvptv.com/tv.png" group-title="Entertainment",DVP-TV
+https://live.dvptv.com:3819/hybrid/play.m3u8
+#EXTINF:-1,Cartoon Network
+http://45.159.74.14:80/CartoonNetwork/index.m3u8
+#EXTINF:-1,Boomerang
+http://45.159.74.14:80/Boomerang/index.m3u8
