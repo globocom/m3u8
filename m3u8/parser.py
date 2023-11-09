@@ -278,7 +278,7 @@ def _parse_extinf(line, data, state, lineno, strict):
         if strict:
             raise ParseError(lineno, line)
         else:
-            duration = chunks[0]
+            duration = chunks[0] if chunks[0] else "0"
             title = ""
     if "segment" not in state:
         state["segment"] = {}
