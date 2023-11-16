@@ -764,6 +764,13 @@ def test_dump_segment_honors_timespec():
     assert "EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:33.000000+00:00" in segment_text
 
 
+def test_dump_honors_timespec():
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_PROGRAM_DATE_TIME)
+    obj_text = obj.dumps(timespec="microseconds").strip()
+
+    assert "EXT-X-PROGRAM-DATE-TIME:2014-08-13T13:36:33.000000+00:00" in obj_text
+
+
 def test_dump_should_not_ignore_zero_duration():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_ZERO_DURATION)
 
