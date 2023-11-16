@@ -363,7 +363,7 @@ class M3U8:
     def add_rendition_report(self, report):
         self.rendition_reports.append(report)
 
-    def dumps(self):
+    def dumps(self, timespec="milliseconds"):
         """
         Returns the current m3u8 as a string.
         You could also use unicode(<this obj>) or str(<this obj>)
@@ -415,7 +415,7 @@ class M3U8:
         for key in self.session_keys:
             output.append(str(key))
 
-        output.append(str(self.segments))
+        output.append(self.segments.dumps(timespec))
 
         if self.preload_hint:
             output.append(str(self.preload_hint))
@@ -701,13 +701,16 @@ class Segment(BasePathMixin):
 
 
 class SegmentList(list, GroupedBasePathMixin):
-    def __str__(self):
+    def dumps(self, timespec="milliseconds"):
         output = []
         last_segment = None
         for segment in self:
-            output.append(segment.dumps(last_segment))
+            output.append(segment.dumps(last_segment, timespec))
             last_segment = segment
         return "\n".join(output)
+
+    def __str__(self):
+        return self.dumps()
 
     @property
     def uri(self):
