@@ -854,9 +854,7 @@ def test_should_dump_multiple_keys():
     obj = m3u8.M3U8(
         playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS
     )
-    expected = (
-        playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS_SORTED.strip()
-    )
+    expected = playlists.PLAYLIST_WITH_ENCRYPTED_SEGMENTS_AND_IV_WITH_MULTIPLE_KEYS_SORTED.strip()
 
     assert expected == obj.dumps().strip()
 
@@ -885,9 +883,7 @@ def test_should_dump_complex_unencrypted_encrypted_keys_no_uri_attr():
     obj = m3u8.M3U8(
         playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED_NONE_AND_NO_URI_ATTR
     )
-    expected = (
-        playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED_NONE_AND_NO_URI_ATTR.strip()
-    )
+    expected = playlists.PLAYLIST_WITH_MULTIPLE_KEYS_UNENCRYPTED_AND_ENCRYPTED_NONE_AND_NO_URI_ATTR.strip()
 
     assert expected == obj.dumps().strip()
 
@@ -1559,6 +1555,7 @@ def test_dump_should_work_for_variant_playlists_with_image_playlists():
     expected = playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS.strip()
 
     assert expected == obj.dumps().strip()
+
 
 def test_segment_media_sequence():
     obj = m3u8.M3U8(playlists.SLIDING_WINDOW_PLAYLIST)

@@ -60,7 +60,7 @@ __all__ = (
     "loads",
     "load",
     "parse",
-    "ParseError"
+    "ParseError",
 )
 
 

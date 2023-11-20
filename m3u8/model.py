@@ -151,7 +151,7 @@ class M3U8:
         ("allow_cache", "allow_cache"),
         ("playlist_type", "playlist_type"),
         ("discontinuity_sequence", "discontinuity_sequence"),
-        ("is_images_only", "is_images_only")
+        ("is_images_only", "is_images_only"),
     )
 
     def __init__(
@@ -232,12 +232,12 @@ class M3U8:
             )
 
         self.image_playlists = PlaylistList()
-        for img_pl in self.data.get('image_playlists', []):
+        for img_pl in self.data.get("image_playlists", []):
             self.image_playlists.append(
                 ImagePlaylist(
                     base_uri=self.base_uri,
                     uri=img_pl["uri"],
-                    image_stream_info=img_pl["image_stream_info"]
+                    image_stream_info=img_pl["image_stream_info"],
                 )
             )
 
@@ -1547,27 +1547,28 @@ class ImagePlaylist(BasePathMixin):
             hdcp_level=None,
             frame_rate=None,
             pathway_id=image_stream_info.get("pathway_id"),
-            stable_variant_id=image_stream_info.get("stable_variant_id")
+            stable_variant_id=image_stream_info.get("stable_variant_id"),
         )
 
     def __str__(self):
         image_stream_inf = []
         if self.image_stream_info.program_id:
-            image_stream_inf.append("PROGRAM-ID=%d" %
-                                     self.image_stream_info.program_id)
+            image_stream_inf.append("PROGRAM-ID=%d" % self.image_stream_info.program_id)
         if self.image_stream_info.bandwidth:
-            image_stream_inf.append("BANDWIDTH=%d" %
-                                     self.image_stream_info.bandwidth)
+            image_stream_inf.append("BANDWIDTH=%d" % self.image_stream_info.bandwidth)
         if self.image_stream_info.average_bandwidth:
-            image_stream_inf.append("AVERAGE-BANDWIDTH=%d" %
-                                     self.image_stream_info.average_bandwidth)
+            image_stream_inf.append(
+                "AVERAGE-BANDWIDTH=%d" % self.image_stream_info.average_bandwidth
+            )
         if self.image_stream_info.resolution:
-            res = (str(self.image_stream_info.resolution[0]) + "x" +
-                   str(self.image_stream_info.resolution[1]))
+            res = (
+                str(self.image_stream_info.resolution[0])
+                + "x"
+                + str(self.image_stream_info.resolution[1])
+            )
             image_stream_inf.append("RESOLUTION=" + res)
         if self.image_stream_info.codecs:
-            image_stream_inf.append("CODECS=" +
-                                     quoted(self.image_stream_info.codecs))
+            image_stream_inf.append("CODECS=" + quoted(self.image_stream_info.codecs))
         if self.uri:
             image_stream_inf.append("URI=" + quoted(self.uri))
         if self.image_stream_info.pathway_id:
@@ -1580,6 +1581,7 @@ class ImagePlaylist(BasePathMixin):
             )
 
         return "#EXT-X-IMAGE-STREAM-INF:" + ",".join(image_stream_inf)
+
 
 class Tiles(BasePathMixin):
     """
@@ -1610,6 +1612,7 @@ class Tiles(BasePathMixin):
 
     def __str__(self):
         return self.dumps()
+
 
 def find_key(keydata, keylist):
     if not keydata:

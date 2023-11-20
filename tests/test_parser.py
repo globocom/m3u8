@@ -297,53 +297,57 @@ def test_should_parse_iframe_playlist():
 
 def test_should_parse_variant_playlist_with_image_playlists():
     data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_IMAGE_PLAYLISTS)
-    image_playlists = list(data['image_playlists'])
+    image_playlists = list(data["image_playlists"])
 
-    assert True is data['is_variant']
+    assert True is data["is_variant"]
     assert 2 == len(image_playlists)
-    assert '320x180' == image_playlists[0]['image_stream_info']['resolution']
-    assert 'jpeg' == image_playlists[0]['image_stream_info']['codecs']
-    assert '5x2_320x180/320x180-5x2.m3u8' == image_playlists[0]['uri']
-    assert '640x360' == image_playlists[1]['image_stream_info']['resolution']
-    assert 'jpeg' == image_playlists[1]['image_stream_info']['codecs']
-    assert '5x2_640x360/640x360-5x2.m3u8' == image_playlists[1]['uri']
+    assert "320x180" == image_playlists[0]["image_stream_info"]["resolution"]
+    assert "jpeg" == image_playlists[0]["image_stream_info"]["codecs"]
+    assert "5x2_320x180/320x180-5x2.m3u8" == image_playlists[0]["uri"]
+    assert "640x360" == image_playlists[1]["image_stream_info"]["resolution"]
+    assert "jpeg" == image_playlists[1]["image_stream_info"]["codecs"]
+    assert "5x2_640x360/640x360-5x2.m3u8" == image_playlists[1]["uri"]
+
 
 def test_should_parse_vod_image_playlist():
     data = m3u8.parse(playlists.VOD_IMAGE_PLAYLIST)
 
-    assert True is data['is_images_only']
-    assert 8 == len(data['tiles'])
-    assert 'preroll-ad-1.jpg' == data['segments'][0]['uri']
-    assert '640x360' == data['tiles'][0]['resolution']
-    assert '5x2' == data['tiles'][0]['layout']
-    assert 6.006 == data['tiles'][0]['duration']
-    assert 'byterange' not in data['tiles'][0]
+    assert True is data["is_images_only"]
+    assert 8 == len(data["tiles"])
+    assert "preroll-ad-1.jpg" == data["segments"][0]["uri"]
+    assert "640x360" == data["tiles"][0]["resolution"]
+    assert "5x2" == data["tiles"][0]["layout"]
+    assert 6.006 == data["tiles"][0]["duration"]
+    assert "byterange" not in data["tiles"][0]
+
 
 def test_should_parse_vod_image_playlist2():
     data = m3u8.parse(playlists.VOD_IMAGE_PLAYLIST2)
 
-    assert True is data['is_images_only']
-    assert '640x360' == data['tiles'][0]['resolution']
-    assert '4x3' == data['tiles'][0]['layout']
-    assert 2.002 == data['tiles'][0]['duration']
-    assert 6 == len(data['tiles'])
-    assert 'promo_1.jpg' == data['segments'][0]['uri']
+    assert True is data["is_images_only"]
+    assert "640x360" == data["tiles"][0]["resolution"]
+    assert "4x3" == data["tiles"][0]["layout"]
+    assert 2.002 == data["tiles"][0]["duration"]
+    assert 6 == len(data["tiles"])
+    assert "promo_1.jpg" == data["segments"][0]["uri"]
+
 
 def test_should_parse_live_image_playlist():
     data = m3u8.parse(playlists.LIVE_IMAGE_PLAYLIST)
 
-    assert True is data['is_images_only']
-    assert 10 == len(data['segments'])
-    assert 'content-123.jpg' == data['segments'][0]['uri']
-    assert 'content-124.jpg' == data['segments'][1]['uri']
-    assert 'content-125.jpg' == data['segments'][2]['uri']
-    assert 'missing-midroll.jpg' == data['segments'][3]['uri']
-    assert 'missing-midroll.jpg' == data['segments'][4]['uri']
-    assert 'missing-midroll.jpg' == data['segments'][5]['uri']
-    assert 'content-128.jpg' == data['segments'][6]['uri']
-    assert 'content-129.jpg' == data['segments'][7]['uri']
-    assert 'content-130.jpg' == data['segments'][8]['uri']
-    assert 'content-131.jpg' == data['segments'][9]['uri']
+    assert True is data["is_images_only"]
+    assert 10 == len(data["segments"])
+    assert "content-123.jpg" == data["segments"][0]["uri"]
+    assert "content-124.jpg" == data["segments"][1]["uri"]
+    assert "content-125.jpg" == data["segments"][2]["uri"]
+    assert "missing-midroll.jpg" == data["segments"][3]["uri"]
+    assert "missing-midroll.jpg" == data["segments"][4]["uri"]
+    assert "missing-midroll.jpg" == data["segments"][5]["uri"]
+    assert "content-128.jpg" == data["segments"][6]["uri"]
+    assert "content-129.jpg" == data["segments"][7]["uri"]
+    assert "content-130.jpg" == data["segments"][8]["uri"]
+    assert "content-131.jpg" == data["segments"][9]["uri"]
+
 
 def test_should_parse_playlist_using_byteranges():
     data = m3u8.parse(playlists.PLAYLIST_USING_BYTERANGES)
@@ -673,7 +677,7 @@ def test_iptv_playlist_with_custom_tags():
 def test_tag_after_extinf():
     parsed_playlist = m3u8.loads(playlists.IPTV_PLAYLIST_WITH_EARLY_EXTINF)
     actual = parsed_playlist.segments[0].uri
-    expected = 'http://str00.iptv.domain/7331/mpegts?token=longtokenhere'
+    expected = "http://str00.iptv.domain/7331/mpegts?token=longtokenhere"
     assert actual == expected
 
 
