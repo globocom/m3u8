@@ -959,7 +959,7 @@ class Playlist(BasePathMixin):
         if resolution is not None:
             resolution = resolution.strip('"')
             values = resolution.split("x")
-            resolution_pair = (int(values[0]), int(values[1]))
+            resolution_pair = (int(round(float(values[0]))), int(round(float(values[1]))))
         else:
             resolution_pair = None
 
