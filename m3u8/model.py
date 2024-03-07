@@ -1134,10 +1134,7 @@ class StreamInfo:
             res = str(self.resolution[0]) + "x" + str(self.resolution[1])
             stream_inf.append("RESOLUTION=" + res)
         if self.frame_rate is not None:
-            stream_inf.append(
-                "FRAME-RATE=%g"
-                % decimal.Decimal(self.frame_rate).quantize(decimal.Decimal("1.000"))
-            )
+            stream_inf.append("FRAME-RATE=%.3f" % self.frame_rate)
         if self.codecs is not None:
             stream_inf.append("CODECS=" + quoted(self.codecs))
         if self.video_range is not None:
