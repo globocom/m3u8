@@ -1,9 +1,7 @@
-# coding: utf-8
 # Copyright 2014 Globo.com Player authors. All rights reserved.
 # Use of this source code is governed by a MIT License
 # license that can be found in the LICENSE file.
 import decimal
-import errno
 import os
 
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
@@ -22,7 +20,7 @@ class MalformedPlaylistError(Exception):
     pass
 
 
-class M3U8(object):
+class M3U8:
     """
     Represents a single M3U8 playlist. Should be instantiated with
     the content as string.
@@ -153,7 +151,7 @@ class M3U8(object):
         ("allow_cache", "allow_cache"),
         ("playlist_type", "playlist_type"),
         ("discontinuity_sequence", "discontinuity_sequence"),
-        ("is_images_only", "is_images_only")
+        ("is_images_only", "is_images_only"),
     )
 
     def __init__(
@@ -234,12 +232,12 @@ class M3U8(object):
             )
 
         self.image_playlists = PlaylistList()
-        for img_pl in self.data.get('image_playlists', []):
+        for img_pl in self.data.get("image_playlists", []):
             self.image_playlists.append(
                 ImagePlaylist(
                     base_uri=self.base_uri,
                     uri=img_pl["uri"],
-                    image_stream_info=img_pl["image_stream_info"]
+                    image_stream_info=img_pl["image_stream_info"],
                 )
             )
 
@@ -364,7 +362,7 @@ class M3U8(object):
     def add_rendition_report(self, report):
         self.rendition_reports.append(report)
 
-    def dumps(self):
+    def dumps(self, timespec="milliseconds"):
         """
         Returns the current m3u8 as a string.
         You could also use unicode(<this obj>) or str(<this obj>)
@@ -376,7 +374,7 @@ class M3U8(object):
             output.append("#EXT-X-MEDIA-SEQUENCE:" + str(self.media_sequence))
         if self.discontinuity_sequence:
             output.append(
-                "#EXT-X-DISCONTINUITY-SEQUENCE:{}".format(self.discontinuity_sequence)
+                f"#EXT-X-DISCONTINUITY-SEQUENCE:{self.discontinuity_sequence}"
             )
         if self.allow_cache:
             output.append("#EXT-X-ALLOW-CACHE:" + self.allow_cache.upper())
@@ -416,7 +414,7 @@ class M3U8(object):
         for key in self.session_keys:
             output.append(str(key))
 
-        output.append(str(self.segments))
+        output.append(self.segments.dumps(timespec))
 
         if self.preload_hint:
             output.append(str(self.preload_hint))
@@ -680,7 +678,7 @@ class Segment(BasePathMixin):
 
     @property
     def base_path(self):
-        return super(Segment, self).base_path
+        return super().base_path
 
     @base_path.setter
     def base_path(self, newbase_path):
@@ -702,13 +700,16 @@ class Segment(BasePathMixin):
 
 
 class SegmentList(list, GroupedBasePathMixin):
-    def __str__(self):
+    def dumps(self, timespec="milliseconds"):
         output = []
         last_segment = None
         for segment in self:
-            output.append(segment.dumps(last_segment))
+            output.append(segment.dumps(last_segment, timespec))
             last_segment = segment
         return "\n".join(output)
+
+    def __str__(self):
+        return self.dumps()
 
     @property
     def uri(self):
@@ -995,7 +996,7 @@ class Playlist(BasePathMixin):
             else:
                 media_types += [media.type]
                 media_type = media.type.upper()
-                stream_inf.append('%s="%s"' % (media_type, media.group_id))
+                stream_inf.append(f'{media_type}="{media.group_id}"')
 
         return "#EXT-X-STREAM-INF:" + ",".join(stream_inf) + "\n" + self.uri
 
@@ -1087,7 +1088,7 @@ class IFramePlaylist(BasePathMixin):
         return "#EXT-X-I-FRAME-STREAM-INF:" + ",".join(iframe_stream_inf)
 
 
-class StreamInfo(object):
+class StreamInfo:
     bandwidth = None
     closed_captions = None
     average_bandwidth = None
@@ -1266,7 +1267,7 @@ class SessionDataList(TagList):
     pass
 
 
-class Start(object):
+class Start:
     def __init__(self, time_offset, precise=None):
         self.time_offset = float(time_offset)
         self.precise = precise
@@ -1305,7 +1306,7 @@ class RenditionReportList(list, GroupedBasePathMixin):
         return "\n".join(output)
 
 
-class ServerControl(object):
+class ServerControl:
     def __init__(
         self,
         can_skip_until=None,
@@ -1346,7 +1347,7 @@ class ServerControl(object):
         return self.dumps()
 
 
-class Skip(object):
+class Skip:
     def __init__(self, skipped_segments, recently_removed_dateranges=None):
         self.skipped_segments = skipped_segments
         self.recently_removed_dateranges = recently_removed_dateranges
@@ -1366,7 +1367,7 @@ class Skip(object):
         return self.dumps()
 
 
-class PartInformation(object):
+class PartInformation:
     def __init__(self, part_target=None):
         self.part_target = part_target
 
@@ -1397,7 +1398,7 @@ class PreloadHint(BasePathMixin):
 
         for attr in ["byterange_start", "byterange_length"]:
             if self[attr] is not None:
-                hint.append("%s=%s" % (denormalize_attribute(attr), self[attr]))
+                hint.append(f"{denormalize_attribute(attr)}={self[attr]}")
 
         return "#EXT-X-PRELOAD-HINT:" + ",".join(hint)
 
@@ -1405,7 +1406,7 @@ class PreloadHint(BasePathMixin):
         return self.dumps()
 
 
-class SessionData(object):
+class SessionData:
     def __init__(self, data_id, value=None, uri=None, language=None):
         self.data_id = data_id
         self.value = value
@@ -1432,7 +1433,7 @@ class DateRangeList(TagList):
     pass
 
 
-class DateRange(object):
+class DateRange:
     def __init__(self, **kwargs):
         self.id = kwargs["id"]
         self.start_date = kwargs.get("start_date")
@@ -1479,7 +1480,7 @@ class DateRange(object):
 
         # client attributes sorted alphabetically output order is predictable
         for attr, value in sorted(self.x_client_attrs):
-            daterange.append("%s=%s" % (denormalize_attribute(attr), value))
+            daterange.append(f"{denormalize_attribute(attr)}={value}")
 
         return "#EXT-X-DATERANGE:" + ",".join(daterange)
 
@@ -1546,27 +1547,28 @@ class ImagePlaylist(BasePathMixin):
             hdcp_level=None,
             frame_rate=None,
             pathway_id=image_stream_info.get("pathway_id"),
-            stable_variant_id=image_stream_info.get("stable_variant_id")
+            stable_variant_id=image_stream_info.get("stable_variant_id"),
         )
 
     def __str__(self):
         image_stream_inf = []
         if self.image_stream_info.program_id:
-            image_stream_inf.append("PROGRAM-ID=%d" %
-                                     self.image_stream_info.program_id)
+            image_stream_inf.append("PROGRAM-ID=%d" % self.image_stream_info.program_id)
         if self.image_stream_info.bandwidth:
-            image_stream_inf.append("BANDWIDTH=%d" %
-                                     self.image_stream_info.bandwidth)
+            image_stream_inf.append("BANDWIDTH=%d" % self.image_stream_info.bandwidth)
         if self.image_stream_info.average_bandwidth:
-            image_stream_inf.append("AVERAGE-BANDWIDTH=%d" %
-                                     self.image_stream_info.average_bandwidth)
+            image_stream_inf.append(
+                "AVERAGE-BANDWIDTH=%d" % self.image_stream_info.average_bandwidth
+            )
         if self.image_stream_info.resolution:
-            res = (str(self.image_stream_info.resolution[0]) + "x" +
-                   str(self.image_stream_info.resolution[1]))
+            res = (
+                str(self.image_stream_info.resolution[0])
+                + "x"
+                + str(self.image_stream_info.resolution[1])
+            )
             image_stream_inf.append("RESOLUTION=" + res)
         if self.image_stream_info.codecs:
-            image_stream_inf.append("CODECS=" +
-                                     quoted(self.image_stream_info.codecs))
+            image_stream_inf.append("CODECS=" + quoted(self.image_stream_info.codecs))
         if self.uri:
             image_stream_inf.append("URI=" + quoted(self.uri))
         if self.image_stream_info.pathway_id:
@@ -1579,6 +1581,7 @@ class ImagePlaylist(BasePathMixin):
             )
 
         return "#EXT-X-IMAGE-STREAM-INF:" + ",".join(image_stream_inf)
+
 
 class Tiles(BasePathMixin):
     """
@@ -1609,80 +1612,6 @@ class Tiles(BasePathMixin):
 
     def __str__(self):
         return self.dumps()
-
-class ImagePlaylist(BasePathMixin):
-    '''
-    ImagePlaylist object representing a link to a
-    variant M3U8 image playlist with a specific bitrate.
-
-    Attributes:
-
-    `image_stream_info` is a named tuple containing the attributes:
-     `bandwidth`, `resolution` which is a tuple (w, h) of integers and `codecs`,
-
-    More info: https://github.com/image-media-playlist/spec/blob/master/image_media_playlist_v0_4.pdf
-    '''
-
-    def __init__(self, base_uri, uri, image_stream_info):
-        self.uri = uri
-        self.base_uri = base_uri
-
-        resolution = image_stream_info.get('resolution')
-        if resolution is not None:
-            values = resolution.split('x')
-            resolution_pair = (int(values[0]), int(values[1]))
-        else:
-            resolution_pair = None
-
-        self.image_stream_info = StreamInfo(
-            bandwidth=image_stream_info.get('bandwidth'),
-            average_bandwidth=image_stream_info.get('average_bandwidth'),
-            video=image_stream_info.get('video'),
-            # Audio, subtitles, closed captions, video range and hdcp level should not exist in
-            # EXT-X-IMAGE-STREAM-INF, so just hardcode them to None.
-            audio=None,
-            subtitles=None,
-            closed_captions=None,
-            program_id=image_stream_info.get('program_id'),
-            resolution=resolution_pair,
-            codecs=image_stream_info.get('codecs'),
-            video_range=None,
-            hdcp_level=None,
-            frame_rate=None,
-            pathway_id=image_stream_info.get('pathway_id'),
-            stable_variant_id=image_stream_info.get('stable_variant_id')
-        )
-
-    def __str__(self):
-        image_stream_inf = []
-        if self.image_stream_info.program_id:
-            image_stream_inf.append('PROGRAM-ID=%d' %
-                                     self.image_stream_info.program_id)
-        if self.image_stream_info.bandwidth:
-            image_stream_inf.append('BANDWIDTH=%d' %
-                                     self.image_stream_info.bandwidth)
-        if self.image_stream_info.average_bandwidth:
-            image_stream_inf.append('AVERAGE-BANDWIDTH=%d' %
-                                     self.image_stream_info.average_bandwidth)
-        if self.image_stream_info.resolution:
-            res = (str(self.image_stream_info.resolution[0]) + 'x' +
-                   str(self.image_stream_info.resolution[1]))
-            image_stream_inf.append('RESOLUTION=' + res)
-        if self.image_stream_info.codecs:
-            image_stream_inf.append('CODECS=' +
-                                     quoted(self.image_stream_info.codecs))
-        if self.uri:
-            image_stream_inf.append('URI=' + quoted(self.uri))
-        if self.image_stream_info.pathway_id:
-            image_stream_inf.append(
-                'PATHWAY-ID=' + quoted(self.image_stream_info.pathway_id)
-            )
-        if self.image_stream_info.stable_variant_id:
-            image_stream_inf.append(
-                'STABLE-VARIANT-ID=' + quoted(self.image_stream_info.stable_variant_id)
-            )
-
-        return '#EXT-X-IMAGE-STREAM-INF:' + ','.join(image_stream_inf)
 
 
 def find_key(keydata, keylist):
