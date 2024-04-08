@@ -76,7 +76,10 @@ def parse(content, strict=False, custom_tags_parser=None):
 
     lines = string_to_lines(content)
     if strict:
-        version_matching.validate(lines)
+        found_errors = version_matching.validate(lines)
+
+        if len(found_errors) > 0:
+            raise Exception(found_errors)
 
     lineno = 0
     for line in lines:
