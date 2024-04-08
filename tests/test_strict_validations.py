@@ -6,6 +6,7 @@ import invalid_versioned_playlists
 import pytest
 
 import m3u8
+import m3u8.version_matching_rules
 
 
 @pytest.mark.xfail
@@ -33,9 +34,11 @@ def test_should_fail_if_EXT_X_MEDIA_SEQUENCE_is_not_a_number():
     assert 0
 
 
-@pytest.mark.xfail
 def test_should_validate_supported_EXT_X_VERSION():
-    m3u8.parse(invalid_versioned_playlists.M3U8_RULE_IV)
+    with pytest.raises(
+        Exception,
+    ):
+        m3u8.parse(invalid_versioned_playlists.M3U8_RULE_IV, strict=True)
 
 
 @pytest.mark.xfail
