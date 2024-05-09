@@ -195,6 +195,13 @@ def test_segment_cue_out_start_dumps():
     obj = m3u8.M3U8(playlists.CUE_OUT_WITH_DURATION_PLAYLIST)
 
     result = obj.dumps()
+    expected = "#EXT-X-CUE-OUT:11.52\n"
+    assert expected in result
+
+def test_segment_cue_out_start_explicit_dumps():
+    obj = m3u8.M3U8(playlists.CUE_OUT_WITH_EXPLICIT_DURATION_PLAYLIST)
+
+    result = obj.dumps()
     expected = "#EXT-X-CUE-OUT:DURATION=11.52\n"
     assert expected in result
 
