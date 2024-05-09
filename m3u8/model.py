@@ -470,14 +470,17 @@ class Segment(BasePathMixin):
       Returns a boolean indicating if a EXT-X-DISCONTINUITY tag exists
       http://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.4.11
 
-    `cue_out_start`
-      Returns a boolean indicating if a EXT-X-CUE-OUT tag exists
-
     `cue_out`
       Returns a boolean indicating if a EXT-X-CUE-OUT-CONT tag exists
       Note: for backwards compatibility, this will be True when cue_out_start
             is True, even though this tag did not exist in the input, and
             EXT-X-CUE-OUT-CONT will not exist in the output
+
+    `cue_out_start`
+      Returns a boolean indicating if a EXT-X-CUE-OUT tag exists
+
+    `cue_out_explicitly_duration`
+      Returns a boolean indicating if a EXT-X-CUE-OUT have the DURATION parameter when parsing
 
     `cue_in`
       Returns a boolean indicating if a EXT-X-CUE-IN tag exists
@@ -528,6 +531,7 @@ class Segment(BasePathMixin):
         byterange=None,
         cue_out=False,
         cue_out_start=False,
+        cue_out_explicitly_duration= False,
         cue_in=False,
         discontinuity=False,
         key=None,
@@ -555,6 +559,7 @@ class Segment(BasePathMixin):
         self.current_program_date_time = current_program_date_time
         self.discontinuity = discontinuity
         self.cue_out_start = cue_out_start
+        self.cue_out_explicitly_duration = cue_out_explicitly_duration
         self.cue_out = cue_out
         self.cue_in = cue_in
         self.scte35 = scte35
@@ -627,11 +632,10 @@ class Segment(BasePathMixin):
                     asset_suffix.append(f"{metadata_key.upper()}={metadata_value}")
                 output.append(f"{ext_x_asset}:{','.join(asset_suffix)}\n")
 
-            output.append(
-                "#EXT-X-CUE-OUT{}\n".format(
-                    (":DURATION=" + self.scte35_duration) if self.scte35_duration else ""
-                )
-            )
+            prefix = ":DURATION=" if self.cue_out_explicitly_duration else ":"
+            cue_info = f"{prefix}{self.scte35_duration}" if self.scte35_duration else ""
+            output.append(f"#EXT-X-CUE-OUT{cue_info}\n")
+
         elif self.cue_out:
             cue_out_cont_suffix = []
             if self.scte35_elapsedtime:

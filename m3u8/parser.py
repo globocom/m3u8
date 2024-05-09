@@ -124,7 +124,9 @@ def parse(content, strict=False, custom_tags_parser=None):
             _parse_cueout(line, state)
             state["cue_out_start"] = True
             state["cue_out"] = True
-
+            if "DURATION" in line.upper():
+                state["cue_out_explicitly_duration"] = True
+        
         elif line.startswith(f"{protocol.ext_oatcls_scte35}:"):
             _parse_oatcls_scte35(line, state)
 
@@ -296,6 +298,7 @@ def _parse_ts_chunk(line, data, state):
     segment["cue_in"] = state.pop("cue_in", False)
     segment["cue_out"] = state.pop("cue_out", False)
     segment["cue_out_start"] = state.pop("cue_out_start", False)
+    segment["cue_out_explicitly_duration"] = state.pop("cue_out_explicitly_duration", False)
     scte_op = state.pop if segment["cue_in"] else state.get
     segment["scte35"] = scte_op("current_cue_out_scte35", None)
     segment["oatcls_scte35"] = scte_op("current_cue_out_oatcls_scte35", None)
