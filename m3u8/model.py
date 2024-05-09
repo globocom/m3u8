@@ -531,7 +531,7 @@ class Segment(BasePathMixin):
         byterange=None,
         cue_out=False,
         cue_out_start=False,
-        cue_out_explicitly_duration= False,
+        cue_out_explicitly_duration=False,
         cue_in=False,
         discontinuity=False,
         key=None,

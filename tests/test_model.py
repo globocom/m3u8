@@ -198,6 +198,7 @@ def test_segment_cue_out_start_dumps():
     expected = "#EXT-X-CUE-OUT:11.52\n"
     assert expected in result
 
+
 def test_segment_cue_out_start_explicit_dumps():
     obj = m3u8.M3U8(playlists.CUE_OUT_WITH_EXPLICIT_DURATION_PLAYLIST)
 
@@ -236,14 +237,14 @@ def test_segment_cue_out_cont_alt():
     obj = m3u8.M3U8(playlists.CUE_OUT_CONT_ALT_PLAYLIST)
     segments = obj.segments
 
-    assert segments[1].scte35_elapsedtime == '2'
-    assert segments[1].scte35_duration == '120'
+    assert segments[1].scte35_elapsedtime == "2"
+    assert segments[1].scte35_duration == "120"
 
-    assert segments[2].scte35_elapsedtime == '8'
-    assert segments[2].scte35_duration == '120.0'
+    assert segments[2].scte35_elapsedtime == "8"
+    assert segments[2].scte35_duration == "120.0"
 
-    assert segments[3].scte35_elapsedtime == '14.001'
-    assert segments[3].scte35_duration == '120.0'
+    assert segments[3].scte35_elapsedtime == "14.001"
+    assert segments[3].scte35_duration == "120.0"
 
 
 def test_segment_envivio_scte35_attribute():
