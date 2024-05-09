@@ -629,7 +629,7 @@ class Segment(BasePathMixin):
 
             output.append(
                 "#EXT-X-CUE-OUT{}\n".format(
-                    (":Duration=" + self.scte35_duration) if self.scte35_duration else ""
+                    (":DURATION=" + self.scte35_duration) if self.scte35_duration else ""
                 )
             )
         elif self.cue_out:
