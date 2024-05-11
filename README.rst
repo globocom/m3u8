@@ -25,7 +25,7 @@ To load a playlist into an object from uri, file path or directly from string, u
     print(playlist.target_duration)
 
     # if you already have the content as string, use
-    
+
     playlist = m3u8.loads('#EXTM3U8 ... etc ... ')
 
 Dumping a playlist
@@ -41,7 +41,7 @@ To dump a playlist from an object to the console or a file, use the `dump/dumps`
     print(playlist.dumps())
 
     # if you want to write a file from its content
-    
+
     playlist.dump('playlist.m3u8')
 
 
@@ -298,6 +298,36 @@ To achieve this your custom_tags_parser function have to return boolean True - i
 Helper functions get_segment_custom_value() and save_segment_custom_value() are intended for getting/storing your parsed values per segment into Segment class.
 After that all custom values will be accessible via property custom_parser_values of Segment instance.
 
+In case you need to dump custom tags, you can use the following code snippet as inspiration:
+
+.. code-block:: python
+
+    def dumps_iptv(iptv : M3U8):
+        output = ["#EXTM3U"]
+        last_group = ""
+        for seg in iptv.segments:
+            segdumps = []
+            seg_props = seg.custom_parser_values["extinf_props"]
+            if seg_props["group-title"] != last_group and last_group != "":
+                segdumps.append(2*"\n")
+            last_group = seg_props["group-title"]
+            if seg.uri:
+                if seg.duration is not None:
+                    segdumps.append("#EXTINF:%s" % number_to_string(seg.duration))
+                    if seg_props["tvg-logo"]:
+                        segdumps.append(" tvg-logo=\"%s\"" % seg_props["tvg-logo"])
+                    if seg_props["group-title"]:
+                        segdumps.append(" group-title=\"%s\"" % seg_props["group-title"])
+                    if seg.title:
+                        segdumps.append("," + seg.title)
+                    segdumps.append("\n")
+                segdumps.append(seg.uri)
+            output.append("".join(segdumps))
+        return "\n".join(output)
+
+
+See `issue 347`_ for more information.
+
 Using different HTTP clients
 ----------------------------
 
@@ -360,6 +390,7 @@ than a few minutes, please open an issue to make sure we don't work on
 the same thing.
 
 .. _m3u8: https://tools.ietf.org/html/rfc8216
+.. _issue 347: https://github.com/globocom/m3u8/issues/347
 .. _#EXT-X-VERSION: https://tools.ietf.org/html/rfc8216#section-4.3.1.2
 .. _#EXTINF: https://tools.ietf.org/html/rfc8216#section-4.3.2.1
 .. _#EXT-X-ALLOW-CACHE: https://datatracker.ietf.org/doc/html/draft-pantos-http-live-streaming-07#section-3.3.6
