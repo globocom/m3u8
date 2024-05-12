@@ -158,4 +158,4 @@ the same thing.
 .. _Alternative audio: http://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-8.7
 .. _VOD: https://developer.apple.com/library/mac/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-TNTAG2
 .. _EVENT: https://developer.apple.com/library/mac/technotes/tn2288/_index.html#//apple_ref/doc/uid/DTS40012238-CH1-EVENT_PLAYLIST
-.. _FAQ: https://github.com/globocom/m3u8/FAQ.md
+.. _FAQ: https://github.com/globocom/m3u8/blob/master/FAQ.md
