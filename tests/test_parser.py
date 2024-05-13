@@ -905,3 +905,9 @@ def test_media_with_stable_rendition_id():
         data["media"][0]["stable_rendition_id"]
         == "a8213e27c12a158ea8660e0fe8bdcac6072ca26d984e7e8603652bc61fdceffa"
     )
+
+def test_req_video_layout():
+    data = m3u8.parse(playlists.VARIANT_PLAYLIST_WITH_REQ_VIDEO_LAYOUT)
+    assert data["playlists"][0]["stream_info"]["req_video_layout"] == '"CH-STEREO"'
+
+
