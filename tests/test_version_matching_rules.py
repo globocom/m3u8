@@ -12,7 +12,7 @@ def test_invalid_iv_in_EXT_X_KEY():
         line="#EXT-X-KEY: METHOD=AES-128, IV=0x123456789ABCDEF0123456789ABCDEF0, URI=https://example.com/key.bin",
     )
 
-    assert validator.validate() == False
+    assert not validator.validate()
 
 
 def test_valid_iv_in_EXT_X_KEY():
@@ -37,7 +37,7 @@ def test_valid_iv_in_EXT_X_KEY():
             line_number=1,
             line=example["line"],
         )
-        assert validator.validate() == True
+        assert not validator.validate()
 
 
 def test_invalid_floating_point_EXTINF():
@@ -58,7 +58,7 @@ def test_invalid_floating_point_EXTINF():
             line_number=1,
             line=example["line"],
         )
-        assert validator.validate() == False
+        assert not validator.validate()
 
 
 def test_valid_floating_point_EXTINF():
@@ -83,7 +83,7 @@ def test_valid_floating_point_EXTINF():
             line_number=1,
             line=example["line"],
         )
-        assert validator.validate() == True
+        assert validator.validate()
 
 
 def test_invalid_EXT_X_BYTERANGE_or_EXT_X_I_FRAMES_ONLY():
@@ -104,7 +104,7 @@ def test_invalid_EXT_X_BYTERANGE_or_EXT_X_I_FRAMES_ONLY():
             line_number=1,
             line=example["line"],
         )
-        assert validator.validate() == False
+        assert not validator.validate()
 
 
 def test_valid_EXT_X_BYTERANGE_or_EXT_X_I_FRAMES_ONLY():
@@ -133,4 +133,4 @@ def test_valid_EXT_X_BYTERANGE_or_EXT_X_I_FRAMES_ONLY():
             line_number=1,
             line=example["line"],
         )
-        assert validator.validate() == True
+        assert validator.validate()
