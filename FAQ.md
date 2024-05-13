@@ -277,3 +277,17 @@ HTTP/HTTPS proxies as a dict to the load function.
     print(playlist.dumps())
 ```
 It works with the default client only. Custom HTTP clients must implement this feature.
+
+# How to validate playlists while parsing them?
+
+Although the library provides two helper functions for loading playlists, you can also use the M3U8 class to instantiate new playlists in a manner similar to the `loads` function. This approach allows you to validate the playlist before using it.
+
+```python
+import m3u8
+
+# Create a new playlist with strict validation
+# The default for 'strict' is False
+p = m3u8.M3U8("playlist content", strict=True)
+```
+
+When `strict=True` is used, the content of the playlist is validated. If any errors are found, an exception will be raised, and a human-readable message will describe the error.
