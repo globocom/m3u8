@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Type
 
 from m3u8 import protocol
 
@@ -102,7 +102,7 @@ class ValidEXTXBYTERANGEOrEXTXIFRAMESONLY(VersionMatchRuleBase):
         return self.version >= 4
 
 
-available_rules: List[type[VersionMatchRuleBase]] = [
+available_rules: List[Type[VersionMatchRuleBase]] = [
     ValidIVInEXTXKEY,
     ValidFloatingPointEXTINF,
     ValidEXTXBYTERANGEOrEXTXIFRAMESONLY,
