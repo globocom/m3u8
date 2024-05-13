@@ -3,8 +3,8 @@ from os.path import abspath, dirname, exists, join
 from setuptools import setup
 
 long_description = None
-if exists("README.rst"):
-    with open("README.rst") as file:
+if exists("README.md"):
+    with open("README.md") as file:
         long_description = file.read()
 
 install_reqs = [
