@@ -20,14 +20,23 @@ def test_valid_iv_in_EXT_X_KEY():
         {
             "line": "#EXT-X-KEY: METHOD=AES-128, URI=https://example.com/key.bin",
             "version": 1,
+            "expected": True,
         },
         {
             "line": "#EXT-X-KEY: METHOD=AES-128, IV=0x123456789ABCDEF0123456789ABCDEF0, URI=https://example.com/key.bin",
             "version": 2,
+            "expected": True,
         },
         {
             "line": "#EXT-X-KEY: METHOD=AES-128, IV=0x123456789ABCDEF0123456789ABCDEF0, URI=https://example.com/key.bin",
             "version": 3,
+            "expected": True,
+        },
+        # Invalid case
+        {
+            "line": "#EXT-X-KEY: METHOD=AES-128, IV=0x123456789ABCDEF0123456789ABCDEF0, URI=https://example.com/key.bin",
+            "version": 1,
+            "expected": False,
         },
     ]
 
@@ -37,7 +46,7 @@ def test_valid_iv_in_EXT_X_KEY():
             line_number=1,
             line=example["line"],
         )
-        assert not validator.validate()
+        assert validator.validate() == example["expected"]
 
 
 def test_invalid_floating_point_EXTINF():
