@@ -52,7 +52,7 @@ class ValidIVInEXTXKEY(VersionMatchRuleBase):
     how_to_fix = "Change the protocol version to 2 or higher."
 
     def validate(self):
-        if not protocol.ext_x_key in self.line:
+        if protocol.ext_x_key not in self.line:
             return True
 
         if "IV" in self.line:
@@ -66,7 +66,7 @@ class ValidFloatingPointEXTINF(VersionMatchRuleBase):
     how_to_fix = "Change the protocol version to 3 or higher."
 
     def validate(self):
-        if not protocol.extinf in self.line:
+        if protocol.extinf not in self.line:
             return True
 
         chunks = self.line.replace(protocol.extinf + ":", "").split(",", 1)
@@ -76,7 +76,7 @@ class ValidFloatingPointEXTINF(VersionMatchRuleBase):
             try:
                 float(value)
                 return True
-            except:
+            except ValueError:
                 return False
 
         def is_floating_number(value: str):
@@ -94,8 +94,8 @@ class ValidEXTXBYTERANGEOrEXTXIFRAMESONLY(VersionMatchRuleBase):
 
     def validate(self):
         if (
-            not protocol.ext_x_byterange in self.line
-            and not protocol.ext_i_frames_only in self.line
+            protocol.ext_x_byterange not in self.line
+            and protocol.ext_i_frames_only not in self.line
         ):
             return True
 
