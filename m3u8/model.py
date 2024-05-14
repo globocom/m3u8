@@ -982,7 +982,7 @@ class Playlist(BasePathMixin):
             hdcp_level=stream_info.get("hdcp_level"),
             pathway_id=stream_info.get("pathway_id"),
             stable_variant_id=stream_info.get("stable_variant_id"),
-            req_video_layout=stream_info.get("req_video_layout")
+            req_video_layout=stream_info.get("req_video_layout"),
         )
         self.media = []
         for media_type in ("audio", "video", "subtitles"):
