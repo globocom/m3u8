@@ -798,6 +798,12 @@ def test_dump_should_not_ignore_zero_duration():
     assert "EXTINF:0" in obj.dumps().strip()
     assert "EXTINF:5220" in obj.dumps().strip()
 
+    assert "EXTINF:0.000" in obj.dumps(infspec="milliseconds").strip()
+    assert "EXTINF:5220.000" in obj.dumps(infspec="milliseconds").strip()
+
+    assert "EXTINF:0.000000" in obj.dumps(infspec="microseconds").strip()
+    assert "EXTINF:5220.000000" in obj.dumps(infspec="microseconds").strip()
+
 
 def test_dump_should_use_decimal_floating_point_for_very_short_durations():
     obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST_WITH_VERY_SHORT_DURATION)
@@ -805,6 +811,14 @@ def test_dump_should_use_decimal_floating_point_for_very_short_durations():
     assert "EXTINF:5220" in obj.dumps().strip()
     assert "EXTINF:5218.5" in obj.dumps().strip()
     assert "EXTINF:0.000011" in obj.dumps().strip()
+
+    assert "EXTINF:5220.000" in obj.dumps(infspec="milliseconds").strip()
+    assert "EXTINF:5218.500" in obj.dumps(infspec="milliseconds").strip()
+    assert "EXTINF:0.000" in obj.dumps(infspec="milliseconds").strip()
+
+    assert "EXTINF:5220.000000" in obj.dumps(infspec="microseconds").strip()
+    assert "EXTINF:5218.500" in obj.dumps(infspec="microseconds").strip()
+    assert "EXTINF:0.000011" in obj.dumps(infspec="microseconds").strip()
 
 
 def test_dump_should_include_segment_level_program_date_time():

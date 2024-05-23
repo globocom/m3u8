@@ -362,7 +362,7 @@ class M3U8:
     def add_rendition_report(self, report):
         self.rendition_reports.append(report)
 
-    def dumps(self, timespec="milliseconds"):
+    def dumps(self, timespec="milliseconds", infspec="auto"):
         """
         Returns the current m3u8 as a string.
         You could also use unicode(<this obj>) or str(<this obj>)
@@ -414,7 +414,7 @@ class M3U8:
         for key in self.session_keys:
             output.append(str(key))
 
-        output.append(self.segments.dumps(timespec))
+        output.append(self.segments.dumps(timespec, infspec))
 
         if self.preload_hint:
             output.append(str(self.preload_hint))
@@ -586,7 +586,7 @@ class Segment(BasePathMixin):
     def add_part(self, part):
         self.parts.append(part)
 
-    def dumps(self, last_segment, timespec="milliseconds"):
+    def dumps(self, last_segment, timespec="milliseconds", infspec="auto"):
         output = []
 
         if last_segment and self.key != last_segment.key:
@@ -659,7 +659,13 @@ class Segment(BasePathMixin):
 
         if self.uri:
             if self.duration is not None:
-                output.append("#EXTINF:%s," % number_to_string(self.duration))
+                if infspec == "milliseconds":
+                    duration = "{:.3f}".format(self.duration)
+                elif infspec == "microseconds":
+                    duration = "{:.6f}".format(self.duration)
+                else:
+                    duration = number_to_string(self.duration)
+                output.append("#EXTINF:%s," % duration)
                 if self.title:
                     output.append(self.title)
                 output.append("\n")
@@ -704,11 +710,11 @@ class Segment(BasePathMixin):
 
 
 class SegmentList(list, GroupedBasePathMixin):
-    def dumps(self, timespec="milliseconds"):
+    def dumps(self, timespec="milliseconds", infspec="auto"):
         output = []
         last_segment = None
         for segment in self:
-            output.append(segment.dumps(last_segment, timespec))
+            output.append(segment.dumps(last_segment, timespec, infspec))
             last_segment = segment
         return "\n".join(output)
 
