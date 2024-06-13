@@ -396,7 +396,7 @@ def test_should_parse_scte35_from_playlist():
         True,
         True,
         True,
-        False, # EXT-X-CUE-IN
+        False,  # EXT-X-CUE-IN
         False,
     ]
     assert actual_cue_status == expected_cue_status
