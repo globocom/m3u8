@@ -180,14 +180,23 @@ def test_segment_cue_out_cont_attributes_dumps():
     assert expected in result
 
 
-def test_segment_oatcls_scte35_dumps():
+def test_segment_oatcls_scte35_cue_out_dumps():
     obj = m3u8.M3U8(playlists.CUE_OUT_ELEMENTAL_PLAYLIST)
     result = obj.dumps()
 
-    # Only insert OATCLS-SCTE35 at cue out
+    # Check OATCLS-SCTE35 for CUE-OUT lines
     cue_out_line = (
         "#EXT-OATCLS-SCTE35:/DAlAAAAAAAAAP/wFAUAAAABf+//wpiQkv4ARKogAAEBAQAAQ6sodg==\n"
     )
+    assert result.count(cue_out_line) == 1
+
+
+def test_segment_oatcls_scte35_non_cue_out_dumps():
+    obj = m3u8.M3U8(playlists.OATCLS_ELEMENTAL_PLAYLIST)
+    result = obj.dumps()
+
+    # Check OATCLS-SCTE35 for non-CUE-OUT lines
+    cue_out_line = "/DAqAAAAAyiYAP/wBQb/FuaKGAAUAhJDVUVJAAAFp3+/EQMCRgIMAQF7Ny4D\n"
     assert result.count(cue_out_line) == 1
 
 
