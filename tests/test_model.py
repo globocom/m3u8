@@ -7,6 +7,7 @@
 
 import datetime
 import os
+import textwrap
 
 import playlists
 import pytest
@@ -1605,6 +1606,74 @@ def test_dump_should_work_for_variant_playlists_with_image_playlists():
 def test_segment_media_sequence():
     obj = m3u8.M3U8(playlists.SLIDING_WINDOW_PLAYLIST)
     assert [s.media_sequence for s in obj.segments] == [2680, 2681, 2682]
+
+
+def test_low_latency_output():
+    obj = m3u8.M3U8(playlists.LOW_LATENCY_PART_PLAYLIST)
+    actual = obj.dumps()
+    expected = textwrap.dedent(
+        """\
+        #EXTM3U
+        #EXT-X-MEDIA-SEQUENCE:264
+        #EXT-X-VERSION:6
+        #EXT-X-TARGETDURATION:4
+        #EXT-X-SERVER-CONTROL:CAN-BLOCK-RELOAD=YES,PART-HOLD-BACK=1,CAN-SKIP-UNTIL=24
+        #EXT-X-PART-INF:PART-TARGET=0.33334
+        #EXT-X-MAP:URI="init.mp4"
+        #EXT-X-PROGRAM-DATE-TIME:2019-02-14T02:13:28.106+00:00
+        #EXTINF:4.00008,
+        fileSequence264.mp4
+        #EXTINF:4.00008,
+        fileSequence265.mp4
+        #EXTINF:4.00008,
+        fileSequence266.mp4
+        #EXTINF:4.00008,
+        fileSequence267.mp4
+        #EXTINF:4.00008,
+        fileSequence268.mp4
+        #EXTINF:4.00008,
+        fileSequence269.mp4
+        #EXTINF:4.00008,
+        fileSequence270.mp4
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.0.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.1.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.2.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.3.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.4.mp4",INDEPENDENT=YES
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.5.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.6.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.7.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.8.mp4",INDEPENDENT=YES
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.9.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.10.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart271.11.mp4"
+        #EXTINF:4.00008,
+        fileSequence271.mp4
+        #EXT-X-PROGRAM-DATE-TIME:2019-02-14T02:14:00.106+00:00
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.a.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.b.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.c.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.d.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.e.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.f.mp4",INDEPENDENT=YES
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.g.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.h.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.i.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.j.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.k.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart272.l.mp4"
+        #EXTINF:4.00008,
+        fileSequence272.mp4
+        #EXT-X-PART:DURATION=0.33334,URI="filePart273.0.mp4",INDEPENDENT=YES
+        #EXT-X-PART:DURATION=0.33334,URI="filePart273.1.mp4"
+        #EXT-X-PART:DURATION=0.33334,URI="filePart273.2.mp4"
+
+        #EXT-X-PRELOAD-HINT:TYPE=PART,URI="filePart273.3.mp4"
+        #EXT-X-RENDITION-REPORT:URI="../1M/waitForMSN.php",LAST-MSN=273,LAST-PART=2
+        #EXT-X-RENDITION-REPORT:URI="../4M/waitForMSN.php",LAST-MSN=273,LAST-PART=1
+        """
+    )
+    assert actual == expected
 
 
 # custom asserts
