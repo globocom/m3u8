@@ -447,7 +447,7 @@ def _parse_byterange(line, state, **kwargs):
 
 
 def _parse_targetduration(**parse_kwargs):
-    return _parse_simple_parameter(cast_to=float, **parse_kwargs)
+    return _parse_simple_parameter(cast_to=int, **parse_kwargs)
 
 
 def _parse_media_sequence(**parse_kwargs):
