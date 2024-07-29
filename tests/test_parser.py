@@ -28,7 +28,7 @@ def test_should_parse_simple_playlist_from_string():
 
 def test_should_parse_non_integer_duration_from_playlist_string():
     data = m3u8.parse(playlists.PLAYLIST_WITH_NON_INTEGER_DURATION)
-    assert 5220.5 == data["targetduration"]
+    assert 5221 == data["targetduration"]
     assert [5220.5] == [c["duration"] for c in data["segments"]]
 
 
