@@ -257,6 +257,14 @@ def test_segment_cue_out_cont_alt():
     assert segments[3].scte35_duration == "120.0"
 
 
+def test_segment_cue_out_cont_mediaconvert():
+    obj = m3u8.M3U8(playlists.CUE_OUT_MEDIACONVERT_PLAYLIST)
+    segments = obj.segments
+
+    assert segments[2].scte35_elapsedtime == "10"
+    assert segments[2].scte35_duration == "4"
+
+
 def test_segment_envivio_scte35_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_ENVIVIO_PLAYLIST)
     segments = obj.segments
