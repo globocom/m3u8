@@ -281,7 +281,7 @@ def test_segment_envivio_scte35_attribute():
 def test_segment_unknown_scte35_attribute():
     obj = m3u8.M3U8(playlists.CUE_OUT_INVALID_PLAYLIST)
     assert obj.segments[0].scte35 is None
-    assert obj.segments[0].scte35_duration is None
+    assert obj.segments[0].scte35_duration == "INVALID"
 
 
 def test_segment_cue_out_no_duration():
