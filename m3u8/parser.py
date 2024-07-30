@@ -320,9 +320,14 @@ def _parse_attribute_list(prefix, line, attribute_parser, default_parser=None):
 
     attributes = {}
     for param in params:
-        name, value = param.split("=", 1)
-        name = normalize_attribute(name)
+        param_parts = param.split("=", 1)
+        if len(param_parts) == 1:
+            name = ""
+            value = param_parts[0]
+        else:
+            name, value = param_parts
 
+        name = normalize_attribute(name)
         if name in attribute_parser:
             value = attribute_parser[name](value)
         elif default_parser is not None:
@@ -548,22 +553,22 @@ def _parse_cueout_cont(line, state, **kwargs):
     if len(elements) != 2:
         return
 
-    # EXT-X-CUE-OUT-CONT:2.436/120 style
-    res = re.match(
-        r"^[-+]?([0-9]+(\.[0-9]+)?|\.[0-9]+)/[-+]?([0-9]+(\.[0-9]+)?|\.[0-9]+)$",
-        elements[1],
-    )
-    if res:
-        state["current_cue_out_elapsedtime"] = res.group(1)
-        state["current_cue_out_duration"] = res.group(3)
-        return
-
     # EXT-X-CUE-OUT-CONT:ElapsedTime=10,Duration=60,SCTE35=... style
     cue_info = _parse_attribute_list(
         protocol.ext_x_cue_out_cont,
         line,
         remove_quotes_parser("duration", "elapsedtime", "scte35"),
     )
+
+    # EXT-X-CUE-OUT-CONT:2.436/120 style
+    progress = cue_info.get("")
+    if progress:
+        progress_parts = progress.split("/", 1)
+        if len(progress_parts) == 1:
+            state["current_cue_out_duration"] = progress_parts[0]
+        else:
+            state["current_cue_out_elapsedtime"] = progress_parts[0]
+            state["current_cue_out_duration"] = progress_parts[1]
 
     duration = cue_info.get("duration")
     if duration:
