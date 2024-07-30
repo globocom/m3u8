@@ -583,54 +583,27 @@ def _parse_cueout_cont(line, state, **kwargs):
         state["current_cue_out_elapsedtime"] = elapsedtime
 
 
-def _cueout_no_duration(line):
-    # this needs to be called first since line.split in all other
-    # parsers will throw a ValueError if passed just this tag
-    if line == protocol.ext_x_cue_out:
-        return (None, None)
-
-
-def _cueout_envivio(line, state):
-    param, value = line.split(":", 1)
-    res = re.match('.*DURATION=(.*),.*,CUE="(.*)"', value)
-    if res:
-        return (res.group(2), res.group(1))
-    else:
-        return None
-
-
-def _cueout_duration(line):
-    # This was added separately rather than modifying "simple"
-    param, value = line.split(":", 1)
-    res = re.match(r"DURATION=(.*)", value)
-    if res:
-        return (None, res.group(1))
-
-
-def _cueout_simple(line):
-    param, value = line.split(":", 1)
-    res = re.match(r"^(\d+(?:\.\d)?\d*)$", value)
-    if res:
-        return (None, res.group(1))
-
-
 def _parse_cueout(line, state, **kwargs):
-    _cueout_state = (
-        _cueout_no_duration(line)
-        or _cueout_envivio(line, state)
-        or _cueout_duration(line)
-        or _cueout_simple(line)
-    )
-    if _cueout_state:
-        cue_out_scte35, cue_out_duration = _cueout_state
-        current_cue_out_scte35 = state.get("current_cue_out_scte35")
-        state["current_cue_out_scte35"] = cue_out_scte35 or current_cue_out_scte35
-        state["current_cue_out_duration"] = cue_out_duration
-
     state["cue_out_start"] = True
     state["cue_out"] = True
     if "DURATION" in line.upper():
         state["cue_out_explicitly_duration"] = True
+
+    elements = line.split(":", 1)
+    if len(elements) != 2:
+        return
+
+    cue_info = _parse_attribute_list(
+        protocol.ext_x_cue_out,
+        line,
+        remove_quotes_parser("cue"),
+    )
+    cue_out_scte35 = cue_info.get("cue")
+    cue_out_duration = cue_info.get("duration") or cue_info.get("")
+
+    current_cue_out_scte35 = state.get("current_cue_out_scte35")
+    state["current_cue_out_scte35"] = cue_out_scte35 or current_cue_out_scte35
+    state["current_cue_out_duration"] = cue_out_duration
 
 
 def _parse_server_control(line, data, **kwargs):
