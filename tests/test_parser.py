@@ -856,8 +856,8 @@ def test_delta_playlist_daterange_skipping():
 
 def test_bitrate():
     data = m3u8.parse(playlists.BITRATE_PLAYLIST)
-    assert data["segments"][0]["bitrate"] == "1674"
-    assert data["segments"][1]["bitrate"] == "1625"
+    assert data["segments"][0]["bitrate"] == 1674
+    assert data["segments"][1]["bitrate"] == 1625
 
 
 def test_content_steering():

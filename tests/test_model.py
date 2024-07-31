@@ -1704,6 +1704,13 @@ def test_low_latency_output():
     assert actual == expected
 
 
+def test_bitrate_settable_as_int():
+    obj = m3u8.loads(playlists.BITRATE_PLAYLIST)
+    obj.segments[0].bitrate = 9876
+
+    assert "#EXT-X-BITRATE:9876" in obj.dumps().strip()
+
+
 # custom asserts
 
 

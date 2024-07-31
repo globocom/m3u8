@@ -671,7 +671,7 @@ class Segment(BasePathMixin):
                 output.append("#EXT-X-BYTERANGE:%s\n" % self.byterange)
 
             if self.bitrate:
-                output.append("#EXT-X-BITRATE:%s\n" % self.bitrate)
+                output.append("#EXT-X-BITRATE:%d\n" % self.bitrate)
 
             if self.gap_tag:
                 output.append("#EXT-X-GAP\n")
