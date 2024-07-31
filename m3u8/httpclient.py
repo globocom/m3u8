@@ -1,6 +1,6 @@
+import gzip
 import ssl
 import urllib.request
-
 from urllib.parse import urljoin
 
 
@@ -15,9 +15,15 @@ class DefaultHTTPClient:
         opener.addheaders = headers.items()
         resource = opener.open(uri, timeout=timeout)
         base_uri = urljoin(resource.geturl(), ".")
-        content = resource.read().decode(
-            resource.headers.get_content_charset(failobj="utf-8")
-        )
+
+        if resource.info().get("Content-Encoding") == "gzip":
+            content = gzip.decompress(resource.read()).decode(
+                resource.headers.get_content_charset(failobj="utf-8")
+            )
+        else:
+            content = resource.read().decode(
+                resource.headers.get_content_charset(failobj="utf-8")
+            )
         return content, base_uri
 
 
