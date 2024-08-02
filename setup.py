@@ -14,7 +14,7 @@ install_reqs = [
 setup(
     name="m3u8",
     author="Globo.com",
-    version="5.2.0",
+    version="5.3.0",
     license="MIT",
     zip_safe=False,
     include_package_data=True,
