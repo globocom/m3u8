@@ -28,7 +28,6 @@ from m3u8.model import (
 )
 from m3u8.protocol import ext_x_part, ext_x_preload_hint, ext_x_start
 
-
 utc = datetime.timezone.utc
 
 
@@ -746,6 +745,23 @@ def test_dump_should_raise_if_create_sub_directories_fails(tmpdir):
     # When we try to write it, we'll be prevented from creating the second subdirectory
     with pytest.raises(OSError):
         m3u8.M3U8(playlists.SIMPLE_PLAYLIST).dump(file_name)
+
+
+def test_create_sub_directories_with_relative_path(tmpdir, monkeypatch):
+    relative_path = os.path.join("relative", "path", "playlist.m3u8")
+
+    # Use a temporary directory as the current working directory for the test
+    monkeypatch.chdir(tmpdir)
+
+    obj = m3u8.M3U8(playlists.SIMPLE_PLAYLIST)
+
+    obj.dump(relative_path)
+
+    expected_file_path = os.path.join(tmpdir, relative_path)
+    assert os.path.exists(expected_file_path)
+
+    with open(expected_file_path, "r") as file:
+        assert file.read().strip() == playlists.SIMPLE_PLAYLIST.strip()
 
 
 def test_dump_should_work_for_variant_streams():
