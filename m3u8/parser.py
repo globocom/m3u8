@@ -355,7 +355,6 @@ def _parse_stream_inf(line, data, state, **kwargs):
     attribute_parser["bandwidth"] = lambda x: int(float(x))
     attribute_parser["average_bandwidth"] = int
     attribute_parser["frame_rate"] = float
-    attribute_parser["video_range"] = str
     attribute_parser["hdcp_level"] = str
     state["stream_info"] = _parse_attribute_list(
         protocol.ext_x_stream_inf, line, attribute_parser
@@ -369,7 +368,6 @@ def _parse_i_frame_stream_inf(line, data, **kwargs):
     attribute_parser["program_id"] = int
     attribute_parser["bandwidth"] = int
     attribute_parser["average_bandwidth"] = int
-    attribute_parser["video_range"] = str
     attribute_parser["hdcp_level"] = str
     iframe_stream_info = _parse_attribute_list(
         protocol.ext_x_i_frame_stream_inf, line, attribute_parser
