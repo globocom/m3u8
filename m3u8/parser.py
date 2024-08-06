@@ -319,7 +319,7 @@ def _parse_attribute_list(prefix, line, attribute_parser, default_parser=None):
     params = ATTRIBUTELISTPATTERN.split(line.replace(prefix + ":", ""))[1::2]
 
     attributes = {}
-    if not line.startswith(prefix+':') :
+    if not line.startswith(prefix + ":"):
         return attributes
 
     for param in params:

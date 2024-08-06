@@ -382,8 +382,8 @@ def test_session_key_attribute_without_initialization_vector():
     assert None is obj.session_keys[0].iv
 
 
-def test_parse_custom_media_header():
-    obj = m3u8.M3U8(playlists.PLAYLIST_WITH_CUSTOM_MEDIA_HEADER)
+def test_parse_tag_name_matches_fully():
+    assert m3u8.M3U8(playlists.PLAYLIST_WITH_TAG_MEDIA_READY)
 
 
 def test_segments_attribute():
