@@ -439,10 +439,10 @@ def _parse_variant_playlist(line, data, state, **kwargs):
     state["expect_playlist"] = False
 
 
-def _parse_bitrate(line, state, **kwargs):
+def _parse_bitrate(state, **kwargs):
     if "segment" not in state:
         state["segment"] = {}
-    state["segment"]["bitrate"] = line.replace(protocol.ext_x_bitrate + ":", "")
+    state["segment"]["bitrate"] = _parse_simple_parameter(cast_to=int, **kwargs)
 
 
 def _parse_byterange(line, state, **kwargs):
