@@ -442,9 +442,7 @@ def _parse_variant_playlist(line, data, state, **kwargs):
 def _parse_bitrate(state, **kwargs):
     if "segment" not in state:
         state["segment"] = {}
-    state["segment"]["bitrate"] = _parse_simple_parameter(
-        cast_to=int, **kwargs
-    )
+    state["segment"]["bitrate"] = _parse_simple_parameter(cast_to=int, **kwargs)
 
 
 def _parse_byterange(line, state, **kwargs):
