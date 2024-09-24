@@ -1294,7 +1294,7 @@ class Start:
 
 
 class RenditionReport(BasePathMixin):
-    def __init__(self, base_uri, uri, last_msn, last_part=None):
+    def __init__(self, base_uri, uri, last_msn=None, last_part=None):
         self.base_uri = base_uri
         self.uri = uri
         self.last_msn = last_msn
@@ -1303,7 +1303,8 @@ class RenditionReport(BasePathMixin):
     def dumps(self):
         report = []
         report.append("URI=" + quoted(self.uri))
-        report.append("LAST-MSN=" + str(self.last_msn))
+        if self.last_msn is not None:
+            report.append("LAST-MSN=" + str(self.last_msn))
         if self.last_part is not None:
             report.append("LAST-PART=" + str(self.last_part))
 
