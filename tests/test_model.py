@@ -1345,6 +1345,14 @@ def test_ll_playlist():
     assert obj.preload_hint.base_uri == "http://localhost/test_base_uri"
 
 
+def test_ll_playlist_omitted_attributes():
+    # RFC 8216 4.4.5.4 states that even the required attribute LAST-MSN
+    # can be omitted in certain conditions.
+    obj = m3u8.M3U8(playlists.LOW_LATENCY_OMITTED_ATTRIBUTES)
+    text = obj.dumps()
+    assert '#EXT-X-RENDITION-REPORT:URI="rendition_1.m3u8"\n' in text
+
+
 def test_add_rendition_report_to_playlist():
     obj = m3u8.M3U8()
 
