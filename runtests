@@ -3,7 +3,11 @@
 test_server_stdout=tests/server.stdout
 
 function install_deps {
-    poetry install
+    if [ -z "$GITHUB_ACTIONS" ]; then
+        poetry install
+    else
+        echo "Skipping dependency installation on GitHub Actions"
+    fi
 }
 
 function start_server {
