@@ -34,16 +34,19 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
+      # Use abatilo/actions-poetry@v2 to install Poetry
+      - name: Install Poetry 
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: 1.5.1
 
+      # Setup Local Virtual Environment if no poetry.toml file
       - name: Setup Local Virtual Environment
         run: |
           poetry config virtualenvs.create true --local
           poetry config virtualenvs.in-project true --local
 
+      # Load Cached Environment if it exists
       - name: Load Cached Environment
         id: cached-poetry-dependencies
         uses: actions/cache@v4
@@ -51,6 +54,7 @@ jobs:
           path: .venv
           key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
+      # Install Dependencies if no cached environment
       - name: Install Dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
