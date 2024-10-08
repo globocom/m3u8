@@ -34,6 +34,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+
+      - run: poetry env use ${{ matrix.python-version }}
+      
       # Runs a single command using the runners shell
       - name: Run all tests
         run: ./runtests

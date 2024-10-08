@@ -1,8 +1,0 @@
--r requirements.txt
-bottle
-pytest
-# pytest-cov 2.6.0 has increased the version requirement 
-# for the coverage package from >=3.7.1 to >=4.4, 
-# which is in conflict with the version requirement 
-# defined by the python-coveralls package for coverage==4.0.3
-pytest-cov>=2.4.0,<2.6
