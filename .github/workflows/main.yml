@@ -42,8 +42,20 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: true
 
-      - run: poetry env use ${{ matrix.python-version }}
+      - name: Load Cached Environment
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Select Poetry Python ${{ matrix.python-version }} Version
+        run: poetry env use ${{ matrix.python-version }}
       
+      - name: Install Python ${{ matrix.python-version }} Dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+
       # Runs a single command using the runners shell
       - name: Run all tests
         run: ./runtests
