@@ -5,8 +5,11 @@
 import os
 import socket
 import urllib.parse
-import m3u8
+import unittest.mock
+
 import pytest
+
+import m3u8
 import playlists
 
 
@@ -146,3 +149,14 @@ def test_raise_timeout_exception_if_timeout_happens_when_loading_from_uri():
         assert True
     else:
         assert False
+
+
+def test_windows_paths():
+    file_path = "C:\\HLS Video\test.m3ui8"
+    with unittest.mock.patch("builtins.open") as mock_open:
+        mock_open.return_value.__enter__.return_value.read.return_value = (
+            playlists.WINDOWS_PLAYLIST
+        )
+        obj = m3u8.load(file_path)
+    assert obj.segments[0].uri == "C:\\HLS Video\\test1.ts"
+    assert obj.segments[0].absolute_uri == "C:\\HLS Video\\test1.ts"
