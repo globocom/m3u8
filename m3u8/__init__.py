@@ -90,7 +90,8 @@ def load(
     Retrieves the content from a given URI and returns a M3U8 object.
     Raises ValueError if invalid content or IOError if request fails.
     """
-    if urlsplit(uri).scheme:
+    base_uri_parts = urlsplit(uri)
+    if base_uri_parts.scheme and base_uri_parts.netloc:
         content, base_uri = http_client.download(uri, timeout, headers, verify_ssl)
         return M3U8(content, base_uri=base_uri, custom_tags_parser=custom_tags_parser)
     else:

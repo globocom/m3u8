@@ -9,8 +9,10 @@ class BasePathMixin:
             return None
 
         ret = urljoin(self.base_uri, self.uri)
-        if self.base_uri and (not urlsplit(self.base_uri).scheme):
-            return ret
+        if self.base_uri:
+            base_uri_parts = urlsplit(self.base_uri)
+            if (not base_uri_parts.scheme) and (not base_uri_parts.netloc):
+                return ret
 
         if not urlsplit(ret).scheme:
             raise ValueError("There can not be `absolute_uri` with no `base_uri` set")
