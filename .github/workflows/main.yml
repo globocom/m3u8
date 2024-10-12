@@ -30,11 +30,35 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
+      # Use abatilo/actions-poetry@v2 to install Poetry
+      - name: Install Poetry 
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.5.1
+
+      # Setup Local Virtual Environment if no poetry.toml file
+      - name: Setup Local Virtual Environment
+        run: |
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+
+      # Load Cached Environment if it exists
+      - name: Load Cached Environment
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+      # Install Dependencies if no cached environment
+      - name: Install Dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+
       # Runs a single command using the runners shell
       - name: Run all tests
-        run: ./runtests
-
+        run: poetry run ./runtests

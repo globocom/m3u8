@@ -3,12 +3,16 @@
 test_server_stdout=tests/server.stdout
 
 function install_deps {
-    pip install -r requirements-dev.txt
+    if [ -z "$GITHUB_ACTIONS" ]; then
+        poetry install
+    else
+        echo "Skipping dependency installation on GitHub Actions"
+    fi
 }
 
 function start_server {
     rm -f ${test_server_stdout}
-    python tests/m3u8server.py >${test_server_stdout} 2>&1 &
+    poetry run python tests/m3u8server.py >${test_server_stdout} 2>&1 &
 }
 
 function stop_server {
@@ -17,7 +21,7 @@ function stop_server {
 }
 
 function run {
-    PYTHONPATH=. py.test -vv --cov-report term-missing --cov m3u8 tests/
+    poetry run pytest -vv --cov-report term-missing --cov m3u8 tests/
 }
 
 function main {

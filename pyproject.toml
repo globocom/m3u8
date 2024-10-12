@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "m3u8"
+version = "6.0.0"
+description = "Python m3u8 parser"
+authors = ["Globo.com"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/globocom/m3u8"
+packages = [
+    {include = "m3u8"},
+    {include = "LICENSE"},
+    {include = "README.md"},
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+backports-datetime-fromisoformat = {version = "*", python = "<3.11"}
+
+[tool.poetry.group.dev.dependencies]
+bottle = "*"
+pytest = "*"
+pytest-cov = ">=2.4.0,<2.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

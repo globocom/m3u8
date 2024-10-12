@@ -15,3 +15,4 @@ local/
 .vscode/
 venv/
 pyvenv.cfg
+poetry.lock
