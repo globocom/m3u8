@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Type
 
 from m3u8 import protocol
 
