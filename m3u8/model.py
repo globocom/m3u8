@@ -449,6 +449,12 @@ class M3U8:
             os.makedirs(basename, exist_ok=True)
 
 
+class TagList(list):
+    def __str__(self):
+        output = [str(tag) for tag in self]
+        return "\n".join(output)
+
+
 class Segment(BasePathMixin):
     """
     A video segment from a M3U8 playlist
@@ -1009,6 +1015,10 @@ class Playlist(BasePathMixin):
         return "#EXT-X-STREAM-INF:" + ",".join(stream_inf) + "\n" + self.uri
 
 
+class PlaylistList(TagList, GroupedBasePathMixin):
+    pass
+
+
 class IFramePlaylist(BasePathMixin):
     """
     IFramePlaylist object representing a link to a
@@ -1260,24 +1270,10 @@ class Media(BasePathMixin):
         return self.dumps()
 
 
-class TagList(list):
-    def __str__(self):
-        output = [str(tag) for tag in self]
-        return "\n".join(output)
-
-
 class MediaList(TagList, GroupedBasePathMixin):
     @property
     def uri(self):
         return [media.uri for media in self]
-
-
-class PlaylistList(TagList, GroupedBasePathMixin):
-    pass
-
-
-class SessionDataList(TagList):
-    pass
 
 
 class Start:
@@ -1443,7 +1439,7 @@ class SessionData:
         return self.dumps()
 
 
-class DateRangeList(TagList):
+class SessionDataList(TagList):
     pass
 
 
@@ -1500,6 +1496,10 @@ class DateRange:
 
     def __str__(self):
         return self.dumps()
+
+
+class DateRangeList(TagList):
+    pass
 
 
 class ContentSteering(BasePathMixin):
