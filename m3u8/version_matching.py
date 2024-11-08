@@ -1,5 +1,3 @@
-from typing import List
-
 from m3u8 import protocol
 from m3u8.version_matching_rules import VersionMatchingError, available_rules
 
