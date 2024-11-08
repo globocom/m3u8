@@ -764,7 +764,7 @@ def test_create_sub_directories_with_relative_path(tmpdir, monkeypatch):
     expected_file_path = os.path.join(tmpdir, relative_path)
     assert os.path.exists(expected_file_path)
 
-    with open(expected_file_path, "r") as file:
+    with open(expected_file_path) as file:
         assert file.read().strip() == playlists.SIMPLE_PLAYLIST.strip()
 
 

@@ -657,9 +657,9 @@ class Segment(BasePathMixin):
         if self.uri:
             if self.duration is not None:
                 if infspec == "milliseconds":
-                    duration = "{:.3f}".format(self.duration)
+                    duration = f"{self.duration:.3f}"
                 elif infspec == "microseconds":
-                    duration = "{:.6f}".format(self.duration)
+                    duration = f"{self.duration:.6f}"
                 else:
                     duration = number_to_string(self.duration)
                 output.append("#EXTINF:%s," % duration)
