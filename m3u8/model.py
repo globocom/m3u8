@@ -3,6 +3,7 @@
 # license that can be found in the LICENSE file.
 import decimal
 import os
+from typing import TypeVar
 
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
 from m3u8.parser import format_date_time, parse
@@ -449,7 +450,10 @@ class M3U8:
             os.makedirs(basename, exist_ok=True)
 
 
-class TagList(list):
+T = TypeVar("T")
+
+
+class TagList(list[T]):
     def __str__(self):
         output = [str(tag) for tag in self]
         return "\n".join(output)
@@ -712,7 +716,7 @@ class Segment(BasePathMixin):
             self.init_section.base_uri = newbase_uri
 
 
-class SegmentList(list, GroupedBasePathMixin):
+class SegmentList(list[Segment], GroupedBasePathMixin):
     def dumps(self, timespec="milliseconds", infspec="auto"):
         output = []
         last_segment = None
@@ -827,7 +831,7 @@ class PartialSegment(BasePathMixin):
         return self.dumps(None)
 
 
-class PartialSegmentList(list, GroupedBasePathMixin):
+class PartialSegmentList(list[PartialSegment], GroupedBasePathMixin):
     def __str__(self):
         output = [str(part) for part in self]
         return "\n".join(output)
@@ -1015,7 +1019,7 @@ class Playlist(BasePathMixin):
         return "#EXT-X-STREAM-INF:" + ",".join(stream_inf) + "\n" + self.uri
 
 
-class PlaylistList(TagList, GroupedBasePathMixin):
+class PlaylistList(TagList[Playlist], GroupedBasePathMixin):
     pass
 
 
@@ -1270,7 +1274,7 @@ class Media(BasePathMixin):
         return self.dumps()
 
 
-class MediaList(TagList, GroupedBasePathMixin):
+class MediaList(TagList[Media], GroupedBasePathMixin):
     @property
     def uri(self):
         return [media.uri for media in self]
@@ -1310,7 +1314,7 @@ class RenditionReport(BasePathMixin):
         return self.dumps()
 
 
-class RenditionReportList(list, GroupedBasePathMixin):
+class RenditionReportList(list[RenditionReport], GroupedBasePathMixin):
     def __str__(self):
         output = [str(report) for report in self]
         return "\n".join(output)
@@ -1439,7 +1443,7 @@ class SessionData:
         return self.dumps()
 
 
-class SessionDataList(TagList):
+class SessionDataList(TagList[SessionData]):
     pass
 
 
@@ -1498,7 +1502,7 @@ class DateRange:
         return self.dumps()
 
 
-class DateRangeList(TagList):
+class DateRangeList(TagList[DateRange]):
     pass
 
 
