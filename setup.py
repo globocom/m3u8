@@ -24,5 +24,5 @@ setup(
     description="Python m3u8 parser",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    python_requires=">=3.7",
+    python_requires=">=3.9",
 )
