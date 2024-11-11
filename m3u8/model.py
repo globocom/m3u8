@@ -3,6 +3,7 @@
 # license that can be found in the LICENSE file.
 import decimal
 import os
+from typing import TypeVar
 
 from m3u8.mixins import BasePathMixin, GroupedBasePathMixin
 from m3u8.parser import format_date_time, parse
@@ -449,6 +450,15 @@ class M3U8:
             os.makedirs(basename, exist_ok=True)
 
 
+T = TypeVar("T")
+
+
+class TagList(list[T]):
+    def __str__(self):
+        output = [str(tag) for tag in self]
+        return "\n".join(output)
+
+
 class Segment(BasePathMixin):
     """
     A video segment from a M3U8 playlist
@@ -706,7 +716,7 @@ class Segment(BasePathMixin):
             self.init_section.base_uri = newbase_uri
 
 
-class SegmentList(list, GroupedBasePathMixin):
+class SegmentList(list[Segment], GroupedBasePathMixin):
     def dumps(self, timespec="milliseconds", infspec="auto"):
         output = []
         last_segment = None
@@ -821,7 +831,7 @@ class PartialSegment(BasePathMixin):
         return self.dumps(None)
 
 
-class PartialSegmentList(list, GroupedBasePathMixin):
+class PartialSegmentList(list[PartialSegment], GroupedBasePathMixin):
     def __str__(self):
         output = [str(part) for part in self]
         return "\n".join(output)
@@ -1007,6 +1017,10 @@ class Playlist(BasePathMixin):
                 stream_inf.append(f'{media_type}="{media.group_id}"')
 
         return "#EXT-X-STREAM-INF:" + ",".join(stream_inf) + "\n" + self.uri
+
+
+class PlaylistList(TagList[Playlist], GroupedBasePathMixin):
+    pass
 
 
 class IFramePlaylist(BasePathMixin):
@@ -1260,24 +1274,10 @@ class Media(BasePathMixin):
         return self.dumps()
 
 
-class TagList(list):
-    def __str__(self):
-        output = [str(tag) for tag in self]
-        return "\n".join(output)
-
-
-class MediaList(TagList, GroupedBasePathMixin):
+class MediaList(TagList[Media], GroupedBasePathMixin):
     @property
     def uri(self):
         return [media.uri for media in self]
-
-
-class PlaylistList(TagList, GroupedBasePathMixin):
-    pass
-
-
-class SessionDataList(TagList):
-    pass
 
 
 class Start:
@@ -1314,7 +1314,7 @@ class RenditionReport(BasePathMixin):
         return self.dumps()
 
 
-class RenditionReportList(list, GroupedBasePathMixin):
+class RenditionReportList(list[RenditionReport], GroupedBasePathMixin):
     def __str__(self):
         output = [str(report) for report in self]
         return "\n".join(output)
@@ -1443,7 +1443,7 @@ class SessionData:
         return self.dumps()
 
 
-class DateRangeList(TagList):
+class SessionDataList(TagList[SessionData]):
     pass
 
 
@@ -1500,6 +1500,10 @@ class DateRange:
 
     def __str__(self):
         return self.dumps()
+
+
+class DateRangeList(TagList[DateRange]):
+    pass
 
 
 class ContentSteering(BasePathMixin):
