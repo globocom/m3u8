@@ -265,6 +265,7 @@ def _parse_extinf(line, state, lineno, strict, **kwargs):
     chunks = line.replace(protocol.extinf + ":", "").split(",", 1)
     if len(chunks) == 2:
         duration, title = chunks
+        duration = re.sub(r'^([\-\d]+).*$', r'\1', duration)
     elif len(chunks) == 1:
         if strict:
             raise ParseError(lineno, line)
