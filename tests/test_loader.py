@@ -152,7 +152,7 @@ def test_raise_timeout_exception_if_timeout_happens_when_loading_from_uri():
 
 
 def test_windows_paths():
-    file_path = "C:\\HLS Video\test.m3ui8"
+    file_path = "C:\\HLS Video\test.m3u8"
     with unittest.mock.patch("builtins.open") as mock_open:
         mock_open.return_value.__enter__.return_value.read.return_value = (
             playlists.WINDOWS_PLAYLIST
